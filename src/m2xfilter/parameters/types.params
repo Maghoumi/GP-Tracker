@@ -1,0 +1,41 @@
+parent.0 = default.params
+pop.subpop.0.species.fitness = ec.simple.SimpleFitness
+
+###########################
+#  TYPINGS & CONSTRAINTS  #
+###########################
+gp.type.a.size = 3
+gp.type.a.1.name = rgb
+gp.type.a.2.name = int
+
+gp.type.s.size = 1
+gp.type.s.0.name = nil-or-int
+gp.type.s.0.size = 2
+gp.type.s.0.member.0 = nil 
+gp.type.s.0.member.1 = int
+
+gp.nc.size = 11
+
+gp.nc.7 = ec.gp.GPNodeConstraints
+gp.nc.7.name = colorterminal
+gp.nc.7.returns = rgb
+gp.nc.7.size = 0
+
+gp.nc.8 = ec.gp.GPNodeConstraints
+gp.nc.8.name = psuedoterminal
+gp.nc.8.returns = nil
+gp.nc.8.size = 1
+gp.nc.8.child.0 = rgb
+
+gp.nc.9 = ec.gp.GPNodeConstraints
+gp.nc.9.name = int
+gp.nc.9.returns = int
+gp.nc.9.size = 0
+
+# constraints for math operations that can work on both int values and double values
+gp.nc.10 = ec.gp.GPNodeConstraints
+gp.nc.10.name = nil-or-int
+gp.nc.10.returns = nil-or-int
+gp.nc.10.size = 2
+gp.nc.10.child.0 = nil-or-int
+gp.nc.10.child.1 = nil-or-int

@@ -1,0 +1,1 @@
+java -Djava.library.path=lib/jcuda -cp lib/jogl/gluegen-rt.jar;lib/jogl/gluegen-rt-natives-windows-amd64.jar;lib/jogl/jogl-all.jar;lib/jogl/jogl-all-natives-windows-amd64.jar;lib/trove/trove-3.0.3.jar;lib/apache/commons-io-2.4.jar;lib/jcuda/jcuda-0.5.5.jar;lib/jcuda/jcudaUtils-0.0.4.jar;bin m2xfilter.M2XFilter

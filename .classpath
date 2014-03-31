@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="**/*.java" kind="src" path="ecj"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="assets"/>
+	<classpathentry exported="true" kind="lib" path="lib/ecj/iText-2.1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ecj/jcommon-1.0.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ecj/jfreechart-1.0.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcuda/jcudaUtils-0.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jnpp/jnpp-0.5.0.35-beta03.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/jnpp/jnpp-0.5.0.35-beta03.jar!/doc"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="GP-Tracker/lib/jnpp"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/jnpp/jnpp-utilnpp-0.5.0.35-beta03.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/jnpp/jnpp-utilnpp-0.5.0.35-beta03.jar!/doc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/jcuda/jcuda-0.5.5.jar" sourcepath="lib/jcuda/JCuda-All-0.5.5-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/jcuda/jcuda-0.5.5.jar!/doc"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="GP-Tracker/lib/jcuda"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/apache/commons-io-2.4.jar" sourcepath="lib/apache/commons-io-2.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/apache/commons-io-2.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/jcuda/jcurand-0.5.5.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="GP-Tracker/lib/jcuda"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/trove/trove-3.0.3.jar" sourcepath="lib/trove/trove-3.0.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/trove/trove-3.0.3.jar!/javadocs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/jogl/jogl-all.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/jogl/jogl-doc.zip!/jogl/javadoc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/jogl/gluegen-rt-natives-windows-amd64.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jogl/gluegen-rt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jogl/gluegen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jogl/jogl-all-natives-windows-amd64.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javacv/ffmpeg-2.1.1-windows-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javacv/javacpp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javacv/javacv-windows-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javacv/javacv.jar" sourcepath="lib/javacv/javacv-0.7-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/javacv/opencv-2.4.8-windows-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/apache/commons-lang3-3.3.1.jar" sourcepath="lib/apache/commons-lang3-3.3.1-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GP-Tracker/lib/apache/commons-lang3-3.3.1-src.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/miglayout/miglayout15-swing.jar" sourcepath="lib/miglayout/miglayout-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

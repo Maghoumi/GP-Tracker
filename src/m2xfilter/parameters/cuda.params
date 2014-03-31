@@ -1,0 +1,14 @@
+parent.0 = language.params
+
+##########################
+#	    CUDA STUFF		 #
+##########################
+
+finish = cuda.gp.CudaFinisher
+pop.subpop.0 = cuda.gp.CudaSubpopulation
+state = cuda.gp.CudaEvolutionState
+eval = cuda.gp.CudaEvaluator
+pop.subpop.0.species.pipe.source.0 = cuda.gp.CudaCrossoverPipeline
+pop.subpop.0.species.pipe.source.0.prob = 0.8
+pop.subpop.0.species.pipe.source.1 = cuda.gp.CudaMutationPipeline
+pop.subpop.0.species.pipe.source.1.prob = 0.2
