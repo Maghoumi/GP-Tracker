@@ -20,6 +20,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -109,7 +110,7 @@ public class Visualizer extends JFrame implements GLEventListener, EvolutionList
 	private final int QUEUE_CAPACITY = 1;
 
 	/** The frame queue which holds the frames and the discovered segments that we want to display using OpenGL */
-	private ArrayBlockingQueue<SegmentedVideoFrame> segmentedFrameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+	private BlockingQueue<SegmentedVideoFrame> segmentedFrameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 
 	/**
 	 * A set of the evolved classifiers. When a new classifier is passed to this
