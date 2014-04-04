@@ -27,7 +27,7 @@ import gnu.trove.list.array.TByteArrayList;
 public class CudaEvaluator extends SimpleEvaluator {
 	
 	/** Keeps the expression list for each thread */
-	protected List<ArrayList<TByteArrayList>> threadExpList;
+	protected List<List<TByteArrayList>> threadExpList;
 	private boolean useCuda = false;
 	
 	private CudaEvolutionState cuState;
@@ -44,7 +44,7 @@ public class CudaEvaluator extends SimpleEvaluator {
 		
 		// Initialize the list of list of expressions
 		
-		threadExpList = /*Collections.synchronizedList*/(new ArrayList<ArrayList<TByteArrayList>>(state.evalthreads));
+		threadExpList = new ArrayList<List<TByteArrayList>>(state.evalthreads);
 		
 		useCuda = state.parameters.getString(base.push("evaluationMethod"), null).toLowerCase().equals("gpu"); 
 		cuState = (CudaEvolutionState) state;
@@ -83,37 +83,6 @@ public class CudaEvaluator extends SimpleEvaluator {
                 if (!state.population.subpops[x].individuals[y].evaluated) {
                 	count++;
                 }
-//		
-//		System.out.println("Wanna evaluate " + count + " individuals.");
-//		
-//		CudaSubpopulation s = (CudaSubpopulation) state.population.subpops[0];
-//		int count2 = 0;
-//		
-//		for(ArrayList<GPIndividual> arr : s.needEval) {
-//			for(GPIndividual in : arr) {
-//				if (!in.evaluated)
-//					count2++;
-//			}
-//		}
-//		
-////		for(int x = 0;x<state.population.subpops.length;x++)
-////            for(int y=0;y<((CudaSubpopulation)state.population.subpops[x]).needEval.size();y++)
-////            	for (GPIndividual i : ((CudaSubpopulation)state.population.subpops[x]).needEval.get(y)) {
-////            		if (!i.evaluated)
-////            			count2++;
-////            	}
-//		
-//		if(count != count2) {
-//			System.out.println("Shit Son! Count1 is " + count + " while the other is " + count2);
-//			System.exit(0);
-//		}
-//		else {
-//			System.out.println("Count checks out!");
-//		}
-		
-		
-		
-		
 		// Not using CUDA? What a shame... :-<
 		if (!useCuda) {
 			super.evaluatePopulation(state);
@@ -133,7 +102,7 @@ public class CudaEvaluator extends SimpleEvaluator {
 			
 			// Determine the working scope of each thread
 			for (int i = 0 ; i < state.evalthreads ; i++) {
-				ArrayList<GPIndividual> listOfInd = subPop.needEval.get(i);
+				List<GPIndividual> listOfInd = subPop.needEval.get(i);
 				
 				from[i] = offset;
 				to[i] = from[i] + listOfInd.size() - 1;
@@ -166,19 +135,6 @@ public class CudaEvaluator extends SimpleEvaluator {
 					}
 	
 			}
-			
-//			int count3 = 0;
-//			for(ArrayList<TByteArrayList> k : threadExpList) {
-//				count3 += k.size();
-//			}
-//			
-//			if (count3 != count) {
-//				System.out.println("Whoa! I ended up with " + count3 + "expressions instead of " + count);
-//				System.exit(0);
-//			}
-//			else {
-//				System.out.println("Flattened count checks out!");
-//			}
 			
 			// Call the CUDA kernel
 			float[] fitnesses = cuState.getCudaInterop().evaluatePopulation(threadExpList, cuState.devTrainingInstances);
@@ -230,19 +186,16 @@ public class CudaEvaluator extends SimpleEvaluator {
 		//Finished! :-)
 	}
 
-	// TODO prestore the state.. Is it possible?? Probbaly YES!
-	// EvolutionState is a Singleton, therefore we can just store a casted thing to it and
-	// use it throughout
 	protected void traversePopChunk(EvolutionState state, CudaSubpopulation subPop, int threadnum) {
 		// Get the unevaluateds for the current thread
-		ArrayList<GPIndividual> myNeedEvals = subPop.needEval.get(threadnum);
-		ArrayList<TByteArrayList> myExpList = threadExpList.get(threadnum);
+		List<GPIndividual> myNeedEvals = subPop.needEval.get(threadnum);
+		List<TByteArrayList> myExpList = threadExpList.get(threadnum);
 		
 		// Walk through my individuals and convert them to byte[] expressions
 		// and store them in myExpList
 		for(GPIndividual ind : myNeedEvals) {
 			CudaNode root = (CudaNode) ind.trees[0].child;
-			byte[] exp = root.byteTraverse();
+			byte[] exp = root.makePostfixExpression();
 			// Add this expression to the list
 			myExpList.add(new TByteArrayList(exp));
 		}
@@ -257,7 +210,7 @@ public class CudaEvaluator extends SimpleEvaluator {
 	 * @param endIndex
 	 */
 	protected void assignFitness(EvolutionState state, CudaSubpopulation subPop, int threadnum, float[] fitnesses, int[] from, int[] to) {
-		ArrayList<GPIndividual> myUnevals = subPop.needEval.get(threadnum); // get my unevaluated individuals
+		List<GPIndividual> myUnevals = subPop.needEval.get(threadnum); // get my unevaluated individuals
 		
 		int indIndex = 0;	// hold the index to my individuals
 		for (int i = from[threadnum] ; i <= to[threadnum] ; i++) {
@@ -265,6 +218,7 @@ public class CudaEvaluator extends SimpleEvaluator {
 			
 			((SimpleFitness) currentInd.fitness).setFitness(state, fitnesses[i] , fitnesses[i] >= 0.985);
 			
+			/** DEBUG */
 //			float testFitness = ProblemData.cudaCaller.cpuEvaluate(state, currentInd, ((M2XFilter)p_problem.clone()).trainingInstances);if (Math.abs(testFitness -fitnesses[i]) > 0.1) {
 //				System.out.println("Different -> CUDA: " + fitnesses[i] + " Actual: " + testFitness); System.out.println(currentInd.trees[0].child.makeLatexTree());}
 			
@@ -302,10 +256,4 @@ public class CudaEvaluator extends SimpleEvaluator {
 			me.assignFitness(state, subPop, threadnum, fitnesses, from, to);
 		}
 	}
-	
-//    public boolean runComplete(final EvolutionState state)
-//    {
-//    	return false;
-//    }
-
 }

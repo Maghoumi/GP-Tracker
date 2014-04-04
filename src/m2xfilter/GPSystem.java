@@ -1,23 +1,19 @@
 package m2xfilter;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
+import m2xfilter.datatypes.EvolutionListener;
 import m2xfilter.datatypes.Job;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
 import visualizer.Visualizer;
 import cuda.CudaInterop;
 import cuda.gp.CudaEvolutionState;
-import cuda.gp.CudaNode;
 import cuda.gp.CudaSimpleStatistics;
 import ec.Evolve;
 import ec.gp.GPIndividual;
-import ec.util.MersenneTwisterFast;
-import ec.util.Output;
-import ec.util.Parameter;
-import ec.util.ParameterDatabase;
-import ec.util.Version;
 
 /**
  * And finally... My complete GP system! Using an object of this class, you can
@@ -38,7 +34,7 @@ import ec.util.Version;
 public class GPSystem extends Evolve implements Runnable {
 
 	/** The job queue for the GP system */
-	private ArrayBlockingQueue<Job> jobs;
+	private BlockingQueue<Job> jobs;
 
 	/**
 	 * Number of jobs that can be queued on this GPSystem without blocking the
@@ -69,15 +65,14 @@ public class GPSystem extends Evolve implements Runnable {
 	private String[] args;
 
 	/**
-	 * Initializes a new GPSystem using the given parameter file and the given
-	 * visualizer. If <b>startThread</b> is true, the worker thread will start
+	 * Initializes a new GPSystem using the given parameter file.
+	 * If <b>startThread</b> is true, the worker thread will start
 	 * working immediately.
 	 * 
 	 * @param args
-	 * @param visualizer
 	 * @param startThread
 	 */
-	public GPSystem(String[] args, Visualizer visualizer, boolean startThread) {
+	public GPSystem(String[] args, boolean startThread) {
 		this.args = args;
 		this.jobs = new ArrayBlockingQueue<Job>(JOB_CAPACITY);
 
@@ -93,13 +88,28 @@ public class GPSystem extends Evolve implements Runnable {
 			state.startFresh();
 		}
 
-		state.setVisualizer(visualizer, 1);
-
 		// Create the worker thread associated with this GPSystem
 		this.runThread = new Thread(this);
 		if (startThread) {
 			this.runThread.start();
 		}
+	}
+	
+	
+	/**
+	 * Add an EvolutionListener to the list of this system's listeners
+	 * @param listener
+	 */
+	public void addEvolutionListener(EvolutionListener listener) {
+		this.state.addEvolutionListener(listener);
+	}
+	
+	/**
+	 * Remove an EvolutionListener from the list of this system's listeners
+	 * @param listener
+	 */
+	public void removeEvolutionListener(EvolutionListener listener) {
+		this.state.removeEvolutionListener(listener);
 	}
 
 	/**
@@ -186,7 +196,7 @@ public class GPSystem extends Evolve implements Runnable {
 	 *            A list of negative examples
 	 * @return The best individual of the whole run
 	 */
-	private GPIndividual call(ArrayList<ByteImage> positives, ArrayList<ByteImage> negatives) {
+	private GPIndividual call(List<ByteImage> positives, List<ByteImage> negatives) {
 		// Switch context
 		getCudaInterop().switchContext();
 		state.setExamples(positives, negatives);

@@ -4,15 +4,9 @@ import static jcuda.driver.JCudaDriver.*;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLProfile;
 
 import org.apache.commons.io.FileUtils;
 
@@ -31,19 +25,8 @@ import utils.cuda.datatypes.Float4;
 import visualizer.Visualizer;
 import m2xfilter.datatypes.DataInstance;
 import m2xfilter.datatypes.ProblemData;
-import jcuda.Pointer;
-import jcuda.Sizeof;
-import jcuda.driver.CUDA_ARRAY_DESCRIPTOR;
-import jcuda.driver.CUDA_MEMCPY2D;
-import jcuda.driver.CUarray;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUarray_format;
-import jcuda.driver.CUdeviceptr;
-import jcuda.driver.CUfunction;
-import jcuda.driver.CUmemorytype;
-import jcuda.driver.CUmodule;
-import jcuda.driver.CUtexref;
-import jcuda.driver.JCudaDriver;
+import jcuda.*;
+import jcuda.driver.*;
 import jcuda.runtime.JCuda;
 import jcuda.utils.KernelLauncher;
 import static jcuda.driver.CUaddress_mode.CU_TR_ADDRESS_MODE_CLAMP;
@@ -200,7 +183,7 @@ public class CudaInterop implements Singleton {
 	 */
 	private void gtSample(CudaEvolutionState cuState) {
 		HashSet<Integer> trainingPoints = new HashSet<Integer>(); // To prevent duplicated training points		
-		ArrayList<DataInstance> instances = cuState.trainingInstances;
+		List<DataInstance> instances = cuState.trainingInstances;
 		ByteImage inputImage = cuState.getTrainingImage();
 		CudaData cudaDataInput = cuState.getDevTrainingImage();
 		ByteImage gtImage = cuState.getGtImage();
@@ -271,11 +254,11 @@ public class CudaInterop implements Singleton {
 	private void posNegSample(CudaEvolutionState cuState) {
 		HashSet<Integer> trainingPoints = new HashSet<Integer>(); // To prevent duplicated training points
 		
-		ArrayList<DataInstance> instances = cuState.trainingInstances;
+		List<DataInstance> instances = cuState.trainingInstances;
 
 		int sampleCount;
-		ArrayList<ByteImage> samples;
-		ArrayList<CudaData> cuSamples;
+		List<ByteImage> samples;
+		List<CudaData> cuSamples;
 
 		samples = cuState.getPositiveExamples();
 		cuSamples = cuState.getDevPositiveExamples();
@@ -585,13 +568,13 @@ public class CudaInterop implements Singleton {
 	 * @param indCount
 	 * @return
 	 */
-	public float[] evaluatePopulation(List<ArrayList<TByteArrayList>> expressions, CudaData data) {
+	public float[] evaluatePopulation(List<List<TByteArrayList>> expressions, CudaData data) {
 		// Convert expressions to byte[]
 		// First determine how many unevals we have in total
 		int indCount = 0;
 		int maxExpLength = 0;
 
-		for (ArrayList<TByteArrayList> thExps : expressions) {
+		for (List<TByteArrayList> thExps : expressions) {
 			indCount += thExps.size();
 
 			// Determine the longest expression
@@ -604,7 +587,7 @@ public class CudaInterop implements Singleton {
 
 		int i = 0;
 
-		for (ArrayList<TByteArrayList> thExps : expressions) {
+		for (List<TByteArrayList> thExps : expressions) {
 			for (TByteArrayList currExp : thExps) {
 				int length = currExp.size();
 				currExp.toArray(population, 0, i * maxExpLength, length);
@@ -674,7 +657,7 @@ public class CudaInterop implements Singleton {
 	 * @param trainingInstances
 	 * @return
 	 */
-	public synchronized float cpuEvaluate(final EvolutionState state, final Individual ind, ArrayList<DataInstance> trainingInstances) {
+	public synchronized float cpuEvaluate(final EvolutionState state, final Individual ind, List<DataInstance> trainingInstances) {
 		int tp = 0, tn = 0;
 		int fp = 0, fn = 0;
 

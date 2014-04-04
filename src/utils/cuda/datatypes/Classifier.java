@@ -1,14 +1,13 @@
 package utils.cuda.datatypes;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import m2xfilter.GPSystem;
 import m2xfilter.datatypes.Job;
 import cuda.gp.CudaNode;
 import ec.gp.GPIndividual;
-import ec.gp.GPNode;
 
 /**
  * Represents a single GP classifier program. The objects of this class
@@ -57,10 +56,10 @@ public class Classifier implements Comparable<Classifier>{
 	private boolean shouldSeed = false;
 	
 	/** The list of the positive examples that are used to train this classifier */
-	private ArrayList<ByteImage> positiveExamples = null;
+	private List<ByteImage> positiveExamples = null;
 	
 	/** The list of negative examples that are used to train this classifier */
-	private ArrayList<ByteImage> negativeExamples = null;
+	private List<ByteImage> negativeExamples = null;
 	
 	/** The training image used to train this classifier */
 	private ByteImage trainingImage = null;
@@ -77,7 +76,7 @@ public class Classifier implements Comparable<Classifier>{
 	 * training instances. The object maintains its own list of positive/negative examples, thus the
 	 * original lists are left intact.
 	 */
-	public Classifier(ArrayList<ByteImage> positiveExamples, ArrayList<ByteImage> negativeExamples) {
+	public Classifier(List<ByteImage> positiveExamples, List<ByteImage> negativeExamples) {
 		this();
 		this.trainingType = Classifier.TYPE_POS_NEG;
 		
@@ -139,14 +138,14 @@ public class Classifier implements Comparable<Classifier>{
 	/**
 	 * @return	The list of positive examples
 	 */
-	public ArrayList<ByteImage> getPositiveExamples() {
+	public List<ByteImage> getPositiveExamples() {
 		return this.positiveExamples;
 	}
 	
 	/**
 	 * @return The list of negative examples
 	 */
-	public ArrayList<ByteImage> getNegativeExamples() {
+	public List<ByteImage> getNegativeExamples() {
 		return this.negativeExamples;
 	}
 	
@@ -220,7 +219,7 @@ public class Classifier implements Comparable<Classifier>{
 	public synchronized void setIndividual(GPIndividual individual) {
 		this.individual = individual;
 		// Update the expression tree
-		this.expression = ((CudaNode)individual.trees[0].child).byteTraverse();
+		this.expression = ((CudaNode)individual.trees[0].child).makePostfixExpression();
 	}
 	
 	/** 

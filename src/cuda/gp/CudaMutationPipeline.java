@@ -1,6 +1,7 @@
 package cuda.gp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ec.BreedingPipeline;
 import ec.EvolutionState;
@@ -209,7 +210,7 @@ public class CudaMutationPipeline extends GPBreedingPipeline {
 			GPIndividual j;
 
 			CudaSubpopulation subPop = (CudaSubpopulation) state.population.subpops[subpopulation];
-            ArrayList<GPIndividual> myList = subPop.needEval.get(thread);
+            List<GPIndividual> myList = subPop.needEval.get(thread);
 
 			if (sources[0] instanceof BreedingPipeline)
 			// it's already a copy, so just smash the tree in
@@ -260,8 +261,6 @@ public class CudaMutationPipeline extends GPBreedingPipeline {
 			}
 
 			// add the new individual, replacing its previous source
-//			if (!j.evaluated)
-//				myList.add(j);
 			inds[q] = j;
 		}
 		return n;

@@ -1,6 +1,7 @@
 package m2xfilter.datatypes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
@@ -27,10 +28,10 @@ public class Job {
 	private int jobType = -1;
 	
 	/** The list of positive examples required by this job */
-	private ArrayList<ByteImage> positiveExamples;
+	private List<ByteImage> positiveExamples;
 	
 	/** The list of negative examples required by this job */
-	private ArrayList<ByteImage> negativeExamples;
+	private List<ByteImage> negativeExamples;
 	
 	/** The training image required by this job */
 	private ByteImage trainingImage;
@@ -51,7 +52,7 @@ public class Job {
 	 * @param negativeExamples	The list of negative examples
 	 * @param classifier	The classifier to be evolved for this job
 	 */
-	public Job(ArrayList<ByteImage> positiveExamples, ArrayList<ByteImage> negativeExamples, Classifier classifier) {
+	public Job(List<ByteImage> positiveExamples, List<ByteImage> negativeExamples, Classifier classifier) {
 		this.jobType = Job.TYPE_POS_NEG;
 		
 		this.positiveExamples = new ArrayList<ByteImage>();		
@@ -125,28 +126,28 @@ public class Job {
 	/**
 	 * @return the positiveExamples
 	 */
-	public ArrayList<ByteImage> getPositiveExamples() {
+	public List<ByteImage> getPositiveExamples() {
 		return positiveExamples;
 	}
 
 	/**
 	 * @param positiveExamples the positiveExamples to set
 	 */
-	public void setPositiveExamples(ArrayList<ByteImage> positiveExamples) {
+	public void setPositiveExamples(List<ByteImage> positiveExamples) {
 		this.positiveExamples = positiveExamples;
 	}
 
 	/**
 	 * @return the negativeExamples
 	 */
-	public ArrayList<ByteImage> getNegativeExamples() {
+	public List<ByteImage> getNegativeExamples() {
 		return negativeExamples;
 	}
 
 	/**
 	 * @param negativeExamples the negativeExamples to set
 	 */
-	public void setNegativeExamples(ArrayList<ByteImage> negativeExamples) {
+	public void setNegativeExamples(List<ByteImage> negativeExamples) {
 		this.negativeExamples = negativeExamples;
 	}
 

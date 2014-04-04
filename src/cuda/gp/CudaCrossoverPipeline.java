@@ -1,6 +1,7 @@
 package cuda.gp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ec.EvolutionState;
 import ec.Individual;
@@ -164,7 +165,7 @@ public class CudaCrossoverPipeline extends CrossoverPipeline {
 	            // If not, swap one in.  Else just copy the parent.
 	            
 	            CudaSubpopulation subPop = (CudaSubpopulation) state.population.subpops[subpopulation];
-	            ArrayList<GPIndividual> myList = subPop.needEval.get(thread);
+	            List<GPIndividual> myList = subPop.needEval.get(thread);
 	            
 	            for(int x=0;x<j1.trees.length;x++)
 	                {
@@ -213,14 +214,10 @@ public class CudaCrossoverPipeline extends CrossoverPipeline {
 	            
 	            // add the individuals to the population
 	            inds[q] = j1;
-//	            if (!j1.evaluated)
-//	            	myList.add(j1);
 	            q++;
 	            if (q<n+start && !tossSecondParent)
 	                {
 	                inds[q] = j2;
-//	                if(!j2.evaluated)
-//	                	myList.add(j2);
 	                q++;
 	                }
 	            }

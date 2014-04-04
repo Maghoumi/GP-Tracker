@@ -1,14 +1,11 @@
 package cuda.gp;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import ec.EvolutionState;
@@ -22,10 +19,6 @@ import ec.util.Parameter;
  * population, the initial population is added to the list of the current
  * thread's unevaluated individuals! Smart, eh? :-)
  * 
- * FIXME One possible drawback: since the initial population is completely
- * unthreaded, the initial population is slower than usual for evaluation.
- * However I don't think it is a big deal...
- * 
  * @author Mehran Maghoumi
  * 
  */
@@ -35,14 +28,14 @@ public class CudaSubpopulation extends Subpopulation {
 	 * A list of individuals that require evaluation. To prevent locking and
 	 * synchronization each thread has its own list
 	 */
-	public List<ArrayList<GPIndividual>> needEval;
+	public List<List<GPIndividual>> needEval;
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
 		super.setup(state, base);
 
 		// Initialize the unevaluated lists of this subpopulation
-		needEval = new ArrayList<ArrayList<GPIndividual>>(state.breedthreads);
+		needEval = new ArrayList<List<GPIndividual>>(state.breedthreads);
 
 		for (int i = 0; i < state.breedthreads; i++) {
 			needEval.add(new ArrayList<GPIndividual>());
@@ -52,7 +45,7 @@ public class CudaSubpopulation extends Subpopulation {
 
 	public void populate(EvolutionState state, int thread) {
 
-		ArrayList<GPIndividual> myUnevals = this.needEval.get(thread);
+		List<GPIndividual> myUnevals = this.needEval.get(thread);
 		int len = individuals.length; // original length of individual array
 		int start = 0; // where to start filling new individuals in -- may get
 						// modified if we read some individuals in

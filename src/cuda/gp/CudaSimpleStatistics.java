@@ -44,11 +44,8 @@ public class CudaSimpleStatistics extends SimpleStatistics {
 				best_of_run[x] = (Individual) (best_i[x].clone());
 				
 				GPIndividual gpInd = (GPIndividual) best_of_run[x];
-//				byte[] indExp = ((CudaNode)gpInd.trees[0].child).byteTraverse();
-				// Pass the individual to the visualizer
-				//TODO pass individual to classifier
+				// Report the best individual to the CudaEvolutionState object
 				cuState.reportIndividual(gpInd);
-//				cuState.getCudaInterop().passNewVisualizationIndividual(indExp);
 			}				
 		}
 

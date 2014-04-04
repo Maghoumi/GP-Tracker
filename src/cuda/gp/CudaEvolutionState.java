@@ -1,16 +1,15 @@
 package cuda.gp;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import m2xfilter.datatypes.DataInstance;
+import m2xfilter.datatypes.EvolutionListener;
 import cuda.CudaInterop;
 import utils.PreciseTimer;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.CudaData;
-import visualizer.Visualizer;
 import ec.EvolutionState;
 import ec.Individual;
 import ec.gp.GPIndividual;
@@ -40,17 +39,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	/** Determines the training mode of this evolutionary run */
 	private int trainingMode = -1;
 	
-	/**
-	 * The visualizer that is associated with this instance of the evolution state.
-	 * The individuals are continuously passed to this visualizer for visualization.  
-	 */
-	private Visualizer visualizer;
-	
-	/**
-	 * How often should the best individual be reported? This number is the
-	 * number of generations. Therefore, "1" means report back every generation. 
-	 */
-	private int indReportFrequency = 1;
+	/** The list of all EvolutionListeners that are registered with this EvolutionState object */
+	private List<EvolutionListener> evolutionListeners = new ArrayList<EvolutionListener>();
 	
 	/** Interop instance for CUDA communications*/
 	private CudaInterop cudaInterop = null;
@@ -63,22 +53,22 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	private boolean isStartFresh = false;
 	
 	/** Stores the training instances that the GP system needs for training */
-	public ArrayList<DataInstance> trainingInstances = new ArrayList<DataInstance>();
+	public List<DataInstance> trainingInstances = new ArrayList<DataInstance>();
 	
 	/** The training instances that are transferred to the GPU */
 	public CudaData devTrainingInstances;
 	
 	/** Represents a list of positive examples that the system uses for training */
-	private ArrayList<ByteImage> positiveExamples;
+	private List<ByteImage> positiveExamples;
 	
 	/** Represents a list of negative examples that the system uses for training */
-	private ArrayList<ByteImage> negativeExamples;
+	private List<ByteImage> negativeExamples;
 	
 	/** The list of positive examples on the GPU */
-	private ArrayList<CudaData> devPositiveExamples;
+	private List<CudaData> devPositiveExamples;
 	
 	/**The list of negative examples on the GPU */
-	private ArrayList<CudaData> devNegativeExamples;
+	private List<CudaData> devNegativeExamples;
 	
 	/** The image to train on (should be supplemented with a ground-truth image as well) */
 	private ByteImage trainingImage;
@@ -127,7 +117,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * @param negatives
 	 * 		A list containing all negative examples
 	 */
-	public void setExamples(ArrayList<ByteImage> positives, ArrayList<ByteImage> negatives) {
+	public void setExamples(List<ByteImage> positives, List<ByteImage> negatives) {
 		this.trainingMode = TRAINING_MODE_POS_NEG;
 		this.positiveExamples = positives;
 		this.negativeExamples = negatives;
@@ -157,7 +147,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * Returns the positive examples list of this state
 	 * @return
 	 */
-	public ArrayList<ByteImage> getPositiveExamples() {
+	public List<ByteImage> getPositiveExamples() {
 		return this.positiveExamples;
 	}
 	
@@ -165,7 +155,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * Returns the negative examples list of this state
 	 * @return
 	 */
-	public ArrayList<ByteImage> getNegativeExamples() {
+	public List<ByteImage> getNegativeExamples() {
 		return this.negativeExamples;
 	}
 	
@@ -228,7 +218,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * Returns the GPU positive examples list of this state
 	 * @return
 	 */
-	public ArrayList<CudaData> getDevPositiveExamples() {
+	public List<CudaData> getDevPositiveExamples() {
 		return this.devPositiveExamples;
 	}
 	
@@ -236,7 +226,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * Returns the GPU negative examples list of this state
 	 * @return
 	 */
-	public ArrayList<CudaData> getDevNegativeExamples() {
+	public List<CudaData> getDevNegativeExamples() {
 		return this.devNegativeExamples;
 	}
 	
@@ -290,17 +280,19 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	}
 	
 	/**
-	 * Set the visualizer associated with this instance of the class. You must also
-	 * specify the report frequency for the visualizer, i.e. how often should the
-	 * visualizer be informed of the evolution of a new individual. This frequency
-	 * is specified as the number of generations.
-	 * 
-	 * @param visualizer	The visualizer to be associated with this instance of the class
-	 * @param reportFrequency	The individual report frequency.
+	 * Add an EvolutionListener to the list of this object's listeners
+	 * @param listener
 	 */
-	public void setVisualizer(Visualizer visualizer, int reportFrequency) {
-		this.visualizer = visualizer;
-		this.indReportFrequency = reportFrequency;
+	public void addEvolutionListener(EvolutionListener listener) {
+		this.evolutionListeners.add(listener);
+	}
+	
+	/**
+	 * Remove an EvolutionListener from the list of this object's listeners
+	 * @param listener
+	 */
+	public void removeEvolutionListener(EvolutionListener listener) {
+		this.evolutionListeners.remove(listener);
 	}
 	
 	/**
@@ -309,14 +301,6 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 */
 	public void setWorkingClassifier(Classifier classifier) {
 		this.classifier = classifier;
-	}
-	
-	/**
-	 * Accessor for the visualizer associated with this evolution state.
-	 * @return
-	 */
-	public Visualizer getVisualizer() {
-		return this.visualizer;
 	}
 	
 	/** 
@@ -339,10 +323,15 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * @param classifier
 	 */
 	public void reportIndividual(GPIndividual individual) {
-		if (generation % indReportFrequency == 0 /*&& !classifier.getIndividual().equals(individual)*/) {	//TODO comparing individuals may have a performance hit!
-			this.classifier.setIndividual(individual);
-			this.visualizer.passNewClassifier(classifier);	//FIXME concurrent access warning!
-			//FIXME probably won't even need to add this guy again because we have already added the pointer
+		this.classifier.setIndividual(individual);
+		
+		for (EvolutionListener listener : this.evolutionListeners) {
+			int indReportFrequency = listener.getIndReportingFrequency();
+			
+			if (generation % indReportFrequency == 0 /*&& !classifier.getIndividual().equals(individual)*/) {	//TODO comparing individuals may have a performance hit!
+				listener.reportClassifier(classifier);	//FIXME concurrent access warning!
+				//FIXME probably won't even need to add this guy again because we have already added the pointer
+			}
 		}
 	}
 

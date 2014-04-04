@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.media.opengl.GL;
@@ -42,6 +43,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import m2xfilter.GPSystem;
+import m2xfilter.datatypes.EvolutionListener;
 import m2xfilter.datatypes.Job;
 import net.miginfocom.swing.MigLayout;
 import utils.cuda.datatypes.ByteImage;
@@ -72,13 +74,15 @@ import javax.swing.SpinnerNumberModel;
  * @author Mehran Maghoumi
  * 
  */
-public class Visualizer extends JFrame implements GLEventListener {
+public class Visualizer extends JFrame implements GLEventListener, EvolutionListener {
 
 	public static final URL ICON_PLAY = Visualizer.class.getResource("/icons/play-icon.png");
 	public static final URL ICON_PAUSE = Visualizer.class.getResource("/icons/pause-icon.png");
 	public static final URL ICON_FFW = Visualizer.class.getResource("/icons/ff-icon.png");
 	public static final URL ICON_RW = Visualizer.class.getResource("/icons/rw-icon.png");
 	public static final URL KERNEL_PATH = Visualizer.class.getResource("/cuda/kernels/visualizer/visualizer-kernel.cu");
+	
+	private static final int REPORT_FREQUENCY = 1;
 	
 	/** The kernel wrapper object to use for invoking CUDA */
 	private VisualizerKernel kernel;
@@ -724,7 +728,8 @@ public class Visualizer extends JFrame implements GLEventListener {
 
 		final String[] params = new String[] { "-file", "bin/m2xfilter/m2xfilter.params" };
 
-		gp = new GPSystem(params, visFiltered, false);
+		gp = new GPSystem(params, false);
+		gp.addEvolutionListener(visFiltered);
 
 		positive1 = ByteImage.loadFromFile("textures/part/positive-1.png");
 		positive2 = ByteImage.loadFromFile("textures/part/negative-2.png");
@@ -732,12 +737,12 @@ public class Visualizer extends JFrame implements GLEventListener {
 		background = ByteImage.loadFromFile("textures/part/background.png");
 		background_brown = ByteImage.loadFromFile("textures/part/background-brown.png");
 
-		ArrayList<ByteImage> j1Positives = new ArrayList<ByteImage>();
-		ArrayList<ByteImage> j1Negatives = new ArrayList<ByteImage>();
-		ArrayList<ByteImage> j2Positives = new ArrayList<ByteImage>();
-		ArrayList<ByteImage> j2Negatives = new ArrayList<ByteImage>();
-		ArrayList<ByteImage> j3Positives = new ArrayList<ByteImage>();
-		ArrayList<ByteImage> j3Negatives = new ArrayList<ByteImage>();
+		List<ByteImage> j1Positives = new ArrayList<ByteImage>();
+		List<ByteImage> j1Negatives = new ArrayList<ByteImage>();
+		List<ByteImage> j2Positives = new ArrayList<ByteImage>();
+		List<ByteImage> j2Negatives = new ArrayList<ByteImage>();
+		List<ByteImage> j3Positives = new ArrayList<ByteImage>();
+		List<ByteImage> j3Negatives = new ArrayList<ByteImage>();
 
 		j1Positives.add(positive1);
 		j1Negatives.add(positive2);
@@ -780,5 +785,15 @@ public class Visualizer extends JFrame implements GLEventListener {
 	 */
 	public synchronized void setCurrentFrame(Integer frameNumber) {
 		this.sliderVidPosition.setValue(frameNumber);
+	}
+
+	@Override
+	public void reportClassifier(Classifier classifier) {
+		passNewClassifier(classifier);
+	}
+
+	@Override
+	public int getIndReportingFrequency() {
+		return REPORT_FREQUENCY;
 	}
 }

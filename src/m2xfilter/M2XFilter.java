@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -52,8 +54,8 @@ import ec.util.Parameter;
 public class M2XFilter extends GPProblem implements SimpleProblemForm
 {
 	public ProblemData input;
-	public ArrayList<DataInstance> trainingInstances = new ArrayList<DataInstance>();
-	private HashSet<Integer> trainingPoints = new HashSet<Integer>();
+	public List<DataInstance> trainingInstances = new ArrayList<DataInstance>();
+	private Set<Integer> trainingPoints = new HashSet<Integer>();
 	
 	private CudaEvolutionState cuState;
 	
@@ -155,7 +157,7 @@ public class M2XFilter extends GPProblem implements SimpleProblemForm
 //		cuState.cudaInterop.setDescribeData(cuState, input, testingData); // for CPU evaluation purposes
 	}
 	
-	private void randomSample(EvolutionState state, ArrayList<DataInstance>instances) throws IOException {
+	private void randomSample(EvolutionState state, List<DataInstance>instances) throws IOException {
 		int pos = 0, neg = 0;
 		int width = ProblemData.byteInputImage.getWidth();
 		int height = ProblemData.byteInputImage.getHeight();
@@ -260,7 +262,7 @@ public class M2XFilter extends GPProblem implements SimpleProblemForm
 	}
 	
 	private void cudaDescribe(EvolutionState state, Individual ind, int subpopulation, int threadnum, int log) {
-		byte[] expression = ((CudaNode)(((GPIndividual)ind).trees[0].child)).byteTraverse();
+		byte[] expression = ((CudaNode)(((GPIndividual)ind).trees[0].child)).makePostfixExpression();
 		
 		PreciseTimer timer = new PreciseTimer();
 		timer.start();
