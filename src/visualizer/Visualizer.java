@@ -214,7 +214,7 @@ public class Visualizer extends JFrame implements GLEventListener, EvolutionList
 		pnlRight = new JPanel();
 		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(pnlRight, BorderLayout.EAST);
-		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][]"));
+		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][][][]"));
 
 		checkBoxList = new CheckBoxList();
 		pnlRight.add(checkBoxList, "cell 0 0,grow");
@@ -295,6 +295,23 @@ public class Visualizer extends JFrame implements GLEventListener, EvolutionList
 		
 				btnResetSize = new JButton("Reset Canvas");
 				this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
+				
+				tglbtnGpSystem = new JToggleButton("GP [Disabled]", false);
+				tglbtnGpSystem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if(tglbtnGpSystem.isSelected()) {
+							tglbtnGpSystem.setText("GP [Enabled]");
+							if (gp!= null)
+								gp.startWorkerThread();
+						}
+						else {
+							tglbtnGpSystem.setText("GP [Disabled]");
+							if (gp!= null)
+								gp.stopWorkerThread();
+						}
+					}
+				});
+				pnlRight.add(tglbtnGpSystem, "cell 0 11");
 				btnResetSize.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
@@ -712,6 +729,7 @@ public class Visualizer extends JFrame implements GLEventListener, EvolutionList
 	public static ByteImage mozakhraf;
 	public static ByteImage background;
 	public static ByteImage background_brown;
+	private JToggleButton tglbtnGpSystem;
 	
 
 	public static void main(String[] args) throws Exception, IOException {

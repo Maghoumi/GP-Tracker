@@ -89,8 +89,9 @@ public class GPSystem extends Evolve implements Runnable {
 		}
 
 		// Create the worker thread associated with this GPSystem
-		this.runThread = new Thread(this);
+		
 		if (startThread) {
+			this.runThread = new Thread(this);
 			this.runThread.start();
 		}
 	}
@@ -116,17 +117,18 @@ public class GPSystem extends Evolve implements Runnable {
 	 * Starts the worker thread that processes the Job queue.
 	 */
 	public void startWorkerThread() {
-		if (!runThread.isAlive())
+		if (this.runThread == null) {
+			this.runThread = new Thread(this);
 			this.runThread.start();
+		}
 	}
 
 	/**
 	 * A call to this function will kill the GPSystem's thread and will prepare
 	 * the system for a shutdown.
 	 */
-	public void finalize() {
+	public void stopWorkerThread() {
 		this.isFinalized = true;
-		runThread.interrupt();
 	}
 
 	/**
@@ -266,7 +268,7 @@ public class GPSystem extends Evolve implements Runnable {
 			} catch (InterruptedException e) {
 				// If this thread is interrupted, then we should probably go for a shutdown
 				// Therefore, we will check the isFinalized flag
-				continue;
+				break;
 			}
 
 			getCudaInterop().switchContext(); // Safety measure
@@ -289,6 +291,10 @@ public class GPSystem extends Evolve implements Runnable {
 			
 			jobs.poll(); // remove this job from the queue permenantly!
 		} // end-while
+		
+		jobs.clear();
+		runThread = null;
+		isFinalized = false;
 	}
 
 }
