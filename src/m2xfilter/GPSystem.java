@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 
 import m2xfilter.datatypes.EvolutionListener;
 import m2xfilter.datatypes.Job;
+import utils.UniqueBlockingQueue;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
 import visualizer.Visualizer;
@@ -34,7 +35,7 @@ import ec.gp.GPIndividual;
 public class GPSystem extends Evolve implements Runnable {
 
 	/** The job queue for the GP system */
-	private BlockingQueue<Job> jobs;
+	private UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
 
 	/**
 	 * Number of jobs that can be queued on this GPSystem without blocking the
@@ -73,8 +74,7 @@ public class GPSystem extends Evolve implements Runnable {
 	 * @param startThread
 	 */
 	public GPSystem(String[] args, boolean startThread) {
-		this.args = args;
-		this.jobs = new ArrayBlockingQueue<Job>(JOB_CAPACITY);
+		this.args = args; 
 
 		state = (CudaEvolutionState) possiblyRestoreFromCheckpoint(this.args);
 		if (state != null) { // loaded from checkpoint 
@@ -257,8 +257,12 @@ public class GPSystem extends Evolve implements Runnable {
 			Job newJob = null;
 
 			try {
-				// Wait for a new job
-				newJob = jobs.take();
+				// Wait for a new job however, don't remove it!
+				// Necessary for the auto-retrain function to work! A job should only be queued 
+				// if it is not already being processed! By not removing the job from the job queue,
+				// we can ensure that only new (and of course useful) jobs are successfully queued 
+				// and dupplicated jobs never get a chance of being queued.
+				newJob = jobs.blockPeek();
 			} catch (InterruptedException e) {
 				// If this thread is interrupted, then we should probably go for a shutdown
 				// Therefore, we will check the isFinalized flag
@@ -282,6 +286,8 @@ public class GPSystem extends Evolve implements Runnable {
 			default:
 				throw new RuntimeException("Wow! Unknown job type! Shutting down...");
 			}
+			
+			jobs.poll(); // remove this job from the queue permenantly!
 		} // end-while
 	}
 

@@ -5,8 +5,7 @@ Subpopulation 0:
 Evaluated: true
 Fitness: 0.75097656
 Tree 0:
- (- (exp (- (max (/ 0.40 0.02) (SmallAvg G))))
-     (sin (InputColor B)))
+ (Log (Log (MediumAvg G)))
 
 Generation: 1
 Best Individual:
@@ -14,3099 +13,2165 @@ Subpopulation 0:
 Evaluated: true
 Fitness: 0.75097656
 Tree 0:
- (* (- (exp (- (max (/ 0.40 0.02) (SmallAvg
-     G)))) (sin (InputColor B))) (MediumAvg R))
+ (Log (Log (SmallAvg R)))
 
 Generation: 2
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.7519531
+Fitness: 0.75097656
 Tree 0:
- (- (/ (min 0.03 0.32) (/ (Log (Log (LargeAvg
-     BW))) (- 0.63 0.94))) (LargeAvg G))
+ (Log (Log (MediumAvg G)))
 
 Generation: 3
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.81640625
+Fitness: 0.77734375
 Tree 0:
- (Log (IfGT (exp (max (sin 0.26) (max 0.86
-     0.53))) (/ (max (SmallAvg B) (+ 0.91 0.20))
-     (min (MediumAvg R) (+ 0.96 0.93))) (max (cos
-     (SmallSd BW)) (LargeAvg G)) (exp (+ (IfGT
-     1.00 0.14 0.25 0.85) (SmallSd BW)))))
+ (sin (min (- (MediumSd BW)) (/ (MediumAvg
+     BW) (sin (- (LargeAvg G) (InputColor R))))))
 
 Generation: 4
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.82714844
+Fitness: 0.81152344
 Tree 0:
- (Log (IfGT (exp (max (sin 0.26) (max 0.86
-     0.53))) (/ (max (SmallAvg B) (+ 0.91 0.20))
-     (min (IfGT (/ 0.71 0.92) (LargeAvg B) (SmallAvg
-         B) (* (SmallSd B) (/ (/ (Log (SmallAvg B))
-         (InputColor G)) (Log (MediumAvg BW))))) (+
-         0.96 0.93))) (max (cos (SmallSd BW)) (LargeAvg
-     G)) (exp (+ (IfGT 1.00 0.14 0.25 0.85) (SmallSd
-     BW)))))
+ (min (+ (Log (- (+ (IfGT (MediumAvg B) 0.79
+     (SmallSd R) (Log (Log (max (max (cos (min
+     0.02 0.74)) (* (cos 0.40) (IfGT 0.75 0.52
+     0.89 0.93))) (IfGT (* (LargeAvg BW) (- 0.18
+     0.77)) (SmallSd B) 0.09 (LargeAvg G))))))
+     (/ (min (Log (/ 0.92 0.82)) (LargeSd R))
+         (MediumSd B))) (cos 0.53))) (exp 0.68)) (-
+     (sin (+ 0.36 0.16)) (MediumAvg BW)))
 
 Generation: 5
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.82714844
+Fitness: 0.81152344
 Tree 0:
- (Log (IfGT (exp (max (sin 0.26) (max 0.86
-     0.53))) (/ (max (SmallAvg B) (+ 0.91 0.20))
-     (min (IfGT (/ 0.71 0.92) (LargeAvg B) (SmallAvg
-         B) (* (SmallSd BW) (/ (/ (Log (SmallAvg B))
-         (InputColor G)) (Log (MediumAvg BW))))) (+
-         0.96 0.93))) (max (cos (SmallSd BW)) (LargeAvg
-     G)) (exp (+ (IfGT 1.00 0.14 0.25 0.85) (SmallSd
-     BW)))))
+ (min (+ (Log (- (+ (IfGT (MediumAvg B) 0.79
+     (- (sin 0.37) (MediumAvg BW)) (Log (Log (max
+     (max (cos (min 0.02 0.74)) (* (cos 0.40)
+         (IfGT 0.75 0.52 0.89 0.93))) (IfGT (* (LargeAvg
+     BW) (- 0.18 0.77)) (SmallSd B) 0.09 (LargeAvg
+     G)))))) (/ (min (Log (/ 0.92 0.82)) (LargeSd
+     R)) (MediumSd B))) (cos 0.53))) (exp 0.68))
+     (- (sin (+ 0.36 0.16)) (MediumAvg BW)))
 
 Generation: 6
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8330078
+Fitness: 0.8339844
 Tree 0:
- (+ (/ (SmallAvg B) (/ (Log (Log (LargeAvg
-     BW))) (- 0.63 0.94))) (- 0.26 0.78))
+ (Log (Log (/ (LargeAvg BW) (sin (- (LargeAvg
+     G) (InputColor R))))))
 
 Generation: 7
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9267578
+Fitness: 0.94628906
 Tree 0:
- (- (/ (min (MediumAvg B) 0.32) (/ (Log (Log
-     (LargeAvg BW))) (- 0.63 0.94))) (SmallSd
-     B))
+ (min (+ (Log (- (+ (cos 0.98) (/ (min (Log
+     (/ 0.92 0.82)) (SmallSd G)) (MediumSd B)))
+     (cos 0.53))) (exp 0.68)) (- (sin (+ 0.36
+     0.16)) (MediumAvg BW)))
 
 Generation: 8
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9267578
+Fitness: 0.9863281
 Tree 0:
- (- (/ (min 0.53 0.32) (/ (Log (Log (LargeAvg
-     BW))) (- 0.63 0.94))) (SmallSd B))
-
-Generation: 9
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.9345703
-Tree 0:
- (/ (/ (- (/ (SmallAvg B) (/ (Log (Log (LargeAvg
-     BW))) (- 0.63 0.94))) (+ (MediumSd G) (MediumSd
-     B))) (InputColor G)) (InputColor G))
-
-Generation: 10
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.9345703
-Tree 0:
- (/ (/ (- (/ (SmallAvg B) (/ (Log (Log (LargeAvg
-     BW))) (- 0.63 0.94))) (+ (MediumSd G) (MediumSd
-     B))) (InputColor G)) (InputColor G))
-
-Generation: 11
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.94140625
-Tree 0:
- (- (/ (min (Log (IfGT (exp (max (sin 0.26)
-     (SmallSd BW))) (/ (max (IfGT 1.00 0.14 0.25
-     0.85) (+ 0.91 0.20)) (min (InputColor G)
-     (+ 0.96 0.93))) (max (cos (Log (MediumAvg
-     BW))) 0.03) (exp (+ (InputColor G) (IfGT
-     (sin 0.35) (SmallSd B) (SmallAvg BW) (MediumSd
-     G)))))) 0.32) (/ (Log (Log (LargeAvg BW)))
-     (- 0.63 0.94))) (SmallSd B))
-
-Generation: 12
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.9970703
-Tree 0:
- (- (/ (min 0.53 0.32) (/ (Log (Log (Log (IfGT
-     (LargeAvg BW) (/ (max (SmallAvg B) (+ 0.91
-     0.20)) (min (IfGT (/ 0.71 0.92) (LargeAvg
-     B) (SmallAvg B) (* (exp 0.78) (max (sin 0.26)
-     (max 0.86 0.53)))) (+ 0.96 0.93))) (max (cos
-     (SmallSd BW)) (LargeAvg G)) (exp (+ (IfGT
-     1.00 (SmallAvg BW) 0.25 0.85) (SmallSd BW)))))))
-     (- 0.63 0.94))) (SmallSd B))
+ (min (+ (Log (- (+ (cos 0.98) (/ (min (Log
+     (/ 0.92 0.82)) (SmallSd G)) (MediumSd B)))
+     (cos 0.53))) (exp 0.68)) (- (sin (+ 0.36
+     (sin 0.37))) (MediumAvg BW)))
 
 Best Individual of Run:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9970703
+Fitness: 0.9863281
 Tree 0:
- (- (/ (min 0.53 0.32) (/ (Log (Log (Log (IfGT
-     (LargeAvg BW) (/ (max (SmallAvg B) (+ 0.91
-     0.20)) (min (IfGT (/ 0.71 0.92) (LargeAvg
-     B) (SmallAvg B) (* (exp 0.78) (max (sin 0.26)
-     (max 0.86 0.53)))) (+ 0.96 0.93))) (max (cos
-     (SmallSd BW)) (LargeAvg G)) (exp (+ (IfGT
-     1.00 (SmallAvg BW) 0.25 0.85) (SmallSd BW)))))))
-     (- 0.63 0.94))) (SmallSd B))
+ (min (+ (Log (- (+ (cos 0.98) (/ (min (Log
+     (/ 0.92 0.82)) (SmallSd G)) (MediumSd B)))
+     (cos 0.53))) (exp 0.68)) (- (sin (+ 0.36
+     (sin 0.37))) (MediumAvg BW)))
 
 Generation: 0
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8251953
+Fitness: 0.875
 Tree 0:
- (- (sin (sin (MediumSd R))) (InputColor B))
+ (- (+ (+ (LargeSd B) (* (min 0.84 0.02) (/
+     0.82 0.71))) (SmallSd B)) (LargeAvg R))
 
 Generation: 1
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8251953
+Fitness: 0.9453125
 Tree 0:
- (- (sin (sin (MediumSd R))) (InputColor B))
+ (- (+ (+ (LargeSd B) (Log 0.87)) (SmallSd
+     B)) (LargeAvg R))
 
 Generation: 2
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.82714844
+Fitness: 0.9453125
 Tree 0:
- (- (sin (sin (- (LargeSd B) (InputColor BW))))
-     (InputColor B))
+ (- (+ (+ (LargeSd B) (Log 0.87)) (SmallSd
+     B)) (LargeAvg R))
 
 Generation: 3
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.82910156
+Fitness: 0.9951172
 Tree 0:
- (- (sin (- (LargeSd B) (InputColor BW)))
-     (InputColor B))
-
-Generation: 4
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.90527344
-Tree 0:
- (- (sin (sin 0.59)) (IfGT (/ (min (min 0.27
-     0.55) (min 0.21 0.09)) (IfGT 0.54 (MediumAvg
-     R) (MediumSd B) (LargeAvg BW))) (SmallSd
-     B) (exp (LargeSd R)) (LargeAvg R)))
-
-Generation: 5
-Best Individual:
-Subpopulation 0:
-Evaluated: true
-Fitness: 0.99316406
-Tree 0:
- (- (sin (sin (MediumSd R))) (/ (min (min
-     0.27 0.55) (min 0.21 0.09)) (IfGT 0.54 (MediumAvg
-     R) (MediumSd B) (LargeAvg BW))))
+ (- (SmallSd BW) (sin 0.31))
 
 Best Individual of Run:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.99316406
+Fitness: 0.9951172
 Tree 0:
- (- (sin (sin (MediumSd R))) (/ (min (min
-     0.27 0.55) (min 0.21 0.09)) (IfGT 0.54 (MediumAvg
-     R) (MediumSd B) (LargeAvg BW))))
+ (- (SmallSd BW) (sin 0.31))
 
 Generation: 0
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.7783203
+Fitness: 0.75
 Tree 0:
- (Log (Log (SmallAvg G)))
+ (- (MediumSd G))
 
 Generation: 1
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.78222656
+Fitness: 0.7841797
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin 0.10) (LargeSd
-     B)) (IfGT (- 0.96) (Log (SmallAvg G)) (+
-     0.21 0.10) (- 0.01 0.41)))) (LargeAvg BW)
-     (Log (SmallAvg B)))
+ (Log (Log (sin (MediumAvg G))))
 
 Generation: 2
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.79785156
+Fitness: 0.7841797
 Tree 0:
- (min (- (SmallAvg G) (sin 0.74)) (sin (SmallSd
-     B)))
+ (Log (Log (sin (MediumAvg G))))
 
 Generation: 3
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.84277344
+Fitness: 0.7841797
 Tree 0:
- (Log (/ (IfGT (MediumAvg BW) (min 0.79 0.05)
-     (* 0.67 0.74) (MediumSd B)) (Log (min (/
-     0.43 0.34) (SmallAvg B)))))
+ (Log (Log (sin (MediumAvg G))))
 
 Generation: 4
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8486328
+Fitness: 0.80078125
 Tree 0:
- (* (- (SmallAvg R) (- (- (sin (+ (max 0.49
-     0.16) (min 0.33 0.14)))))) (LargeSd B))
+ (* (SmallSd B) (/ (- (- (SmallSd G) (* 0.18
+     0.94))) (MediumSd G)))
 
 Generation: 5
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.85058594
+Fitness: 0.875
 Tree 0:
- (Log (/ (SmallAvg B) (Log (min (/ 0.43 0.34)
-     (SmallAvg B)))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (MediumAvg B))))) (MediumSd B))
+     (MediumAvg B))
 
 Generation: 6
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8515625
+Fitness: 0.875
 Tree 0:
- (IfGT (Log (min (InputColor B) (max 0.53
-     0.63))) (Log (- (sin 0.25) (cos 0.30))) (-
-     (Log (Log (SmallAvg R)))) (* (SmallSd BW)
-     (min (- (SmallAvg G) (sin (max 0.53 0.63)))
-         (sin (SmallSd B)))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (MediumAvg B))))) (MediumSd B))
+     (MediumAvg G))
 
 Generation: 7
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8515625
+Fitness: 0.875
 Tree 0:
- (IfGT (Log (min (InputColor B) (max 0.53
-     0.63))) (Log (- (sin 0.25) (cos 0.30))) (-
-     (Log (Log (SmallAvg R)))) (* (+ 0.21 0.10)
-     (min (- (SmallAvg G) (sin (max 0.53 0.63)))
-         (sin (SmallSd B)))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (MediumAvg B))))) (MediumSd B))
+     (MediumAvg G))
 
 Generation: 8
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.86816406
+Fitness: 0.875
 Tree 0:
- (* (- (SmallAvg R) (- (- (sin (+ (max 0.49
-     (/ (/ (max (sin 0.10) (LargeSd B)) (IfGT
-         (- 0.96) (Log (- 0.96)) (+ 0.21 0.10) (Log
-         (min (Log (IfGT (exp 0.19) (min 0.49 0.73)
-             (SmallAvg G) (SmallAvg BW))) (+ 0.39 (SmallAvg
-             G)))))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (+ 0.21 0.10) 0.33))) (min 0.33 0.14))))))
-     (LargeSd B))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (MediumAvg B))))) (MediumSd B))
+     (SmallAvg B))
 
 Generation: 9
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8828125
+Fitness: 0.8808594
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (LargeSd B)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (SmallAvg R) (-
-     0.01 0.41)) (Log (/ (SmallAvg BW) (Log (SmallAvg
-     BW)))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (SmallAvg BW))))) (MediumSd B))
+     (SmallAvg G))
 
 Generation: 10
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88378906
+Fitness: 0.8808594
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (min 0.79 0.05)) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg BW) (Log
-     (SmallAvg BW)))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (SmallAvg BW))))) (MediumSd B))
+     (SmallAvg G))
 
 Generation: 11
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.8808594
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (min 0.79 0.05)) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (SmallAvg BW))))) (MediumSd B))
+     (SmallAvg G))
 
 Generation: 12
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.8808594
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (min 0.79 0.05)) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (SmallSd BW) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (exp (MediumAvg
+     B)))) (exp (SmallAvg BW))))) (MediumSd B))
+     (SmallAvg G))
 
 Generation: 13
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.88378906
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (min 0.79 0.05)) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (exp (SmallAvg
+     R)))) (exp (SmallAvg G))))) (MediumSd B))
+     (MediumAvg B))
 
 Generation: 14
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.8886719
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (min 0.79 0.05)) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (exp (exp (MediumAvg B)))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (MediumAvg G))
 
 Generation: 15
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.88964844
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (* (sin (cos (Log (* 0.67 (IfGT (- 0.96)
-     (Log (SmallAvg G)) (+ 0.21 0.10) (SmallAvg
-     R)))))) (min (Log (SmallAvg BW)) (sin (SmallSd
-     B))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (SmallAvg G) (- 0.01 0.41)))) (IfGT (- 0.96)
-     (Log (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))
-     (Log (/ (SmallAvg G) (Log (min (MediumAvg
-         BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (exp (exp (MediumAvg B)))) (exp (MediumAvg
+     B))))))) (exp (- (- (sin (- (sin (exp (exp
+     (MediumAvg B)))) (exp (MediumAvg G))))) (MediumSd
+     B)))))) (MediumSd B)) (MediumAvg B))
 
 Generation: 16
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.88671875
+Fitness: 0.88964844
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (* (sin (cos (Log (* 0.67 (IfGT (IfGT
-     (SmallSd G) (LargeAvg BW) (LargeAvg G) (-
-     (sin (LargeAvg B)) (MediumAvg R))) (Log (SmallAvg
-     G)) (+ 0.21 0.10) (SmallAvg R)))))) (min
-     (Log (SmallAvg BW)) (sin (SmallSd B)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         G) (- 0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (SmallAvg R) (- 0.01 0.41)) (Log (/ (SmallAvg
-     G) (Log (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (exp (exp (MediumAvg B)))) (exp (MediumAvg
+     B))))))) (exp (- (- (sin (- (sin (exp (exp
+     (MediumAvg B)))) (exp (MediumAvg G))))) (MediumSd
+     B)))))) (MediumSd B)) (MediumAvg B))
 
 Generation: 17
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8886719
+Fitness: 0.8935547
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- 0.96)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (SmallAvg R)
-     (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (exp (exp (SmallAvg B)))) (sin (- (sin (exp
+     (exp (MediumAvg B)))) (exp (SmallAvg G)))))))))
+     (exp (SmallAvg G))))) (MediumSd B)) (MediumAvg
+     B))
 
 Generation: 18
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8886719
+Fitness: 0.8955078
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- 0.96)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (SmallAvg R)
-     (- 0.01 0.41)) (Log (/ (SmallAvg R) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (MediumAvg G))
 
 Generation: 19
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8886719
+Fitness: 0.8955078
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- 0.96)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (SmallAvg R)
-     (- 0.01 0.41)) (Log (/ (SmallAvg R) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (MediumAvg G))
 
 Generation: 20
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8886719
+Fitness: 0.8955078
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- 0.96)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (SmallAvg G)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg G) (Log
-     (min (MediumAvg BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (MediumAvg G))
 
 Generation: 21
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89160156
+Fitness: 0.89941406
 Tree 0:
- (IfGT (Log (sin 0.10)) (Log (- (sin (SmallAvg
-     G)) (cos 0.30))) (- (- (- 0.96) (SmallAvg
-     BW)) (Log (InputColor R))) (IfGT (LargeSd
-     R) (- (/ (max (sin (InputColor R)) (min 0.79
-     0.05)) (IfGT (- 0.96) (Log (SmallAvg G))
-     (SmallAvg B) (- 0.01 0.41)))) (IfGT (- 0.96)
-     (Log (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))
-     (Log (/ (SmallAvg G) (Log (min (MediumAvg
-         BW) (min (IfGT (LargeSd R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (Log (MediumAvg
-         BW)) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (- 0.96) (Log (SmallAvg G)) (LargeAvg BW)
-         (- 0.01 0.41)) (Log (/ (SmallAvg BW) (min
-         (LargeSd B) (/ (+ (* 0.69 0.21) (LargeAvg
-         R)) (InputColor R)))))) (SmallAvg B))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (SmallAvg G))
 
 Generation: 22
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89160156
+Fitness: 0.89941406
 Tree 0:
- (IfGT (Log (sin 0.10)) (Log (- (sin (SmallAvg
-     G)) (cos 0.30))) (- (- (- 0.96) (SmallAvg
-     BW)) (Log (InputColor R))) (IfGT (LargeSd
-     R) (- (/ (max (sin (InputColor R)) (min 0.79
-     0.05)) (IfGT (- 0.96) (Log (SmallAvg G))
-     (SmallAvg B) (- 0.01 0.41)))) (IfGT (- 0.96)
-     (Log (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))
-     (Log (/ (SmallAvg G) (Log (min (MediumAvg
-         BW) (min (IfGT (LargeSd R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (Log (MediumAvg
-         BW)) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (- 0.96) (Log (SmallAvg G)) (LargeAvg BW)
-         (- 0.01 0.41)) (Log (/ (SmallAvg BW) (min
-         (LargeSd B) (/ (+ (* 0.69 0.21) (LargeAvg
-         R)) (InputColor R)))))) (SmallAvg B))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (MediumSd
+     B)) (SmallAvg G))
 
 Generation: 23
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89453125
+Fitness: 0.9013672
 Tree 0:
- (IfGT (Log (sin 0.10)) (Log (- (sin (SmallAvg
-     G)) (cos 0.30))) (- (- (- 0.96) (Log (SmallAvg
-     G))) (Log (InputColor R))) (IfGT (LargeSd
-     R) (- (/ (max (sin (InputColor R)) (min 0.79
-     0.05)) (IfGT (- 0.96) (Log (SmallAvg G))
-     (SmallAvg B) (- 0.01 0.41)))) (IfGT (- 0.96)
-     (Log (SmallAvg G)) (SmallAvg R) (- 0.01 0.41))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         0.53 0.63)) (min (IfGT (LargeSd R) (- (/
-         (* (InputColor BW) (SmallAvg G)) (IfGT (-
-         0.96) (Log (MediumAvg BW)) (SmallAvg R) (-
-         0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-         G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (* 0.69
-         0.21) (LargeAvg R)) (InputColor R)))))) (SmallAvg
-         B))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 24
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8955078
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- (- 0.01 (min (MediumAvg BW) (SmallAvg
-     B))))) (IfGT (max (sin (InputColor R)) (-
-     0.96)) (Log (SmallAvg G)) (Log (sin 0.10))
-     (- (sin 0.25) 0.41)))) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (max (sin (InputColor R)) (min
-     0.79 0.05)) (- 0.01 0.41)) (Log (/ (SmallAvg
-     G) (Log (max (LargeSd BW) (SmallAvg G))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 25
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.8955078
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (- 0.96)) (IfGT (- 0.96) (Log (IfGT (Log
-     (- (* (IfGT (sin 0.43) (sin 0.46) (* 0.03
-         0.62) (- 0.51)) (MediumAvg R)) (- 0.96)))
-     (Log (MediumAvg BW)) (SmallAvg G) (- 0.01
-     0.41))) (Log (sin 0.10)) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (SmallAvg
-         R) (- 0.01 0.41)) (Log (/ (SmallAvg R) (Log
-     (min (MediumAvg BW) (Log (/ (SmallAvg BW)
-         (min (LargeSd B) (/ (+ (* 0.69 0.21) (LargeAvg
-             R)) (InputColor R))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 26
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89746094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (+ (MediumAvg BW) (* (MediumSd G) (MediumSd
-     G)))) (IfGT (SmallAvg G) (Log (SmallAvg G))
-     (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (SmallAvg R) (/
-     (SmallAvg G) (Log (min (SmallSd BW) (MediumAvg
-     BW))))) (Log (/ (SmallAvg R) (Log (min (MediumAvg
-     BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 27
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89746094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (+ (MediumAvg BW) (* (MediumSd G) (MediumSd
-     G)))) (IfGT (SmallAvg G) (Log (SmallAvg G))
-     (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT (-
-     0.96) (Log (SmallAvg B)) (SmallAvg R) (/
-     (SmallAvg G) (Log (min (SmallSd BW) (MediumAvg
-     BW))))) (Log (/ (SmallAvg R) (Log (min (MediumAvg
-     BW) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     G))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 28
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89746094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (max 0.53 0.63))) (sin (SmallSd B)))
-     0.41)))) (LargeAvg R) (Log (/ (SmallAvg G)
-     (Log (min (sin (max 0.53 0.63)) (min (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (Log (MediumAvg BW)) (-
-         0.01 (min (MediumAvg BW) (SmallAvg B))) (-
-         0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-         G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (* 0.69
-         0.21) (LargeAvg R)) (InputColor R)))))) (SmallAvg
-         B)))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (SmallAvg
+     G))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 29
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.89746094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (SmallAvg B)) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (max 0.53 0.63))) (sin (SmallSd B)))
-     0.41)))) (LargeAvg R) (Log (/ (SmallAvg G)
-     (Log (min (sin (max 0.53 0.63)) (min (IfGT
-         (LargeSd R) (- (/ (LargeSd R) (IfGT (- 0.96)
-         (Log (MediumAvg BW)) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (LargeAvg BW) (- 0.01 0.41)) (Log (/ (SmallAvg
-         BW) (min (LargeSd B) (/ (+ (* 0.69 0.21)
-         (LargeAvg R)) (InputColor R)))))) (SmallAvg
-         B)))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 30
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9003906
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (+ (MediumAvg BW) (* (MediumSd G) (LargeSd
-     R)))) (IfGT (SmallAvg G) (Log (SmallAvg G))
-     (Log (sin 0.10)) (- 0.01 0.41)))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (SmallAvg R) (/
-     (SmallAvg G) (- 0.96))) (Log (/ (SmallAvg
-     R) (Log (min (SmallAvg B) (SmallAvg B))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 31
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9121094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (min (- 0.18 (sin
-     (max 0.53 0.63))) (sin (SmallSd B))) 0.41))))
-     (LargeAvg R) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (min (IfGT (InputColor
-     R) (- (/ (* (InputColor BW) (SmallAvg G))
-     (IfGT (- 0.96) (Log (MediumAvg BW)) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (- 0.96) (Log (-
-     0.96)) (LargeAvg BW) (- 0.01 0.41)) (Log
-     (/ (SmallAvg BW) (min (LargeSd B) (SmallAvg
-         G))))) (+ 0.08 0.95)))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 32
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9121094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (max 0.53 0.63))) (- 0.96)) 0.41))))
-     (LargeAvg R) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (cos (max (min 0.15 0.60) (* 0.65
-         0.95))) (- 0.01 (min (MediumAvg BW) (SmallAvg
-         B))) (- 0.01 0.41)))) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (LargeAvg BW) (- 0.01 0.41))
-     (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-         (+ (* 0.69 0.21) (LargeAvg R)) (InputColor
-         R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 33
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9121094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (max 0.53 0.63))) (- 0.96)) 0.41))))
-     (LargeAvg R) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (Log (MediumAvg BW)) (- 0.01 (min
-         (MediumAvg BW) (SmallAvg B))) (- 0.01 0.41))))
-     (InputColor B) (Log (/ (SmallAvg BW) (min
-     (LargeSd B) (/ (+ (* 0.69 0.21) (LargeAvg
-     R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg G))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 34
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.91308594
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* (sin (InputColor R)) 0.95))))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (- (min (- 0.18 (sin (max 0.53 0.63))) (sin
-         (SmallSd B))) 0.41)))) (LargeAvg R) (Log
-     (/ (SmallAvg G) (Log (min (sin (max 0.53
-         0.63)) (min (IfGT (InputColor R) (- (/ (*
-         (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-         (Log (MediumAvg BW)) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (- 0.96) (Log (- 0.96)) (LargeAvg
-         BW) (- 0.01 0.41)) (Log (/ (SmallAvg BW)
-         (min (LargeSd B) (SmallAvg G))))) (+ 0.08
-         0.95)))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 35
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.91308594
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (IfGT (- 0.96) (Log (MediumAvg BW)) (SmallAvg
-         R) (- 0.01 0.41)))))) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (Log (sin 0.10)) (- (min (-
-     0.18 (sin (max 0.53 0.63))) (- 0.01 (min
-     (MediumAvg BW) (SmallAvg B)))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (min (IfGT (InputColor R) (-
-     (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (Log (MediumAvg BW)) (SmallAvg R)
-         (- 0.01 0.41)))) (IfGT (- 0.96) (Log (- 0.96))
-     (min (SmallSd BW) (MediumAvg BW)) (- 0.01
-     0.41)) (Log (/ (SmallAvg BW) (min (LargeSd
-     B) (SmallAvg G))))) (+ 0.08 0.95)))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     G))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg BW))
 
 Generation: 36
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.92285156
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (min 0.15 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (sin (max
-         0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-     (SmallAvg B) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (LargeAvg
-         BW) (- 0.01 0.41)) (Log (/ (SmallAvg BW)
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 37
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.92285156
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (- 0.96) (*
-     0.65 0.95))))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min 0.15 0.60) (* 0.65 0.95))))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) (sin (max 0.53 0.63)))
-         (- 0.96)) 0.41)))) (Log (sin 0.10)) (- (min
-     (- (SmallAvg G) (InputColor R)) (sin (SmallSd
-     B))) 0.41)))) (LargeAvg R) (Log (/ (SmallAvg
-     G) (Log (min (sin (max 0.53 0.63)) (IfGT
-     (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-     G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-     (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-     0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 38
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.92285156
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (min 0.15 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (sin (max
-         0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-     (SmallAvg B) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (LargeAvg
-         BW) (- 0.01 0.41)) (Log (/ (SmallAvg BW)
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 39
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.92285156
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (min 0.15 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (sin (max
-         0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-     (SmallAvg B) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (min (LargeSd B) (/ (+
-         (sin 0.10) (LargeAvg R)) (SmallAvg G))))
-         (LargeAvg BW) (- 0.01 0.41)) (Log (/ (SmallAvg
-     BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-     R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 40
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9248047
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (Log (sin 0.10)) (- (min (- (SmallAvg G)
-         (sin (max 0.53 0.63))) (- 0.96)) 0.41))))
-     (Log (sin 0.10)) (- (min (- (SmallAvg G)
-     (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (LargeAvg R) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (SmallAvg B) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (LargeAvg BW) (- 0.01 0.41)) (Log (/ (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (SmallAvg B) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (- 0.96) (sin 0.10) (LargeAvg
-     BW) (- 0.01 0.41)) (Log (/ (SmallAvg BW)
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R))))))) (min (LargeSd B)
-     (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 41
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9267578
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (sin (InputColor R)) (/ (SmallAvg
-             G) (cos (max (min 0.15 0.60) (* 0.65 0.95))))))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (sin (max
-         0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (max
-     (LargeSd BW) (SmallAvg G)) (SmallAvg B) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-     (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-     0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg R))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 42
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9267578
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (sin (InputColor R)) (/ (SmallAvg
-             G) (cos (max (min 0.15 0.60) (* 0.65 0.95))))))))
-     (IfGT (min (Log (SmallAvg G)) (- 0.96)) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (- (min (-
-         (SmallAvg G) (sin (max 0.53 0.63))) (- 0.96))
-         0.41)))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (LargeAvg R) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (max (LargeSd BW) (SmallAvg G)) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (LargeAvg BW) (-
-     0.01 0.41)) (Log (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-     R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 43
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9277344
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (SmallAvg B))))) (/ (SmallAvg G)
-         (cos (max (sin (InputColor R)) (/ (SmallAvg
-             G) (cos (max (min 0.15 0.60) (* 0.65 0.95))))))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (sin (max
-         0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (max
-     (LargeSd BW) (SmallAvg G)) (SmallAvg B) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (- 0.96) (min (-
-     (SmallAvg G) (InputColor R)) (sin (SmallSd
-     B))) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-     (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-     0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 44
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9277344
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (IfGT (-
-     0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) (sin (max 0.53 0.63)))
-         (- 0.96)) 0.41))) (/ (SmallAvg G) (cos (max
-     (min 0.15 0.60) (* 0.65 0.95))))) (IfGT (-
-     0.96) (Log (/ (max (sin (InputColor R)) (/
-     (SmallAvg G) (cos (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-         (* 0.65 0.95)))))))) (IfGT (min (Log (SmallAvg
-     G)) (- 0.96)) (Log (SmallAvg G)) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (sin (max
-     0.53 0.63))) (- 0.96)) 0.41)))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (LargeAvg
-     R) (Log (/ (SmallAvg G) (Log (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (max
-     (LargeSd BW) (SmallAvg G)) (SmallAvg B) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-     (SmallAvg BW) (min (LargeSd B) (LargeAvg
-     R))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 45
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.92871094
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 0.60)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (/
-     (max (sin (InputColor R)) (/ (SmallAvg G)
-         (cos (max (sin (InputColor R)) (/ (SmallAvg
-             G) (cos (max (min 0.15 0.60) (* 0.65 0.95))))))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (- (min (- (SmallAvg G) (IfGT (- 0.96)
-         (SmallAvg B) (SmallAvg R) (- 0.01 0.41)))
-         (- 0.96)) 0.41)))) (Log (sin 0.10)) (- (min
-     (- (SmallAvg G) (InputColor R)) (sin (SmallSd
-     B))) 0.41)))) (LargeAvg R) (Log (/ (SmallAvg
-     G) (Log (min (sin (max 0.53 0.63)) (IfGT
-     (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-     G)) (IfGT (max (LargeSd BW) (SmallAvg G))
-     (SmallAvg B) (SmallAvg R) (- 0.01 0.41))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (LargeAvg
-         BW) (- 0.01 0.41)) (Log (/ (min (sin (max
-     0.53 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-     (SmallAvg B) (SmallAvg R) (- 0.01 0.41))))
-     (cos (max (min (IfGT (- 0.96) (SmallAvg B)
-         (SmallAvg R) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))) (Log (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-     R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-     (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg G))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 46
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94140625
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (- (LargeSd BW))) (+
-         (MediumSd B) (LargeAvg BW))) (InputColor
-         R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-         0.96) (Log (SmallAvg G)) (LargeAvg BW) (-
-         0.01 0.41)) (Log (/ (min (sin (max 0.53 0.63))
-         (IfGT (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 47
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9423828
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (- (LargeSd BW))) (+
-         (MediumSd B) (LargeAvg BW))) (InputColor
-         R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-         0.96) (Log (SmallAvg G)) (LargeAvg BW) (-
-         0.01 0.41)) (Log (/ (min (sin (max 0.53 (SmallAvg
-         G))) (IfGT (- 0.96) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-         0.96) (sin 0.10) (LargeAvg BW) (Log (sin
-         0.10))) (Log (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-         (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 48
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9423828
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-         (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (- (LargeSd BW))) (+
-         (MediumSd B) (LargeAvg BW))) (InputColor
-         R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-         0.96) (Log (SmallAvg G)) (LargeAvg BW) (-
-         0.01 0.41)) (Log (/ (min (sin (max 0.53 (SmallAvg
-         G))) (IfGT (- 0.96) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         B) (SmallAvg R) (- 0.01 0.41)))) (IfGT (-
-         0.96) (sin 0.10) (LargeAvg BW) (Log (sin
-         0.10))) (Log (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R))))))) (min (LargeSd B) (/ (+ (* 0.65 0.95)
-         (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     G))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 49
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9423828
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (SmallAvg G) (* 0.65 0.95)))))
-         (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-             0.10)) (/ (SmallAvg BW) (min (LargeSd B)
-             (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-                 (MediumSd R) (- (LargeSd BW))) (+ (MediumSd
-                 B) (LargeAvg BW))) (InputColor R))))))) (Log
-     (sin 0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (SmallSd B))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max 0.53 0.63)) (IfGT (InputColor
-         R) (- (/ (* (InputColor BW) (SmallAvg G))
-         (IfGT (- 0.96) (SmallAvg G) (SmallAvg R)
-             (- 0.01 0.41)))) (IfGT (- 0.96) (Log (SmallAvg
-         G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-         (min (sin (max 0.53 (SmallAvg G))) (IfGT
-             (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg R))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 50
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94628906
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (+
-     (MediumSd B) (LargeAvg BW))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) (LargeAvg BW) (- 0.01
-         0.41)) (Log (/ (min (sin (max 0.53 0.63))
-         (IfGT (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 51
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94628906
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (InputColor R)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (+
-     (MediumSd B) (LargeAvg BW))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) (LargeAvg BW) (- 0.01
-         0.41)) (Log (/ (min (sin (max 0.53 0.63))
-         (IfGT (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     B)) (MediumAvg G))
 
 Generation: 52
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94628906
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (+
-     (MediumSd B) (LargeAvg BW))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (sin 0.10) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max 0.53 0.63)) (IfGT
-     (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-     G)) (IfGT (- 0.96) (SmallAvg G) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-     (SmallAvg G)) (LargeAvg BW) (- 0.01 0.41))
-     (Log (/ (min (sin (max 0.53 0.63)) (IfGT
-         (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-         R) (- 0.01 0.41)))) (- (Log 0.54) (+ 0.06
-         0.43)) (Log (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-         (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 53
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9472656
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (+
-     (+ 0.06 0.43) (LargeAvg BW))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) (LargeAvg BW) (- 0.01
-         0.41)) (Log (/ (min (sin (SmallAvg BW)) (IfGT
-         (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-         (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-         BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 54
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9472656
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (- 0.01 0.41))
-         (Log (/ (min (sin (max 0.53 0.63)) (IfGT
-             (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     B)) (MediumAvg B))
 
 Generation: 55
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9472656
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.17)) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (SmallAvg BW) (min (LargeSd B)
-         (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-             (MediumSd R) (- (LargeSd BW))) (+ (+ 0.06
-             0.43) (LargeAvg BW))) (InputColor R)))))))
-     (Log (sin 0.10)) (- (min (- (SmallAvg G)
-     (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) (LargeAvg BW) (- 0.01
-         0.41)) (Log (/ (min (sin (SmallAvg BW)) (IfGT
-         (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-         (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-         BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg BW))))) (SmallSd
+     B)) (MediumAvg B))
 
 Generation: 56
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9472656
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (max 0.53 0.63)) (IfGT (- 0.96)
-             (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-                 (- 0.96) (SmallAvg B) (SmallAvg R) (- 0.01
-                 0.41)))) (IfGT (- 0.96) (sin 0.10) (LargeAvg
-             BW) (Log (sin 0.10))) (Log (/ (SmallAvg BW)
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     B)) (MediumAvg B))
 
 Generation: 57
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9472656
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg R))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (- 0.01 0.41))
-         (Log (/ (min (sin (max 0.53 (SmallAvg R)))
-             (IfGT (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-                 G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-                 R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-                 (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-                 BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 58
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9482422
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (max 0.53 (SmallAvg G))) (IfGT
-             (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 59
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9482422
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (+ (* 0.15 (InputColor BW)) (cos
-     (MediumSd G))))) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (max 0.53 (SmallAvg G))) (IfGT
-             (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     B)) (MediumAvg B))
 
 Generation: 60
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9482422
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (max 0.53 0.63) (* 0.65 0.95))))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (/ (SmallAvg BW) (min (LargeSd BW) (/ (/
-         (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-             R) (- (LargeSd BW))) (+ (+ 0.06 0.43) (LargeAvg
-         BW))) (InputColor R))))))) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) (InputColor R)) (sin
-         (SmallSd B))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max 0.53 0.63)) (IfGT (InputColor R)
-     (- (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-         (- 0.96) (SmallAvg G) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (SmallAvg BW) (Log (SmallAvg
-     G)) (LargeAvg BW) (- 0.01 0.41)) (Log (/
-     (min (sin (SmallAvg BW)) (IfGT (- 0.96) (-
-         (/ (* (InputColor BW) (SmallAvg G)) (IfGT
-             (- 0.96) (SmallAvg B) (+ (sin 0.10) (LargeAvg
-             R)) (- 0.01 0.41)))) (IfGT (- 0.96) (sin
-         0.10) (LargeAvg BW) (Log (sin 0.10))) (Log
-         (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-             0.10) (LargeAvg R)) (InputColor R)))))))
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg BW))))) (SmallSd
+     B)) (MediumAvg B))
 
 Generation: 61
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9482422
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (min 0.15
-     (MediumAvg BW))) (MediumSd R) (- (LargeSd
-     BW))) (* (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (sin (+ (* 0.15 (InputColor BW)) (cos
-     (MediumSd G))))) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (max 0.53 (SmallAvg G))) (IfGT
-             (- 0.96) (- (/ (* (InputColor BW) (SmallAvg
-             G)) (IfGT (- 0.96) (SmallAvg B) (SmallAvg
-             R) (- 0.01 0.41)))) (IfGT (- 0.96) (sin 0.10)
-             (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-             BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-             (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg B))))) (exp (MediumAvg
+     B))))))) (exp (MediumAvg B))))) (SmallSd
+     BW)) (MediumAvg G))
 
 Generation: 62
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94921875
+Fitness: 0.9013672
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (sin 0.10) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     B))))))) (exp (max (MediumAvg G) (Log (LargeSd
+     G))))))) (SmallSd BW)) (MediumAvg B))
 
 Generation: 63
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94921875
+Fitness: 0.90234375
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (sin 0.10)) (IfGT (- 0.96) (sin
-             0.10) (LargeAvg BW) (Log (sin 0.10))) (Log
-             (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-                 0.10) (InputColor B)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (sin (sin (exp (exp (MediumAvg B)))))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 64
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.94921875
+Fitness: 0.90234375
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R))) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (SmallSd B))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (sin 0.10)) (IfGT (- 0.96) (sin
-             0.10) (LargeAvg BW) (Log (sin 0.10))) (Log
-             (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-                 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (sin (sin (exp (exp (MediumAvg B)))))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 65
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.90234375
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (sin 0.10) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (sin (sin (exp (exp (MediumAvg B)))))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 66
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.90527344
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (sin 0.10) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (sin (exp (MediumAvg R))))))))))) (SmallSd
+     BW)) (MediumAvg B))
 
 Generation: 67
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.9091797
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (sin 0.10) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (/ (MediumAvg BW) (LargeAvg BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 68
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.9091797
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-     0.43)) (MediumSd R) (- (LargeSd BW))) (*
-     (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (sin 0.10) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (LargeAvg R) (InputColor R))))))) (min (LargeSd
-             B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (/ (MediumAvg BW) (LargeAvg BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 69
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.9091797
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ 0.75 (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) (InputColor
-     R)) (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max 0.53 0.63)) (IfGT (InputColor
-         R) (- (/ (* (InputColor BW) (SmallAvg G))
-         (IfGT (- 0.96) (SmallAvg G) (SmallAvg R)
-             (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (sin 0.10)
-         (LargeAvg BW) (Log (sin 0.10))) (Log (/ (SmallAvg
-         BW) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (exp (/ (MediumAvg BW) (LargeAvg BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 70
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (* (InputColor BW)
-     (SmallAvg G)) (+ 0.06 0.43)) (MediumSd R)
-     (- (LargeSd BW))) (* (InputColor BW) (SmallAvg
-     G))) (InputColor R))))))) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) (InputColor R)) (sin
-         (InputColor R))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max 0.53 0.63)) (IfGT (InputColor
-         R) (- (/ (* (InputColor BW) (SmallAvg G))
-         (IfGT (- 0.96) (SmallAvg G) (SmallAvg R)
-             (- 0.01 0.41)))) (IfGT (min (LargeSd B) (/
-         (+ (sin 0.10) (LargeAvg R)) (InputColor R)))
-         (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (SmallAvg G) (Log
-             (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-                 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 71
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9501953
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (IfGT (- 0.96) (SmallAvg B) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (sin (LargeSd R)) (InputColor R)))))))
-     (Log (sin 0.10)) (- (min (- (SmallAvg G)
-     (InputColor R)) (sin (sin 0.10))) 0.41))))
-     (* (InputColor BW) (SmallAvg G)) (Log (/
-     (SmallAvg G) (Log (min (sin (max 0.53 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (SmallAvg
-         G) (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max 0.53 0.63))) (IfGT
-             (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-             (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-             (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-                 (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-             (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                 R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 72
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-             (MediumSd R) (- (LargeSd BW))) (* (InputColor
-             BW) (SmallAvg G))) (InputColor R))))))) (Log
-     (sin 0.10)) (- (min (- (SmallAvg G) 0.53)
-     (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 73
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-             (MediumSd R) (- (LargeSd BW))) (* (InputColor
-             BW) (SmallAvg G))) (InputColor R))))))) (Log
-     (sin 0.10)) (- (min (- (SmallAvg G) 0.53)
-     (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 74
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (sin (InputColor R)) 0.60) (* 0.65
-         0.95))))) (IfGT (- 0.96) (Log (SmallAvg G))
-     (Log (sin 0.10)) (/ (LargeAvg R) (min (LargeSd
-     B) (/ (/ (IfGT 0.37 (- (InputColor R) (+
-     0.06 0.43)) (MediumSd R) (- (LargeSd BW)))
-     (* (InputColor BW) (SmallAvg G))) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) 0.53) (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 75
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-             (MediumSd R) (- (Log (SmallAvg G)))) (* (InputColor
-             BW) (SmallAvg G))) (InputColor R))))))) (Log
-     (sin 0.10)) (- (min (- (SmallAvg G) 0.53)
-     (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin (max 0.53 0.63))
-             (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 76
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-             (MediumSd R) (- (LargeSd BW))) (sin 0.10))
-         (InputColor R))))))) (Log (sin 0.10)) (-
-     (min (- (SmallAvg G) 0.53) (sin (sin 0.10)))
-     0.41)))) (* (InputColor BW) (SmallAvg G))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- (LargeSd
-         BW))) (/ (IfGT 0.37 (Log (LargeAvg BW)) (MediumSd
-         R) (- 0.96)) (* (InputColor BW) (SmallAvg
-         G)))) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (SmallAvg BW) (Log (SmallAvg G)) 0.41 (sin
-         0.10)) (Log (/ (min (sin (sin (max 0.53 0.63)))
-         (IfGT (- 0.96) (- (+ 0.06 0.43)) (IfGT (-
-             0.96) (InputColor R) (LargeAvg BW) (Log (sin
-             0.10))) (Log (/ (SmallAvg BW) (min (LargeSd
-             B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-         (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 77
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.9511719
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (* (InputColor BW) (SmallAvg
-     G)))) (/ (SmallAvg G) (cos (max (min 0.15
-     (MediumAvg BW)) 0.66)))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (* (SmallAvg BW) (IfGT
-         (* (min 0.48 0.55) (SmallSd B)) (- (InputColor
-         G) (- 0.73)) (min (- 0.26 0.28) (MediumSd
-         B)) (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-         (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-             0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-             (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-                 (MediumSd R) (- (LargeSd BW))) (* (InputColor
-                 BW) (SmallAvg G))) (InputColor R))))))) (Log
-     (sin 0.10)) (- (min (- (SmallAvg G) 0.53)
-     (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max 0.53 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (MediumSd BW)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg BW) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 78
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-         (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-             (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (exp (/ (MediumAvg
+         BW) (LargeAvg G)))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 79
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-         (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-             (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (max
+     (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+     BW) (LargeAvg BW)))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 80
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-         (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-             (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 81
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91015625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-         (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-             (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (MediumAvg G) (sin (sin (exp (/ (MediumAvg
+         BW) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 82
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9140625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (- (Log 0.54) (+ 0.06 0.43)) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (LargeAvg R) (* 0.65 0.95))))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (/ (LargeAvg R) (min (LargeSd B) (/ (SmallAvg
-         G) (InputColor R))))))) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) 0.53) (sin (sin 0.10)))
-         0.41)))) (* (InputColor BW) (SmallAvg G))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- (LargeSd
-         BW))) (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))) (* (InputColor BW) (SmallAvg
-         G)))) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (SmallAvg BW) (Log (SmallAvg G)) 0.41 (sin
-         0.10)) (Log (/ (min (sin (sin (max (SmallAvg
-         G) 0.63))) (IfGT (- 0.96) (- (+ 0.06 0.43))
-         (Log (sin 0.10)) (Log (/ (SmallAvg BW) (min
-         (LargeSd B) (/ (+ (sin 0.10) (LargeAvg R))
-         (InputColor R))))))) (min (LargeSd B) (/
-         (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     BW))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg G))
 
 Generation: 83
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9140625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (InputColor BW) (min
-         (- 0.26 0.28) (MediumSd B)) (exp (* 0.20
-         0.94)))) 0.60) (* 0.65 0.95))))) (IfGT (-
-     0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (/ (LargeAvg R) (min (LargeSd B) (/ (SmallAvg
-         G) (InputColor R))))))) (Log (sin 0.10))
-     (- (min (- (SmallAvg G) 0.53) (sin (sin 0.10)))
-         0.41)))) (* (InputColor BW) (SmallAvg G))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- (LargeSd
-         BW))) (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (- 0.96)) (* (InputColor
-         BW) (SmallAvg G)))) (* 0.41 (MediumAvg BW))
-         (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (sin 0.10)))
-         (Log (/ (SmallAvg BW) (min (LargeSd B) (/
-             (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     BW))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (- (sin (sin (exp (MediumAvg G)))) (exp
+         (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg G))
 
 Generation: 84
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9140625
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (Log (sin 0.10)) (* 0.65 0.95)))))) (/ (SmallAvg
-     G) (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (/ (LargeSd B) (* (InputColor BW)
-         (SmallAvg G))) (- (InputColor G) (- 0.73))
-         (min (- 0.26 0.28) (MediumSd B)) (exp (*
-         0.20 0.94)))) 0.60) (* 0.65 0.95))))) (IfGT
-         (- 0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-         (/ (LargeAvg R) (min (LargeSd B) (/ (SmallAvg
-             G) (InputColor R))))))) (Log (sin 0.10))
-         (- (min (- (SmallAvg G) 0.53) (sin (sin 0.10)))
-             0.41)))) (* (InputColor BW) (SmallAvg G))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (/ (SmallAvg G) (cos (max
-         (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-             0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))
-         (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max (SmallAvg G) 0.63)))
-             0.56) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     BW))))))) (exp (max (MediumAvg G) (sin (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW))))))))))))) (SmallSd BW))
+     (MediumAvg G))
 
 Generation: 85
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9169922
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (SmallSd B)) (- (InputColor G)
-         (LargeSd BW)) (min (- 0.26 0.28) (MediumSd
-         B)) (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 (SmallAvg G)))
-         (MediumSd R) (- (LargeSd BW))) (/ (IfGT 0.37
-         (- (Log 0.54) (+ 0.06 0.43)) (InputColor
-         R) (- 0.96)) (* (InputColor BW) (SmallAvg
-         G)))) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (SmallAvg BW) (Log (SmallAvg G)) 0.41 (sin
-         0.10)) (Log (/ (min (sin (sin (max (SmallAvg
-         G) 0.63))) (IfGT (- 0.96) (- (+ 0.06 0.43))
-         (IfGT (- 0.96) (InputColor R) (LargeAvg BW)
-             (Log (sin 0.10))) (Log (/ (SmallAvg BW) (min
-         (LargeSd B) (/ (+ (sin 0.10) (SmallAvg G))
-         (InputColor R))))))) (min (LargeSd B) (/
-         (+ (sin 0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (LargeAvg BW) (sin (sin (exp (/ (MediumAvg
+     G) (LargeAvg BW)))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 86
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9169922
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (min (* (SmallAvg BW) (IfGT (* (min
-         0.48 0.55) (LargeSd R)) (- (InputColor G)
-         (- 0.73)) (min (- 0.26 0.28) (MediumSd B))
-         (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (sin 0.10) (SmallAvg
-     G)) (Log (/ (SmallAvg G) (Log (min (sin (max
-     (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-     (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-     G)) (IfGT (- 0.96) (/ (IfGT (InputColor G)
-     (- (Log 0.54) (+ 0.06 0.43)) (MediumSd R)
-     (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log 0.54)
-     (+ 0.06 0.43)) (MediumSd R) (- 0.96)) (*
-     (InputColor BW) (SmallAvg G)))) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- 0.96) (IfGT (- 0.96) (InputColor
-     R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-     (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-     0.10) (LargeAvg R)) (InputColor R)))))))
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (LargeAvg BW) (sin (sin (exp (/ (MediumAvg
+     G) (LargeAvg BW)))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 87
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9169922
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (sin (sin 0.10)) (Log
-         (sin 0.10)) (- 0.01 0.41)) 0.60) (* 0.65
-     0.95)))))) (/ (SmallAvg G) (cos (max (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06
-         0.43)) (MediumSd R) (- 0.96)) (* (InputColor
-         BW) (SmallAvg G)))) 0.60) (/ (min (SmallAvg
-     BW) (SmallSd BW)) (- 0.64))) 0.66)))) (IfGT
-     (- 0.96) (Log (/ (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (SmallSd B))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (SmallAvg B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-     R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-     R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-     G) 0.53) (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (- (+ 0.06 0.43)) (-
-         0.96)) (* (InputColor BW) (SmallAvg G))))
-         (SmallAvg R) (- 0.01 0.41)))) (IfGT (SmallAvg
-         BW) (Log (SmallAvg G)) 0.41 (sin 0.10)) (Log
-         (/ (min (sin (sin (max (SmallAvg G) 0.63)))
-             (IfGT (- 0.96) (- (+ 0.06 0.43)) (IfGT (-
-                 0.96) (InputColor R) (LargeAvg BW) (Log (sin
-                 0.10))) (Log (/ (SmallAvg BW) (min (LargeSd
-                 B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-                 R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-             (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (LargeAvg BW) (sin (sin (exp (/ (MediumAvg
+     G) (LargeAvg BW)))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 88
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (cos (/ (max (IfGT 0.04 0.75 0.89
-         0.45) (exp 0.37)) (LargeSd R)))) 0.60) (*
-     0.65 0.95)))))) (/ (SmallAvg G) (cos (max
-     (min 0.15 (MediumAvg BW)) 0.66)))) (IfGT
-     (- 0.96) (Log (/ (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (SmallSd B))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-     (SmallAvg G)) (Log (/ (max (sin (InputColor
-     R)) (/ (SmallAvg G) (cos (max (LargeAvg R)
-     (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (/ (LargeAvg R) (min
-     (LargeSd B) (/ (SmallAvg G) (InputColor R)))))))
-     (/ (LargeAvg R) (min (LargeSd B) (/ (SmallAvg
-         G) (InputColor R))))))) (Log (sin 0.10))
-     (- (LargeSd B) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (InputColor R))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-         (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-         (InputColor R) (LargeAvg BW) (Log (SmallAvg
-         B))) (Log (/ (SmallAvg BW) (min (LargeSd
-         B) (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-         (LargeAvg R)) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg G))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (sin (sin (exp (sin (exp (exp (MediumAvg
+         BW))))))))) (sin (sin (max (exp (/ (SmallAvg
+     B) (LargeAvg BW))) (sin (LargeSd BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 89
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (max (min (IfGT
-     (- 0.96) (SmallAvg B) (Log (sin 0.10)) (-
-     0.01 0.41)) 0.60) (* 0.65 (max (InputColor
-     BW) (- (+ 0.06 0.43) (* (MediumSd R) (- 0.01
-     0.44))))))))))) (/ (SmallAvg G) (cos (max
-     (min 0.15 (MediumAvg BW)) 0.66)))) (IfGT
-     (- 0.96) (Log (/ (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (SmallSd B))
-         (InputColor R) (min (- 0.26 0.28) (SmallAvg
-         B)) (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (SmallAvg G) (Log (/
-         (min (sin (sin (max (SmallAvg G) 0.63)))
-             (IfGT (- 0.96) (- (+ 0.06 0.43)) (IfGT (-
-                 0.96) (* (cos (LargeSd G)) (min (IfGT (min
-                 0.87 0.65) 0.76 (InputColor BW) (min 0.25
-                 0.92)) (exp (max 0.49 0.76)))) (LargeAvg
-                 BW) (Log (sin 0.10))) (Log (/ (SmallAvg BW)
-                 (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-                     R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-             R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg G))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (sin (sin (exp (sin (exp (exp (MediumAvg
+         BW))))))))) (sin (sin (max (exp (/ (SmallAvg
+     B) (LargeAvg BW))) (sin (LargeSd BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 90
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (SmallAvg G)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (min 0.15 (sin
-         (max (SmallAvg G) 0.63))) 0.66)))) (IfGT
-     (- 0.96) (Log (/ (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (Log (- 0.01 0.41))) 0.60) (* 0.65 0.95)))))
-     (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-         0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-         (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg B)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (InputColor BW)) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-         (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-         (sin (sin (max (SmallAvg G) 0.63))) (SmallAvg
-         BW)) (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (LargeAvg BW) (sin (- (InputColor R) (MediumAvg
+     BW)))))))))))) (SmallSd BW)) (MediumAvg B))
 
 Generation: 91
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (sin (sin
-         (max (SmallAvg G) 0.63))) (- 0.01 0.41))
-         0.60) (* 0.65 0.95)))))) (/ (SmallAvg G)
-     (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (LargeAvg R)
-         (* 0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-         G)) (Log (sin 0.10)) (/ (LargeAvg R) (min
-         (LargeSd B) (/ (+ 0.06 0.43) (InputColor
-         R))))))) (Log (sin 0.10)) (- (min (- (SmallAvg
-         G) 0.53) (sin (sin 0.10))) 0.41)))) (* (SmallAvg
-     G) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (InputColor BW)) (/ (IfGT 0.37 (- (Log
-         0.54) (+ (+ (sin 0.10) (LargeAvg R)) 0.43))
-         (MediumSd R) (- 0.96)) (* (InputColor BW)
-         (SmallAvg G)))) (SmallAvg R) (- 0.01 0.41))))
-         (IfGT (SmallAvg BW) (Log (SmallAvg G)) 0.41
-             (sin 0.10)) (Log (/ (min (sin (sin (max (SmallAvg
-         G) 0.63))) (IfGT (- 0.96) (- (+ 0.06 0.43))
-         (IfGT (- 0.96) (InputColor R) (LargeAvg BW)
-             (Log (SmallSd BW))) (Log (/ (SmallAvg BW)
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R))))))) (min (LargeSd B)
-         (/ (+ (sin 0.10) (SmallAvg G)) (sin 0.10)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg G))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (sin (sin (exp (sin (exp (exp (MediumAvg
+         BW))))))))) (sin (sin (max (exp (/ (SmallAvg
+     B) (LargeAvg BW))) (sin (LargeSd BW))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 92
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 (max
-     (InputColor BW) 0.96))))))) (/ (SmallAvg
-     G) (cos (max (* 0.65 0.95) 0.66)))) (IfGT
-     (- 0.96) (Log (/ (max (sin (InputColor R))
-     (/ (SmallAvg G) (cos (max (LargeAvg R) (*
-         0.65 0.95))))) (IfGT (- 0.96) (Log (SmallAvg
-     G)) (Log (sin 0.10)) (/ (LargeAvg R) (min
-     (LargeSd B) (/ (SmallAvg G) (InputColor R)))))))
-     (Log (sin 0.10)) (- (min (- (SmallAvg G)
-     0.53) (sin (sin 0.10))) 0.41)))) (* (InputColor
-     BW) (SmallAvg G)) (Log (/ (SmallAvg G) (Log
-     (min (sin (max (+ (sin 0.10) (LargeAvg R))
-         0.63)) (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (Log (sin
-         0.10)) (MediumSd R) (- 0.96)) (* (InputColor
-         BW) (SmallAvg G)))) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (- 0.01 0.41) (Log (IfGT (-
-         0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         0.41 (sin 0.10)) (Log (/ (min (sin (sin (max
-         (SmallAvg G) 0.63))) (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (LargeAvg R)
-         (* 0.65 0.95)))))) (min (LargeSd B) (/ (+
-         (sin 0.10) (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (MediumAvg BW) (sin (sin (exp (/ (LargeAvg
+     BW) (LargeAvg BW)))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 93
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (/ (Log (MediumSd G)) 0.17)) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- 0.96)) (* (InputColor BW) (SmallAvg
-         G)))) (SmallAvg R) (- 0.01 0.41)))) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (SmallSd B))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-         R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-         R))))))) (Log (sin 0.10)) (- (min (min (-
-         (SmallAvg B) 0.53) (sin (sin 0.10))) (sin
-         0.10)) 0.41)))) (* (SmallAvg B) (SmallAvg
-     G)) (Log (/ (SmallAvg G) (Log (min (sin (max
-     (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-     (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-     G)) (IfGT (- 0.96) (/ (IfGT 0.37 (- (cos
-     (MediumSd G)) (+ 0.06 0.43)) (MediumSd R)
-     (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log 0.54)
-     (+ 0.06 0.43)) (MediumSd R) (- 0.96)) (*
-     (InputColor BW) (MediumAvg BW)))) (SmallAvg
-     R) (- 0.01 0.41)))) (IfGT (SmallAvg BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- (+ 0.06 0.43)) (IfGT (- 0.96)
-     (InputColor R) (LargeAvg BW) (Log (SmallAvg
-     G))) (Log (/ (SmallAvg BW) (min (LargeSd
-     B) (/ (LargeAvg R) (InputColor R))))))) (min
-     (LargeSd B) (/ (+ (sin 0.10) (LargeAvg R))
-     (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (LargeAvg B) (sin (sin (exp (/ (LargeAvg
+     BW) (LargeAvg BW)))))))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 94
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.91796875
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (- 0.01 0.41)) 0.60) (* 0.65 0.95))))))
-     (/ (SmallAvg G) (cos (max (- (/ (* (InputColor
-         BW) (SmallAvg G)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (SmallAvg BW)) (/ (IfGT 0.37 (- (Log 0.54)
-         (+ 0.06 0.43)) (MediumSd R) (- 0.96)) (*
-         (InputColor BW) (SmallAvg G)))) (SmallAvg
-         R) (- 0.01 0.41)))) 0.66)))) (IfGT (- 0.96)
-     (Log (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (* (SmallAvg BW) (IfGT
-         (* (min 0.48 0.55) (SmallSd B)) (- (InputColor
-         G) (- 0.73)) (min (- 0.26 0.28) (MediumSd
-         B)) (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-         (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-             0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-             (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (min (- (SmallAvg B) 0.53)
-     (sin (sin 0.10))) (sin 0.10)) 0.41)))) (*
-     (SmallAvg B) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max (+ (sin 0.10) (LargeAvg
-     R)) 0.63)) (IfGT (InputColor R) (- (/ (*
-     (InputColor BW) (SmallAvg G)) (IfGT (- 0.96)
-     (/ (IfGT 0.37 (- (cos (MediumSd G)) (+ 0.06
-         0.43)) (MediumSd R) (- (LargeSd BW))) (/
-         (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-             R) (- 0.96)) (* (InputColor BW) (SmallAvg
-         G)))) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-     (SmallAvg BW) (sin (InputColor R)) 0.41 (sin
-     0.10)) (Log (/ (min (sin (sin (max (SmallAvg
-     G) 0.63))) (IfGT (- 0.96) (- (+ 0.06 0.43))
-     (IfGT (- 0.96) (InputColor R) (LargeAvg BW)
-         (Log (SmallAvg G))) (Log (/ (SmallAvg BW)
-     (min (LargeSd B) (/ (+ 0.06 0.43) (InputColor
-         R))))))) (min (LargeSd B) (/ (+ (sin 0.10)
-     (LargeAvg R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (exp (MediumAvg BW)))) (sin (sin (exp
+         (/ (SmallAvg B) (LargeAvg BW)))))))) (sin
+     (sin (sin (max (MediumAvg BW) (sin (sin (exp
+         (/ (LargeAvg BW) (LargeAvg BW))))))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 95
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9189453
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (sin (InputColor R)) (* 0.65 (InputColor
-     R))))))) (/ (SmallAvg G) (cos (max (min 0.15
-     (InputColor R)) 0.66)))) (IfGT (- 0.96) (Log
-     (/ (max (sin (InputColor R)) (/ (SmallAvg
-         G) (cos (max (min (* (SmallAvg BW) (IfGT
-         (* (min 0.48 0.55) (SmallSd B)) (- (InputColor
-         G) (- 0.73)) (min (- 0.26 0.28) (MediumSd
-         B)) (exp (* 0.20 0.94)))) 0.60) (* 0.65 0.95)))))
-         (IfGT (- 0.96) (Log (SmallAvg G)) (Log (sin
-             0.10)) (/ (LargeAvg R) (min (LargeSd B) (/
-             (SmallAvg G) (InputColor R))))))) (Log (sin
-     0.10)) (- (min (- (SmallAvg G) 0.53) (sin
-     (sin 0.10))) 0.41)))) (* (InputColor BW)
-     (SmallAvg G)) (Log (/ (SmallAvg G) (Log (min
-     (sin (max (+ (sin 0.10) (LargeAvg R)) 0.63))
-     (IfGT (InputColor R) (- (/ (* (InputColor
-         BW) (SmallAvg BW)) (IfGT (- 0.96) (/ (IfGT
-         0.37 (- (Log 0.54) (+ 0.06 0.43)) (MediumSd
-         R) (- (LargeSd BW))) (/ (IfGT 0.37 (- (Log
-         0.54) (+ 0.06 0.43)) (MediumSd R) (- 0.96))
-         (* (* (LargeSd R) (SmallAvg G)) (SmallAvg
-             G)))) (SmallAvg R) (- 0.01 0.41)))) (IfGT
-         (SmallAvg BW) (Log (SmallAvg G)) 0.41 (sin
-         0.10)) (Log (/ (min (sin (sin (max (SmallAvg
-         G) 0.63))) (IfGT (- 0.96) (- (+ 0.06 0.43))
-         (IfGT (- 0.96) (InputColor R) (LargeAvg BW)
-             (Log (sin 0.10))) (Log (/ (SmallAvg BW) (min
-         (LargeSd B) (/ (+ (sin 0.10) (LargeAvg R))
-         (InputColor R))))))) (min (LargeSd B) (/
-         (+ (sin 0.10) (LargeSd B)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (MediumAvg G))) (sin (sin (exp (/ (SmallAvg
+         B) (LargeAvg BW)))))))) (sin (sin (sin (max
+     (sin (exp (/ (MediumAvg G) (MediumAvg G))))
+     (sin (- (InputColor R) (MediumAvg BW))))))))))))
+     (SmallSd BW)) (MediumAvg B))
 
 Generation: 96
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.95214844
+Fitness: 0.9189453
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (min (IfGT (- 0.96) (SmallAvg B) (Log (sin
-         0.10)) (sin (InputColor R))) 0.60) (* 0.65
-     (max (InputColor BW) (- (max 0.28 (cos 0.51))
-         (* (MediumSd R) (- 0.01 0.44)))))))))) (/
-     (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-     BW)) 0.66)))) (IfGT (- 0.96) (Log (/ (max
-     (sin (InputColor R)) (/ (SmallAvg G) (cos
-     (max (LargeAvg R) (* 0.65 0.95))))) (IfGT
-     (- 0.96) (Log (SmallAvg G)) (Log (sin 0.10))
-     (/ (LargeAvg R) (min (LargeSd B) (/ (SmallAvg
-         G) (LargeSd B))))))) (Log (sin 0.10)) (-
-     (min (- (SmallAvg G) 0.53) (sin (sin 0.10)))
-     0.41)))) (* (InputColor BW) (SmallAvg G))
-     (Log (/ (SmallAvg G) (Log (min (sin (max
-         (+ (sin 0.10) (LargeAvg R)) 0.63)) (IfGT
-         (InputColor R) (- (/ (* (InputColor BW) (SmallAvg
-         G)) (IfGT (- 0.96) (/ (IfGT 0.37 (- (- 0.96)
-         (+ 0.06 0.43)) (MediumSd R) (- (LargeSd BW)))
-         (/ (IfGT 0.37 (- (Log 0.54) (+ (cos (LargeSd
-             G)) 0.43)) (MediumSd R) (- 0.96)) (* (InputColor
-             BW) (SmallAvg G)))) (SmallAvg R) (- 0.01
-         0.41)))) (IfGT (SmallAvg BW) (Log (SmallAvg
-         G)) 0.41 (sin 0.10)) (Log (/ (min (sin (sin
-         (max (SmallAvg G) 0.63))) (IfGT (- 0.96)
-         (- (+ 0.06 0.43)) (IfGT (- 0.96) (InputColor
-         R) (LargeAvg BW) (Log (sin 0.10))) (Log (/
-         (* 0.65 0.95) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-         (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-             R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (- (sin
+     (sin (exp (exp (MediumAvg BW))))) (exp (MediumAvg
+     G))))))) (exp (max (max (MediumAvg G) (sin
+     (max (- (sin (sin (exp (exp (MediumAvg BW)))))
+         (exp (/ (LargeAvg BW) (LargeAvg BW)))) (sin
+         (sin (exp (/ (SmallAvg B) (LargeAvg BW))))))))
+     (sin (sin (sin (max (sin (exp (/ (MediumAvg
+         G) (MediumAvg G)))) (sin (- (InputColor R)
+         (MediumAvg BW)))))))))))) (SmallSd BW)) (MediumAvg
+     B))
 
 Generation: 97
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.953125
+Fitness: 0.9199219
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (- 0.96) (* 0.65 0.95)))))) (/ (SmallAvg
-     G) (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (MediumSd R))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-         R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-         R))))))) (Log (sin 0.10)) (- 0.96)))) (*
-     (InputColor BW) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max (+ (sin 0.10) (LargeAvg
-     R)) 0.63)) (IfGT (InputColor R) (- (/ (*
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))) (SmallAvg G)) (IfGT (- 0.96)
-     (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-         (MediumSd R) (- (LargeSd BW))) (/ (IfGT 0.37
-         (+ (sin 0.10) (LargeAvg R)) (MediumSd R)
-         (- 0.96)) (SmallAvg G))) (SmallAvg R) (-
-     0.01 0.41)))) (IfGT (InputColor BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- (+ 0.06 0.43)) (- 0.96) (Log
-     (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (+ (/
+     0.90 0.72) (SmallSd BW))) (+ (MediumSd G)
+     (+ (LargeAvg R) (MediumSd BW)))))) (exp (max
+     (max (MediumAvg G) (sin (sin (sin (exp (sin
+         (exp (exp (MediumAvg BW))))))))) (sin (sin
+     (max (exp (/ (SmallAvg B) (LargeAvg G)))
+         (sin (LargeSd BW)))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 98
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.953125
+Fitness: 0.9199219
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (- 0.96) (* 0.65 0.95)))))) (/ (SmallAvg
-     G) (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (MediumSd R))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-         R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-         R))))))) (Log (sin 0.10)) (- 0.96)))) (*
-     (InputColor BW) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max (+ (sin 0.10) (LargeAvg
-     R)) 0.63)) (IfGT (InputColor R) (- (/ (*
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))) (SmallAvg G)) (IfGT (- 0.96)
-     (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-         (MediumSd R) (- (LargeSd BW))) (/ (IfGT 0.37
-         (+ (sin 0.10) (LargeAvg R)) (MediumSd R)
-         (- 0.96)) (SmallAvg G))) (SmallAvg R) (-
-     0.01 0.41)))) (IfGT (InputColor BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- (+ 0.06 0.43)) (- 0.96) (Log
-     (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (+ (/
+     0.90 0.72) (SmallSd BW))) (+ (MediumSd G)
+     (+ (LargeAvg R) (MediumSd BW)))))) (exp (max
+     (max (MediumAvg G) (sin (sin (sin (exp (sin
+         (exp (exp (MediumAvg BW))))))))) (sin (sin
+     (max (exp (/ (SmallAvg B) (LargeAvg G)))
+         (sin (LargeSd BW)))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Generation: 99
 Best Individual:
 Subpopulation 0:
 Evaluated: true
-Fitness: 0.953125
+Fitness: 0.9199219
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (- 0.96) (* 0.65 0.95)))))) (/ (SmallAvg
-     G) (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (MediumSd R))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-         R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-         R))))))) (Log (sin 0.10)) (- 0.96)))) (*
-     (InputColor BW) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max (+ (sin 0.10) (LargeAvg
-     R)) 0.63)) (IfGT (InputColor R) (- (/ (*
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))) (SmallAvg G)) (IfGT (- 0.96)
-     (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-         (MediumSd R) (- (LargeSd BW))) (/ (IfGT 0.37
-         (+ (sin 0.10) (LargeAvg R)) (MediumSd R)
-         (- 0.96)) (SmallAvg G))) (SmallAvg R) (-
-     0.01 0.41)))) (IfGT (InputColor BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- (+ 0.06 0.43)) (- 0.96) (Log
-     (/ (SmallAvg BW) 0.10)))) (min (LargeSd B)
-     (/ (+ (sin 0.10) (LargeAvg R)) (InputColor
-         R)))))))))))
+ (- (- (- (sin (- (sin (exp (- (sin (+ (/
+     0.90 0.72) (SmallSd BW))) (+ (MediumSd G)
+     (+ (LargeAvg R) (MediumSd BW)))))) (exp (max
+     (max (MediumAvg G) (sin (sin (sin (exp (sin
+         (exp (exp (MediumAvg BW))))))))) (sin (sin
+     (max (exp (/ (SmallAvg B) (LargeAvg G)))
+         (sin (LargeSd BW)))))))))) (SmallSd BW))
+     (MediumAvg B))
 
 Best Individual of Run:
 Subpopulation 0:
 Evaluated: true
+Fitness: 0.9199219
+Tree 0:
+ (- (- (- (sin (- (sin (exp (- (sin (+ (/
+     0.90 0.72) (SmallSd BW))) (+ (MediumSd G)
+     (+ (LargeAvg R) (MediumSd BW)))))) (exp (max
+     (max (MediumAvg G) (sin (sin (sin (exp (sin
+         (exp (exp (MediumAvg BW))))))))) (sin (sin
+     (max (exp (/ (SmallAvg B) (LargeAvg G)))
+         (sin (LargeSd BW)))))))))) (SmallSd BW))
+     (MediumAvg B))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.7548828
+Tree 0:
+ (Log (Log (MediumAvg R)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.7626953
+Tree 0:
+ (Log (IfGT (Log (cos (/ 0.09 0.83))) (* (-
+     (/ 0.70 0.65) (MediumAvg G)) (- (MediumAvg
+     BW) (max 0.10 0.87))) (IfGT (SmallSd BW)
+     (InputColor BW) (* (- 0.40 0.72) (MediumSd
+     R)) (Log (SmallSd B))) (- (MediumSd B) (sin
+     (MediumSd G)))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8730469
+Tree 0:
+ (Log (IfGT (Log (cos (/ 0.09 0.83))) (* (-
+     (/ 0.70 0.65) (MediumAvg G)) (- (MediumAvg
+     BW) (max 0.10 0.87))) (IfGT (SmallSd BW)
+     (InputColor BW) (* (- 0.40 0.72) (MediumSd
+     R)) (Log (Log (Log (MediumAvg R))))) (- (MediumSd
+     B) (sin (MediumSd G)))))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9091797
+Tree 0:
+ (Log (IfGT (Log 0.76) (* (- (/ 0.70 0.65)
+     (SmallSd B)) (- (MediumAvg BW) (max 0.10
+     0.87))) (IfGT (SmallSd BW) (InputColor BW)
+     (* (- 0.40 0.72) (MediumSd R)) (Log (SmallSd
+     B))) (- (MediumSd B) (sin (MediumSd G)))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9091797
+Tree 0:
+ (Log (IfGT (Log 0.76) (* (- (/ 0.70 0.65)
+     (SmallSd B)) (- (MediumAvg BW) (max 0.10
+     0.87))) (IfGT (SmallSd BW) (InputColor BW)
+     (* (- 0.40 0.72) (MediumSd R)) (Log (SmallSd
+     B))) (- (MediumSd B) (sin (MediumSd G)))))
+
+Generation: 5
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.92871094
+Tree 0:
+ (Log (IfGT (Log (Log (LargeAvg B))) (* (-
+     (/ 0.70 0.65) (* (- (/ 0.70 0.65) (MediumAvg
+     G)) (- (MediumAvg BW) (max 0.10 0.87))))
+     (- (MediumSd R) 0.59)) (IfGT (SmallSd BW)
+     (InputColor BW) (* (- 0.40 0.72) (MediumSd
+     R)) (Log (- (MediumSd R) (MediumAvg B))))
+     (- (MediumSd B) (sin (MediumSd G)))))
+
+Generation: 6
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9550781
+Tree 0:
+ (Log (IfGT (Log 0.76) (* (- (cos (Log (cos
+     (/ 0.09 0.83)))) (SmallSd B)) (- (MediumAvg
+     BW) (max 0.10 0.87))) (IfGT (SmallSd BW)
+     (InputColor BW) (* (Log 0.71) (MediumSd R))
+     (Log (SmallSd B))) (- (MediumSd B) (sin (MediumSd
+     G)))))
+
+Generation: 7
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9609375
+Tree 0:
+ (Log (IfGT (Log 0.76) (* (- (cos (Log (cos
+     (/ 0.09 0.83)))) (SmallSd B)) (- (MediumAvg
+     BW) (max 0.10 0.87))) (IfGT (SmallSd BW)
+     (InputColor BW) (/ 0.70 0.65) (Log (SmallSd
+     B))) (- (MediumSd B) (sin (MediumSd G)))))
+
+Generation: 8
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9921875
+Tree 0:
+ (Log (IfGT (Log (Log (/ (MediumAvg G) (MediumSd
+     G)))) (* (- (/ 0.70 0.65) (* (- (/ 0.70 0.65)
+     (MediumAvg G)) (- (MediumAvg BW) (max 0.10
+     0.87)))) (- (MediumSd R) 0.59)) (IfGT (Log
+     (cos (LargeAvg B))) (InputColor BW) (* (-
+     0.40 0.72) (MediumSd R)) (Log (- (MediumSd
+     R) (MediumAvg B)))) (- (MediumSd B) (sin
+     (MediumSd G)))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9921875
+Tree 0:
+ (Log (IfGT (Log (Log (/ (MediumAvg G) (MediumSd
+     G)))) (* (- (/ 0.70 0.65) (* (- (/ 0.70 0.65)
+     (MediumAvg G)) (- (MediumAvg BW) (max 0.10
+     0.87)))) (- (MediumSd R) 0.59)) (IfGT (Log
+     (cos (LargeAvg B))) (InputColor BW) (* (-
+     0.40 0.72) (MediumSd R)) (Log (- (MediumSd
+     R) (MediumAvg B)))) (- (MediumSd B) (sin
+     (MediumSd G)))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.75390625
+Tree 0:
+ (Log (Log (LargeAvg R)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.75390625
+Tree 0:
+ (Log (Log (LargeAvg R)))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.75390625
+Tree 0:
+ (Log (Log (LargeAvg R)))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.83203125
+Tree 0:
+ (Log (- (* (Log (LargeAvg R)) (exp 0.24))
+     (* (MediumSd BW) (- 0.19 (MediumSd G)))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.83203125
+Tree 0:
+ (Log (- (* (Log (LargeAvg R)) (exp 0.24))
+     (* (MediumSd BW) (- 0.19 (MediumSd G)))))
+
+Generation: 5
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9658203
+Tree 0:
+ (Log (+ (- (- 0.20)) (Log (IfGT (MediumAvg
+     R) 0.45 (max (MediumSd G) (max (LargeSd R)
+     (Log (sin (min (- 0.63) (+ 0.56 (Log (Log
+         (LargeAvg B))))))))) (* (MediumAvg BW) (Log
+     (Log (LargeAvg R))))))))
+
+Generation: 6
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9658203
+Tree 0:
+ (Log (+ (- (- 0.20)) (Log (IfGT (MediumAvg
+     R) 0.45 (max (MediumSd G) (max (LargeSd R)
+     (Log (sin (min (- 0.63) (+ (sin (Log (Log
+         (LargeAvg R)))) (Log (Log (LargeAvg B)))))))))
+     (* (MediumAvg BW) (Log (Log (LargeAvg R))))))))
+
+Generation: 7
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.98535156
+Tree 0:
+ (max (sin (Log (- (* (Log (LargeAvg R)) (exp
+     0.24)) (- (* (Log (LargeAvg R)) (exp 0.24))
+     (* (MediumSd BW) (* (MediumAvg BW) (- (SmallSd
+         BW)))))))) (/ (sin 0.85) (sin (Log (Log (LargeAvg
+     R))))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.98535156
+Tree 0:
+ (max (sin (Log (- (* (Log (LargeAvg R)) (exp
+     0.24)) (- (* (Log (LargeAvg R)) (exp 0.24))
+     (* (MediumSd BW) (* (MediumAvg BW) (- (SmallSd
+         BW)))))))) (/ (sin 0.85) (sin (Log (Log (LargeAvg
+     R))))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8300781
+Tree 0:
+ (min (cos (exp (LargeAvg BW))) (SmallSd R))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8300781
+Tree 0:
+ (IfGT (exp (* 0.98 0.31)) (Log (+ 0.85 0.40))
+     (min (cos (exp (LargeAvg BW))) (SmallSd R))
+     0.69)
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8388672
+Tree 0:
+ (- (cos (Log (SmallSd B))))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9970703
+Tree 0:
+ (- (LargeSd BW) (cos (Log (SmallSd B))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9970703
+Tree 0:
+ (- (LargeSd BW) (cos (Log (SmallSd B))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8232422
+Tree 0:
+ (/ (/ (exp 0.14) (sin 0.54)) (IfGT (MediumAvg
+     B) (max 0.49 0.15) (- 0.86 0.98) (max 0.42
+     0.25)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 1.0
+Tree 0:
+ (cos (/ (- (- (SmallSd BW) 0.89)) (Log (cos
+     0.33))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 1.0
+Tree 0:
+ (cos (/ (- (- (SmallSd BW) 0.89)) (Log (cos
+     0.33))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.90234375
+Tree 0:
+ (* (Log (LargeAvg R)) (IfGT 0.22 (IfGT (SmallAvg
+     BW) (/ (SmallAvg G) (IfGT 0.13 0.12 0.38
+     0.50)) (InputColor G) (LargeSd G)) (* (SmallSd
+     R) (* (- 0.31) (LargeSd BW))) (LargeSd B)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.90234375
+Tree 0:
+ (* (Log (LargeAvg R)) (IfGT 0.22 (IfGT (SmallAvg
+     BW) (/ (SmallAvg G) (IfGT 0.13 0.12 0.38
+     0.50)) (InputColor G) (LargeSd G)) (* (SmallSd
+     R) (* (- 0.31) (LargeSd BW))) (- (Log (-
+     (* 0.90 0.65))))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.90234375
+Tree 0:
+ (* (Log (LargeAvg R)) (IfGT 0.22 (IfGT (SmallAvg
+     BW) (/ (SmallAvg G) (IfGT 0.13 0.12 0.38
+     0.50)) (InputColor G) (LargeSd G)) (* (-
+     (/ 0.68 0.69)) (SmallAvg R)) 0.07))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9355469
+Tree 0:
+ (+ (sin (/ (LargeSd B) 0.03)) (/ (max (LargeAvg
+     G) (Log 0.42)) (min (Log (max 0.19 0.11))
+     (LargeSd B))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9970703
+Tree 0:
+ (* (Log (LargeAvg R)) (IfGT 0.22 (IfGT (*
+     (SmallAvg B) (cos 0.51)) (/ (SmallAvg G)
+     (IfGT 0.13 0.12 0.38 0.50)) (InputColor G)
+     (LargeSd G)) (* (SmallSd R) (* (- 0.31) (LargeSd
+     BW))) (- (Log (- (* 0.90 (- (SmallSd R) (-
+     (Log (LargeSd BW))))))))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9970703
+Tree 0:
+ (* (Log (LargeAvg R)) (IfGT 0.22 (IfGT (*
+     (SmallAvg B) (cos 0.51)) (/ (SmallAvg G)
+     (IfGT 0.13 0.12 0.38 0.50)) (InputColor G)
+     (LargeSd G)) (* (SmallSd R) (* (- 0.31) (LargeSd
+     BW))) (- (Log (- (* 0.90 (- (SmallSd R) (-
+     (Log (LargeSd BW))))))))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.96777344
+Tree 0:
+ (- (cos (+ (SmallAvg G) (SmallAvg G))) (*
+     (* (exp (exp 0.39)) (MediumSd BW)) (SmallAvg
+     G)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.96777344
+Tree 0:
+ (- (cos (+ (SmallAvg G) (SmallAvg G))) (*
+     (* (exp (exp 0.39)) (MediumSd BW)) (SmallAvg
+     G)))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.99902344
+Tree 0:
+ (IfGT (+ (IfGT (MediumSd R) (IfGT 0.19 0.63
+     0.61 0.25) (min 0.48 0.65) (- (sin 0.03)
+     (InputColor R))) (InputColor R)) (MediumSd
+     B) (Log (- (InputColor R))) (/ (- (min 0.50
+     0.11) (exp 0.28)) (* 0.36 (- 0.29))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.99902344
+Tree 0:
+ (IfGT (+ (IfGT (MediumSd R) (IfGT 0.19 0.63
+     0.61 0.25) (min 0.48 0.65) (- (sin 0.03)
+     (InputColor R))) (InputColor R)) (MediumSd
+     B) (Log (- (InputColor R))) (/ (- (min 0.50
+     0.11) (exp 0.28)) (* 0.36 (- 0.29))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.7734375
+Tree 0:
+ (- (sin (- (max (IfGT 0.63 0.89 0.75 0.63)
+     (min 0.92 0.71)))) (Log (SmallAvg BW)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8144531
+Tree 0:
+ (IfGT (MediumAvg BW) (max (+ (- 1.00) (cos
+     0.11)) (min 0.50 0.65)) (Log (- (SmallAvg
+     R))) (exp (- (/ 0.65 0.70))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.82128906
+Tree 0:
+ (* (SmallSd G) (- (SmallAvg B) (/ (MediumSd
+     R) (/ 0.18 0.41))))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.82128906
+Tree 0:
+ (* (SmallSd G) (- (SmallAvg B) (/ (MediumSd
+     R) (/ 0.18 0.41))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8671875
+Tree 0:
+ (cos (Log (* (LargeSd G) (- (SmallAvg G)
+     (/ 0.18 0.41)))))
+
+Generation: 5
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8671875
+Tree 0:
+ (cos (Log (* (LargeSd G) (- (SmallAvg G)
+     (/ 0.18 0.41)))))
+
+Generation: 6
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8857422
+Tree 0:
+ (/ (* (exp (Log (/ 0.12 0.65))) (- (IfGT
+     0.70 (InputColor R) (LargeAvg BW) (InputColor
+     G)) (+ (- 0.75 0.98) (min 0.65 0.66)))) (-
+     (- (Log (min 0.50 0.65))) (+ (MediumSd B)
+     (MediumAvg G))))
+
+Generation: 7
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.99902344
+Tree 0:
+ (* (SmallSd G) (- (exp (- 0.52)) (/ (MediumSd
+     R) (/ 0.18 0.41))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.99902344
+Tree 0:
+ (* (SmallSd G) (- (exp (- 0.52)) (/ (MediumSd
+     R) (/ 0.18 0.41))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.76953125
+Tree 0:
+ (IfGT (* (max (InputColor BW) (MediumSd R))
+     (max (InputColor R) (Log (+ 0.22 0.00))))
+     (- (sin (max (sin 0.36) (/ 0.29 0.28))) (min
+         (LargeSd G) (- (cos 0.41) (SmallSd G))))
+     (- (SmallSd G) (IfGT (/ (+ 0.85 0.62) (min
+         0.84 0.94)) (LargeAvg B) (SmallSd R) (Log
+         (- 0.96 0.54)))) (cos (sin (LargeSd B))))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.76953125
+Tree 0:
+ (IfGT (* (max (InputColor BW) (MediumSd R))
+     (max (InputColor R) (Log (+ 0.22 0.00))))
+     (- (sin (max (- 0.06 0.16) (/ 0.29 0.28)))
+         (min (LargeSd G) (- (cos 0.41) (SmallSd G))))
+     (- (SmallSd G) (IfGT (/ (+ 0.85 0.62) (min
+         0.84 0.94)) (LargeAvg B) (SmallSd R) (Log
+         (- 0.96 0.54)))) (cos (sin (LargeSd B))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8027344
+Tree 0:
+ (Log (- (sin (Log (InputColor BW))) 0.14))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.85253906
+Tree 0:
+ (IfGT (* (max (InputColor BW) (MediumSd R))
+     (max (InputColor R) (Log (min (LargeSd G)
+         (- (cos 0.41) (SmallSd G)))))) (- (sin (max
+     (sin 0.36) (- (sin 0.22)))) (min (LargeSd
+     G) (- (cos 0.41) (SmallSd G)))) (- (SmallSd
+     G) (IfGT (/ (+ 0.85 0.62) (min 0.84 0.94))
+     (LargeAvg B) (SmallSd R) (sin 0.21))) (cos
+     (sin (LargeSd B))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9091797
+Tree 0:
+ (- (IfGT (* (max (InputColor BW) (MediumSd
+     R)) (max (InputColor R) (Log (+ 0.22 (+ 0.68
+     0.53))))) (- (sin (max (sin 0.36) (/ 0.29
+     0.28))) (min (LargeSd G) (- (cos 0.41) (SmallSd
+     R)))) (- (SmallSd G) (IfGT (/ (+ 0.85 0.62)
+     (min 0.84 0.94)) (LargeAvg B) (SmallSd R)
+     (Log (- 0.96 0.54)))) (InputColor G)) (LargeSd
+     R))
+
+Generation: 5
+Best Individual:
+Subpopulation 0:
+Evaluated: true
 Fitness: 0.953125
 Tree 0:
- (IfGT (LargeSd R) (- (/ (max (sin (max (sin
-     (InputColor R)) (/ (SmallAvg G) (cos (max
-     (- 0.96) (* 0.65 0.95)))))) (/ (SmallAvg
-     G) (cos (max (min 0.15 (MediumAvg BW)) 0.66))))
-     (IfGT (- 0.96) (Log (/ (max (sin (InputColor
-         R)) (/ (SmallAvg G) (cos (max (min (* (SmallAvg
-         BW) (IfGT (* (min 0.48 0.55) (MediumSd R))
-         (- (InputColor G) (- 0.73)) (min (- 0.26
-         0.28) (MediumSd B)) (exp (* 0.20 0.94))))
-         0.60) (* 0.65 0.95))))) (IfGT (- 0.96) (Log
-         (SmallAvg G)) (Log (sin 0.10)) (/ (LargeAvg
-         R) (min (LargeSd B) (/ (SmallAvg G) (InputColor
-         R))))))) (Log (sin 0.10)) (- 0.96)))) (*
-     (InputColor BW) (SmallAvg G)) (Log (/ (SmallAvg
-     G) (Log (min (sin (max (+ (sin 0.10) (LargeAvg
-     R)) 0.63)) (IfGT (InputColor R) (- (/ (*
-     (/ (SmallAvg G) (cos (max (min 0.15 (MediumAvg
-         BW)) 0.66))) (SmallAvg G)) (IfGT (- 0.96)
-     (/ (IfGT 0.37 (- (Log 0.54) (+ 0.06 0.43))
-         (MediumSd R) (- (LargeSd BW))) (/ (IfGT 0.37
-         (+ (sin 0.10) (LargeAvg R)) (MediumSd R)
-         (- 0.96)) (SmallAvg G))) (SmallAvg R) (-
-     0.01 0.41)))) (IfGT (InputColor BW) (Log
-     (SmallAvg G)) 0.41 (sin 0.10)) (Log (/ (min
-     (sin (sin (max (SmallAvg G) 0.63))) (IfGT
-     (- 0.96) (- (+ 0.06 0.43)) (- 0.96) (Log
-     (/ (SmallAvg BW) (min (LargeSd B) (/ (+ (sin
-         0.10) (LargeAvg R)) (InputColor R)))))))
-     (min (LargeSd B) (/ (+ (sin 0.10) (LargeAvg
-         R)) (InputColor R)))))))))))
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) (Log (+ 0.22 0.00))))
+     (- (sin (max (sin 0.36) (/ 0.29 0.28))) (min
+         (LargeSd G) (- (cos 0.41) (SmallSd G))))
+     (- (SmallSd G) (IfGT (/ (+ 0.85 0.62) (min
+         0.84 0.94)) (InputColor G) (SmallSd R) (Log
+         (Log 0.18)))) (cos (/ (+ 0.85 0.62) (min
+     0.84 (SmallSd R)))))
+
+Generation: 6
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.953125
+Tree 0:
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) 0.22)) (- (sin (max (sin
+     0.36) (/ 0.29 0.28))) (min (LargeSd G) (-
+     (cos 0.41) (SmallSd G)))) (- (SmallSd G)
+     (IfGT (/ (+ 0.85 0.62) (min 0.84 0.94)) (InputColor
+         G) (SmallSd R) (Log (Log 0.18)))) (cos (/
+     (+ 0.85 0.62) (min 0.84 (SmallSd R)))))
+
+Generation: 7
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9736328
+Tree 0:
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) (Log (+ 0.22 0.00))))
+     (- (sin (max (sin 0.36) (min (/ (InputColor
+         G) (MediumAvg G)) (+ 0.85 0.62)))) (min (LargeSd
+         G) (- (cos 0.41) (SmallSd G)))) (- (SmallSd
+     G) (IfGT (/ (+ 0.85 0.62) (min 0.84 0.94))
+     (InputColor G) (SmallSd R) (Log (+ 0.22 0.00))))
+     (cos (/ (+ 0.85 0.62) (min 0.84 (SmallSd
+         R)))))
+
+Generation: 8
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.97753906
+Tree 0:
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) (Log (+ 0.22 0.00))))
+     (- (sin (max (sin 0.36) (min (/ (InputColor
+         G) (MediumAvg G)) (+ 0.85 0.62)))) (min (LargeSd
+         G) (- (cos 0.41) (SmallSd G)))) (- (SmallSd
+     G) (IfGT (/ (+ 0.85 0.62) (min 0.84 0.94))
+     (InputColor G) (SmallSd R) (Log (+ 0.22 0.00))))
+     (cos (/ (+ 0.85 0.62) (min 0.84 (LargeSd
+         R)))))
+
+Generation: 9
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.98535156
+Tree 0:
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) (max (InputColor BW)
+         (MediumSd R)))) (- (sin (max (sin 0.36) (/
+     0.29 (SmallSd G)))) (min (LargeSd G) (- (cos
+     0.41) (SmallSd G)))) (IfGT (* (max (InputColor
+     BW) (MediumSd R)) (max (InputColor R) (Log
+     (+ 0.22 (+ 0.68 0.53))))) (- (sin (max (sin
+     0.36) (/ 0.29 0.28))) (min (min (LargeSd
+     G) (- (cos (LargeAvg BW)) (SmallSd G))) (-
+     (cos 0.41) (SmallSd R)))) (- (SmallSd G)
+     (IfGT (/ (+ 0.85 0.62) (max (InputColor R)
+         (Log (+ 0.22 (+ 0.68 0.53))))) (LargeAvg
+         B) (SmallSd R) (Log (- 0.96 0.54)))) (InputColor
+     G)) (cos (/ (+ (- (cos 0.41) (SmallSd R))
+     0.62) (min 0.84 (SmallSd R)))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.98535156
+Tree 0:
+ (IfGT (* (max (InputColor BW) (SmallSd R))
+     (max (InputColor R) (max (InputColor BW)
+         (MediumSd R)))) (- (sin (max (sin 0.36) (/
+     0.29 (SmallSd G)))) (min (LargeSd G) (- (cos
+     0.41) (SmallSd G)))) (IfGT (* (max (InputColor
+     BW) (MediumSd R)) (max (InputColor R) (Log
+     (+ 0.22 (+ 0.68 0.53))))) (- (sin (max (sin
+     0.36) (/ 0.29 0.28))) (min (min (LargeSd
+     G) (- (cos (LargeAvg BW)) (SmallSd G))) (-
+     (cos 0.41) (SmallSd R)))) (- (SmallSd G)
+     (IfGT (/ (+ 0.85 0.62) (max (InputColor R)
+         (Log (+ 0.22 (+ 0.68 0.53))))) (LargeAvg
+         B) (SmallSd R) (Log (- 0.96 0.54)))) (InputColor
+     G)) (cos (/ (+ (- (cos 0.41) (SmallSd R))
+     0.62) (min 0.84 (SmallSd R)))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.75
+Tree 0:
+ (- 0.07)
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.84277344
+Tree 0:
+ (sin (Log (min (cos (Log (SmallSd G))) (LargeAvg
+     B))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.84277344
+Tree 0:
+ (sin (Log (min (cos (Log (SmallSd G))) (LargeAvg
+     B))))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9941406
+Tree 0:
+ (* (InputColor G) (Log (Log (min (cos (Log
+     (SmallSd G))) (LargeAvg R)))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9941406
+Tree 0:
+ (* (InputColor G) (Log (Log (min (cos (Log
+     (SmallSd G))) (LargeAvg R)))))
+
+Generation: 0
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.7607422
+Tree 0:
+ (/ (Log (SmallSd BW)) (IfGT 0.39 (LargeAvg
+     B) (- 0.67 0.77) (cos 0.07)))
+
+Generation: 1
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8720703
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (LargeAvg R) (max 0.90 0.41))) (sin (LargeAvg
+     BW))) (- (min (exp (max (+ 0.49 0.24) (min
+     0.04 0.97))) (cos (SmallSd R)))))
+
+Generation: 2
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.8720703
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (LargeAvg R) (Log (- (InputColor B))))) (sin
+     (LargeAvg BW))) (- (min (exp (max (+ 0.49
+     0.24) (min 0.04 0.97))) (cos (SmallSd R)))))
+
+Generation: 3
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.90722656
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (max 0.90 0.41))) (sin
+     (LargeAvg BW))) (- (min (exp (Log (+ (Log
+     (SmallAvg BW)) (Log 0.94)))) (cos (SmallSd
+     R)))))
+
+Generation: 4
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9082031
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (LargeAvg R) (max 0.90 0.41))) (SmallSd BW))
+     (- (min (exp (Log (+ (Log (SmallAvg BW))
+         (Log 0.94)))) (cos (SmallSd R)))))
+
+Generation: 5
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9550781
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (LargeAvg R) (max 0.90 0.41))) (SmallSd BW))
+     (- (min (exp (Log (+ (Log (SmallAvg BW))
+         (Log 0.94)))) (cos 0.77))))
+
+Generation: 6
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9589844
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (LargeAvg R) (max 0.90 0.41))) (SmallSd BW))
+     (- (min (exp (Log (+ (Log (SmallAvg BW))
+         (Log 0.94)))) (+ 0.49 0.24))))
+
+Generation: 7
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9716797
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (SmallAvg BW))) (sin (LargeAvg
+     BW))) (- (min (exp (Log (+ (Log (LargeAvg
+     BW)) (Log 0.94)))) (+ 0.49 0.24))))
+
+Generation: 8
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9794922
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (SmallAvg BW))) (sin (LargeAvg
+     BW))) (- (min (exp 0.07) (+ 0.49 0.24))))
+
+Generation: 9
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9794922
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (SmallAvg BW))) (sin (LargeAvg
+     BW))) (- (min (exp 0.07) (+ 0.49 0.24))))
+
+Generation: 10
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9794922
+Tree 0:
+ (- (- (- (IfGT (/ (+ 0.49 0.24) 0.07) (MediumAvg
+     R) (sin (LargeSd BW)) (SmallAvg BW))) (sin
+     (LargeAvg BW))) (- (min (exp 0.07) (+ 0.49
+     0.24))))
+
+Generation: 11
+Best Individual:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9873047
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (SmallAvg BW))) (sin (sin
+     (LargeAvg BW)))) (- (min (exp 0.07) (+ 0.49
+     0.24))))
+
+Best Individual of Run:
+Subpopulation 0:
+Evaluated: true
+Fitness: 0.9873047
+Tree 0:
+ (- (- (- (IfGT (/ 0.94 0.07) (MediumAvg R)
+     (sin (LargeSd BW)) (SmallAvg BW))) (sin (sin
+     (LargeAvg BW)))) (- (min (exp 0.07) (+ 0.49
+     0.24))))

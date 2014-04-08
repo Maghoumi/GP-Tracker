@@ -192,6 +192,18 @@ public class Job {
 	public void setClassfier(Classifier classfier) {
 		this.classfier = classfier;
 	}
+
+	/**
+	 * Compares this Job with another Job object. Two jobs are equal if
+	 * they are working with the same classifier.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		Classifier otherClassifier = ((Job)obj).classfier;
+		return this.classfier.equals(otherClassifier);
+	}
+	
+	
 	
 	
 }
