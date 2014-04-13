@@ -1,7 +1,9 @@
 package cuda.gp;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import m2xfilter.datatypes.DataInstance;
 import m2xfilter.datatypes.EvolutionListener;
@@ -40,7 +42,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	private int trainingMode = -1;
 	
 	/** The list of all EvolutionListeners that are registered with this EvolutionState object */
-	private List<EvolutionListener> evolutionListeners = new ArrayList<EvolutionListener>();
+	private Set<EvolutionListener> evolutionListeners = new HashSet<EvolutionListener>();
 	
 	/** Interop instance for CUDA communications*/
 	private CudaInterop cudaInterop = null;

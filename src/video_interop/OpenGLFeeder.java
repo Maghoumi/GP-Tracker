@@ -1,47 +1,43 @@
 package video_interop;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-
-import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
-import javax.swing.JButton;
 
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Segment;
 import utils.opengl.OpenGLUtils;
 import video_interop.datatypes.SegmentedVideoFrame;
-import visualizer.Visualizer;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class OpenGLFeeder extends JFrame implements VideoFeeder {
-	
-	private final int NUM_CHANNELS = 4;
-	private final int LENGTH_IN_FRAMES = 170;
-	private final int FRAME_WIDTH = 640;
-	private final int FRAME_HEIGHT = 480;
+	private final static int NUM_CHANNELS = 4;
+	private final static int LENGTH_IN_FRAMES = 170;
+	private final static int FRAME_WIDTH = 854;
+	private final static int FRAME_HEIGHT = 640;
+	private final static int VERTICAL_MARGIN = 10;
+	private final static int OBJECT_HEIGHT = 128;
 	
 	private byte[] buffer = new byte[FRAME_WIDTH * FRAME_HEIGHT * NUM_CHANNELS];
 	
 	private volatile boolean paused = false;
-	private volatile boolean alive = false;
 	private volatile int position = 0;
 	
-	private Thread workerThread = null;
-	private Visualizer owner;
-	
 	/** the list of the objects that should be painted on the canvas */
-	private HashSet<Segment> objects = new HashSet<Segment>();
+	private Set<Segment> objects = new HashSet<Segment>();
+	
+	/** The background segment (used for negative example when there are no other segments in the image) */
+	private Segment background = null;
 	
 	private JFileChooser dlgOpen = new JFileChooser("textures/part");	
 	
@@ -52,7 +48,17 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	
 	public OpenGLFeeder() {
 		setupUI();
-		this.workerThread = new Thread(this);
+		
+		try {
+			ByteImage bgImage = ByteImage.loadFromFile("textures/part/background.png");
+			this.background = new Segment(bgImage, 0, 0, 128, 128);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		setVisible(true);
 	}
 	
 	private void setupUI() {
@@ -129,23 +135,18 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 		Arrays.fill(buffer, (byte)255);
 		
 		for (Segment object : this.objects) {
-			
 			// reset the position of the objects if necessary
 			if (position == 0)
 				object.x = 0;
 			
 			// Draw this object on canvas
-			OpenGLUtils.drawOnBuffer(buffer, object.getByteImage(), this.FRAME_WIDTH, this.FRAME_HEIGHT, object.getRectangle());
+			OpenGLUtils.drawOnBuffer(buffer, object.getByteImage(), FRAME_WIDTH, FRAME_HEIGHT, object.getRectangle());
 			
 			// Move the objects!
 			if (!this.paused)
 				object.x += 3;
 		}
 	}
-	
-	
-	
-	
 	
 	@Override
 	public ByteImage getNextFrame() {
@@ -158,18 +159,18 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	}
 	
 	@Override
-	public void getAndPassNextFrame() {
-		this.pause();
-		
+	public SegmentedVideoFrame getNextSegmentedFrame() {
 		ByteImage newFrame = getNextFrame();
-		this.owner.setCurrentFrame(this.position);
 		
-		this.owner.passNewFrame(new SegmentedVideoFrame(newFrame, objects));		
+		if (!this.paused)
+			position++;
+		
+		return new SegmentedVideoFrame(newFrame, objects, background);
 	}
 	
 	@Override
 	public int getLengthInFrames() {
-		return this.LENGTH_IN_FRAMES;
+		return LENGTH_IN_FRAMES;
 	}
 	
 	@Override
@@ -191,56 +192,13 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	}
 	
 	@Override
-	public void setOwner(Visualizer visualizer) {
-		this.owner = visualizer;
-		this.owner.setVideoLength(LENGTH_IN_FRAMES);
-	}
-
-	@Override
 	public int getFrameWidth() {
-		return this.FRAME_WIDTH;
+		return FRAME_WIDTH;
 	}
 
 	@Override
 	public int getFrameHeight() {
-		return this.FRAME_HEIGHT;
-	}
-
-	@Override
-	public void run() {
-		try {
-			
-			while (this.alive) {
-				
-				//Run one frame, pass whatever to the owner :-)
-				ByteImage newFrame = getNextFrame();
-				this.owner.setCurrentFrame(this.position);
-				this.owner.passNewFrame(new SegmentedVideoFrame(newFrame, objects));
-				
-				if (!this.paused)
-					position++;
-			}
-			
-		}
-		catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
-		}	
-	}
-
-	@Override
-	public void start() {
-		this.alive = this.workerThread.isAlive();
-		
-		if (!this.alive) {
-			this.workerThread.start();
-			this.alive = true;
-		}
-	}
-
-	@Override
-	public void stop() {
-		this.alive = false;
+		return FRAME_HEIGHT;
 	}
 
 	@Override
@@ -302,7 +260,7 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	
 	private static int getNextYPosition() {
 		int result = y;
-		y += 128 + 10;
+		y += OBJECT_HEIGHT + VERTICAL_MARGIN;
 		return result;
 	}
 }

@@ -9,7 +9,7 @@ import m2xfilter.datatypes.Job;
 import utils.UniqueBlockingQueue;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
-import visualizer.Visualizer;
+import visualizer.OpenGLVisualizer;
 import cuda.CudaInterop;
 import cuda.gp.CudaEvolutionState;
 import cuda.gp.CudaSimpleStatistics;
@@ -144,6 +144,13 @@ public class GPSystem extends Evolve implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * @return	True if the job queue is empty, False otherwise.
+	 */
+	public boolean isQueueEmpty() {
+		return this.jobs.size() == 0;
 	}
 	
 	/**

@@ -109,6 +109,8 @@ public class Classifier implements Comparable<Classifier>{
 	 * @param trainingMode
 	 */
 	public Classifier(int trainingType) {
+		this();
+		
 		this.trainingType = trainingType;
 		
 		switch (this.trainingType) {
@@ -297,23 +299,13 @@ public class Classifier implements Comparable<Classifier>{
 	}
 	
 	/**
-	 * Retrains this classifier
-	 * 
-	 * @param system	The GPSystem object to use for retraining this classifier 
-	 * @param shouldSeed	Should the existing GPTree be used as the initial population seed?  
-	 */
-	public void retrain(GPSystem system, boolean shouldSeed) {
-		this.shouldSeed = shouldSeed;
-		system.queueJob(new Job(this));
-	}
-	
-	/**
 	 * Two classifiers are the same (same, meaning they are meant for the 
 	 * same texture) if their colors are equal.
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		Classifier other = (Classifier) obj;
+		
 		return this.color.equals(other.color);
 	}
 	

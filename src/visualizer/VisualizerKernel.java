@@ -1,6 +1,7 @@
 package visualizer;
 
 import static jcuda.driver.JCudaDriver.*;
+import invoker.Invoker;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -14,7 +15,6 @@ import javax.media.opengl.GLAutoDrawable;
 
 import m2xfilter.GPSystem;
 import m2xfilter.datatypes.Job;
-
 import utils.cuda.datatypes.CUdeviceptr2D;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ClassifierSet;
@@ -110,7 +110,8 @@ public class VisualizerKernel {
 	}
 	
 	/**
-	 * Calls the visualization CUDA kernel and displays the results using OpenGL.
+	 * Calls the visualization CUDA kernel and displays the results using OpenGL. Also
+	 * returns the number of classifiers that have claimed the current segment
 	 * 
 	 * @param gp	The GPSystem object that is used for retraining classifiers
 	 * @param drawable	The OpenGL drawable
@@ -122,8 +123,11 @@ public class VisualizerKernel {
 	 * @param showConflicts	A flag indicating whether the conflicting areas should be painted red
 	 * @param imageWidth	The image (frame) width
 	 * @param imageHeight	The image (frame) height
+	 * 
+	 * @return Returns the number of classifiers that have claimed this segment. Will return -1
+	 * 			if thresholding was not enabled
 	 */
-	public void call(GPSystem gp, GLAutoDrawable drawable, ClassifierSet classifiers, Segment segment,
+	public int call(Invoker invoker, GLAutoDrawable drawable, ClassifierSet classifiers, Segment segment,
 			boolean shouldThreshold, float threshold, float opacity,
 			boolean showConflicts, boolean autoRetrain,
 			int imageWidth, int imageHeight) {
@@ -184,41 +188,41 @@ public class VisualizerKernel {
 		
 		// Should we do the thresholding here??
 		if (!shouldThreshold)
-			return;
+			return -1;
 		
 		// Do thresholding:
-		// A list of classifiers that assert this texture belongs to them!!
-		List<Classifier> asserters = new ArrayList<Classifier>();
+		// A list of classifiers that have claimed this segment
+		List<Classifier> claimers = new ArrayList<Classifier>();
 		
 		for (int i = 0 ; i < scratchPad.length ; i++) {
 			scratchPad[i] /= segment.width * segment.height;
 			if (scratchPad[i] > threshold)
-				asserters.add(pointerToAll.classifiers.get(i));
+				claimers.add(pointerToAll.classifiers.get(i));
 		}
 		
-		if (asserters.size() == 1) {
+		if (claimers.size() == 1) {
 			OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
-					asserters.get(0).getColor(), opacity,
+					claimers.get(0).getColor(), opacity,
 					imageWidth, imageHeight ,segment.getRectangle());
-			return;
+			return claimers.size();
 		} 
-		else if (asserters.size() != 0) {	// if 0 => no classifiers have been active!!
+		else if (claimers.size() != 0) {	// if 0 => no classifiers have been active!!
 			OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
 					Color.RED, opacity,
 					imageWidth, imageHeight, segment.getRectangle());
 		}
 		
 		if (!autoRetrain)
-			return;
+			return claimers.size();
 		
 		// Retrain all asserters
 		//FIXME should I retrain only specific ones??
-		for (Classifier c : asserters) {
+		for (Classifier c : claimers) {
 			if (c.getColor() == Color.GREEN)
-				gp.queueJob(new Job(c));
+				invoker.retrain(c, false);
 		}
 		
-		
+		return claimers.size();
 	}	
 	
 	/**

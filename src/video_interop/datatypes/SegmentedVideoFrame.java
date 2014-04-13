@@ -23,6 +23,9 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	/** The set of segments that were found in the frame */
 	private Set<Segment> segments = new HashSet<Segment>();
 	
+	/** The background segment of this SegmentedVideoFrame */ 
+	private Segment background;
+	
 	/**
 	 * Instantiates an object of this class using the provided video frame and
 	 * the set of found segments on that frame. Note that the segments inside
@@ -31,12 +34,14 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	 * @param frame	The video frame
 	 * @param segments	The set of segments that were found in this video frame
 	 */
-	public SegmentedVideoFrame(ByteImage frame, Set<Segment> segments) {
+	public SegmentedVideoFrame(ByteImage frame, Set<Segment> segments, Segment background) {
 		this.frame = frame;
 		
 		for (Segment s : segments) {
 			this.segments.add((Segment) s.clone());
 		}
+		
+		this.background = (Segment) background.clone();
 	}
 
 	@Override
@@ -49,5 +54,20 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	 */
 	public ByteImage getFrame() {
 		return this.frame;
-	}	
+	}
+	
+	/**
+	 * @return	The number of segments in this video frame
+	 */
+	public int size() {
+		return this.segments.size();
+	}
+	
+	/** 
+	 * @return	The background of this SegmentedVideoFrame object. The background
+	 * segment should be used for training as an instance that is always negative
+	 */
+	public Segment getBackground() {
+		return this.background;
+	}
 }

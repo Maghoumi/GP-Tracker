@@ -13,7 +13,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Segment;
-import visualizer.Visualizer;
+import visualizer.OpenGLVisualizer;
 
 /**
  * A helper class that takes a video file and passes the video frames to the
@@ -28,7 +28,7 @@ public class FramePasser implements Runnable {
 	private FFmpegFrameGrabber grabber = null;
 
 	/** The visualizer instance that owns this FramePasser instance */
-	private Visualizer owner = null;
+	private OpenGLVisualizer owner = null;
 
 	/** The worker thread that parses the video file */
 	private Thread workerThread = null;
@@ -47,7 +47,7 @@ public class FramePasser implements Runnable {
 	private boolean stepMode = false;
 	
 
-	public FramePasser(Visualizer owner, File videoFile) {
+	public FramePasser(OpenGLVisualizer owner, File videoFile) {
 		avutil.av_log_set_level(avutil.AV_LOG_QUIET); // Shutup FFMpeg!
 		this.owner = owner;
 		this.grabber = new FFmpegFrameGrabber(videoFile);
@@ -69,7 +69,7 @@ public class FramePasser implements Runnable {
 		this(null, videoFile);
 	}
 
-	public void setOwner(Visualizer visualizer) {
+	public void setOwner(OpenGLVisualizer visualizer) {
 		this.owner = visualizer;
 		this.owner.setVideoLength(lengthInFrames);
 	}
