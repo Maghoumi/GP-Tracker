@@ -22,7 +22,7 @@ import utils.StringUtils;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.CudaData;
 import utils.cuda.datatypes.Float4;
-import visualizer.OpenGLVisualizer;
+import visualizer.GLVisualizer;
 import m2xfilter.datatypes.DataInstance;
 import m2xfilter.datatypes.ProblemData;
 import jcuda.*;
@@ -74,7 +74,7 @@ public class CudaInterop implements Singleton {
 	private CUfunction fncFilter = null; // Function handle for the image filter function
 
 	/** The visualizer instance that can display data in realtime */
-	public OpenGLVisualizer visualizer;
+	public GLVisualizer visualizer;
 
 	/** Flag indicating whether the data should be visualized using OpenGL */
 	private boolean visualize;

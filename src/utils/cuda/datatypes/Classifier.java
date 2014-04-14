@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import m2xfilter.GPSystem;
-import m2xfilter.datatypes.Job;
 import cuda.gp.CudaNode;
 import ec.gp.GPIndividual;
 
@@ -46,14 +44,14 @@ public class Classifier implements Comparable<Classifier>{
 	/** A flag indicating whether this classifier is enabled or not */
 	private boolean enabled = true;
 	
-	/** The ClassifierSet that this classifier belongs to. Used for notifying of changes in disability of this classifier */
-	private ClassifierSet owner = null;
-	
 	/** Used in the toString method */
 	private String colorName;
 	
 	/** A flag indicating whether this classifier should be used to seed the initial population */
 	private boolean shouldSeed = false;
+	
+	/** The list of all the segments that this classifier has claimed */
+	private List<Segment> claimedSegments = new ArrayList<Segment>();
 	
 	/** The list of the positive examples that are used to train this classifier */
 	private List<ByteImage> positiveExamples = null;
@@ -260,16 +258,7 @@ public class Classifier implements Comparable<Classifier>{
 	public void setEnabled(boolean enabled) {
 		if (this.enabled != enabled) {
 			this.enabled = enabled;
-			owner.notifyEnabilityChanged(this);
 		}
-	}
-	
-	/**
-	 * Sets the owner of this classifier
-	 * @param owner
-	 */
-	public void setOwner(ClassifierSet owner) {
-		this.owner = owner;
 	}
 	
 	/**
@@ -299,6 +288,45 @@ public class Classifier implements Comparable<Classifier>{
 	}
 	
 	/**
+	 * Adds a segment as a claimed segment by this classifier
+	 * Note: a claim is when a classifier "claims" a texture
+	 */
+	public void addClaim(Segment segment) {
+		this.claimedSegments.add(segment);
+	}
+	
+	/**
+	 * Reset the claims this classifier has over the segments
+	 * Note: a claim is when a classifier "claims" a texture
+	 */
+	public void resetClaims() {
+		this.claimedSegments.clear();
+	}
+	
+	/**
+	 * @return	The number of claims that this classifier has
+	 */
+	public int getClaimsCount() {
+		return this.claimedSegments.size();
+	}
+	
+	/**
+	 * @return	The list of claimed segments by this classifier
+	 */
+	public List<Segment> getClaims() {
+		return this.claimedSegments;
+	}
+	
+	/**
+	 * Determines if this classifier has claimed the specified segment 
+	 * @param segment
+	 * @return
+	 */
+	public boolean hasClaimed(Segment segment) {
+		return this.claimedSegments.contains(segment);
+	}
+	
+	/**
 	 * Two classifiers are the same (same, meaning they are meant for the 
 	 * same texture) if their colors are equal.
 	 */
@@ -318,10 +346,9 @@ public class Classifier implements Comparable<Classifier>{
 			Color.GREEN,
 			Color.ORANGE,
 			Color.BLUE,
-			Color.YELLOW,
-			Color.CYAN,
 			Color.MAGENTA,
 			Color.PINK,
+			Color.CYAN,
 			Color.RED
 		};
 		
@@ -335,7 +362,7 @@ public class Classifier implements Comparable<Classifier>{
 		 */
 		public static Color getNextColor() {
 			if (index >=colors.length)
-				throw new RuntimeException("Out of colors for the classifiers.");
+				throw new RuntimeException("Out of colors for the classifiers");
 			
 			return colors[index++];
 		}

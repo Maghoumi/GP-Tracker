@@ -2,7 +2,7 @@ package video_interop;
 
 import utils.cuda.datatypes.ByteImage;
 import video_interop.datatypes.SegmentedVideoFrame;
-import visualizer.OpenGLVisualizer;
+import visualizer.GLVisualizer;
 
 /**
  * Defines the standard operations that must be supported by any class that 
@@ -20,7 +20,7 @@ public interface VideoFeeder {
 //	 * Set the owner of this VideoFeeder instance
 //	 * @param visualizer	The visualizer that owns this VideoFeeder instance
 //	 */
-//	public void setOwner(OpenGLVisualizer visualizer);
+//	public void setOwner(GLVisualizer visualizer);
 	
 	/**
 	 * @return	The width of each frame of the video

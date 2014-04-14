@@ -171,6 +171,10 @@ public class ByteImage implements Cloneable {
 		return this.underlyingImage.getHeight();
 	}
 	
+	/**
+	 * @return	The size of the image in bytes (will return the
+	 * 			underlying byte array's length)
+	 */
 	public int getSizeInBytes() {
 		return this.byteData.length;
 	}
@@ -195,7 +199,9 @@ public class ByteImage implements Cloneable {
 		return result;
 	}
 	
-	// Returns the size of this image 
+	/**
+	 * @return	The size of this image (i.e. width * height)
+	 */
 	public int getSize() {
 		return this.getWidth() * this.getHeight();
 	}
@@ -333,7 +339,24 @@ public class ByteImage implements Cloneable {
 		return new ByteImage(getBufferedImage());
 	}
 	
+	/**
+	 * TODO Will do image differencing to determine if the provided image
+	 * "looks" similar to this one
+	 * 
+	 * @param other	The other image to be compared against this one 
+	 * @return True, if the images "look" similar, False otherwise
+	 */
+	public boolean imageDiffEqual(ByteImage other) {
+		int sumOfDiff = 0;
+		
+		for (int i = 0 ; i < getSizeInBytes() ; i++) {
+			sumOfDiff += byteData[i] - other.byteData[i];
+		}
+		
+		return sumOfDiff < 50;
+	}
 	
+
 	public static ByteImage loadFromFile(String path) throws IOException {
 		return new ByteImage(ImageIO.read(new File(path)));
 	}

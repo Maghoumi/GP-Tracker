@@ -10,7 +10,7 @@
  */
 __device__
 void directWriteDescribe(char* expressions, int pitchInElements, int expCount,
-		uchar4 *overlayColors, const char showConflicts, const float opacity,
+		char* enabilityMap, uchar4 *overlayColors, const char showConflicts, const float opacity,
 		DescribeData data, uchar4 *output,
 		const int segmentX, const int segmentY,
 		const int segmentWidth, const int segmentHeight,
@@ -39,6 +39,7 @@ void directWriteDescribe(char* expressions, int pitchInElements, int expCount,
 		char* expression = expressions + i * pitchInElements;
 		// Obtain the overlay color of the next expression
 		uchar4 overlay = overlayColors[i];
+		bool enabled = enabilityMap[i] == 1;
 
 		// If there are no expressions passed to this kernel, the kernel would just copy
 		// the input data into the output buffer! (Acting as a simple image/video displayer)
@@ -48,7 +49,7 @@ void directWriteDescribe(char* expressions, int pitchInElements, int expCount,
 
 		bool obtained = parseExpression(expression, data);
 
-		if (obtained) {
+		if (obtained && enabled) {
 			colorOverlay(overlayed, overlay, opacity);
 			tidConflicts++;	// Update the conflict table
 		}
@@ -110,7 +111,7 @@ void thresholdDescribe(char* expressions, int pitchInElements, int expCount,
  */
 extern "C"
 __global__ void describe(const char shouldThreshold, char* expressions, int pitchInElements, int expCount,
-		uchar4 *overlayColors, const char showConflicts, const float opacity,
+		char* enabilityMap, uchar4 *overlayColors, const char showConflicts, const float opacity,
 		float* scratchPad,
 		float4 *input, uchar4 *output,
 		float4 *smallAvg, float4 *mediumAvg, float4 *largeAvg,
@@ -134,7 +135,7 @@ __global__ void describe(const char shouldThreshold, char* expressions, int pitc
 	else {
 		directWriteDescribe(
 				expressions, pitchInElements, expCount,
-				overlayColors, showConflicts, opacity,
+				enabilityMap, overlayColors, showConflicts, opacity,
 				data, output,
 				segmentX, segmentY,
 				segmentWidth, segmentHeight,

@@ -84,6 +84,22 @@ public class Segment implements Cloneable {
 			.append(this.height)
 			.toHashCode();
 	}
+	
+	/**
+	 * TODO Will do image differencing to determine if the provided segment
+	 * "looks" similar to the one that this segment represents.
+	 * 
+	 * @param other	The other segment to be compared against this segment
+	 * @return
+	 */
+	public boolean imageEquals(Segment other) {
+		int sumOfDiff = 0;
+		
+		if (!this.equals(other))
+			return false;
+		
+		return this.getByteImage().imageDiffEqual(other.getByteImage());
+	}
 
 	/**
 	 * Performs a shallow clone of this object. Note that the image data and CudaData

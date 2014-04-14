@@ -18,7 +18,10 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -49,6 +52,7 @@ import net.miginfocom.swing.MigLayout;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ClassifierSet;
+import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
 import utils.cuda.datatypes.Segment;
 import utils.opengl.OpenGLUtils;
 import video_interop.OpenGLFeeder;
@@ -74,13 +78,13 @@ import javax.swing.SpinnerNumberModel;
  * @author Mehran Maghoumi
  * 
  */
-public class OpenGLVisualizer extends JFrame implements GLEventListener, Visualizer {
+public class GLVisualizer extends JFrame implements GLEventListener, Visualizer {
 
-	public static final URL ICON_PLAY = OpenGLVisualizer.class.getResource("/icons/play-icon.png");
-	public static final URL ICON_PAUSE = OpenGLVisualizer.class.getResource("/icons/pause-icon.png");
-	public static final URL ICON_FFW = OpenGLVisualizer.class.getResource("/icons/ff-icon.png");
-	public static final URL ICON_RW = OpenGLVisualizer.class.getResource("/icons/rw-icon.png");
-	public static final URL KERNEL_PATH = OpenGLVisualizer.class.getResource("/cuda/kernels/visualizer/visualizer-kernel.cu");
+	public static final URL ICON_PLAY = GLVisualizer.class.getResource("/icons/play-icon.png");
+	public static final URL ICON_PAUSE = GLVisualizer.class.getResource("/icons/pause-icon.png");
+	public static final URL ICON_FFW = GLVisualizer.class.getResource("/icons/ff-icon.png");
+	public static final URL ICON_RW = GLVisualizer.class.getResource("/icons/rw-icon.png");
+	public static final URL KERNEL_PATH = GLVisualizer.class.getResource("/cuda/kernels/visualizer/visualizer-kernel.cu");
 	
 	private static final int REPORT_FREQUENCY = 1;
 	
@@ -168,14 +172,14 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 	 *            The height of the image to be visualized
 	 * 
 	 */
-	public OpenGLVisualizer(int imageWidth, int imageHeight) {
+	public GLVisualizer(int imageWidth, int imageHeight) {
 		this.imageWidth = imageWidth;
 		this.imageHeight = imageHeight;
 
 		setup();
 	}
 
-	public OpenGLVisualizer(Invoker invoker) {
+	public GLVisualizer(Invoker invoker) {
 		this(invoker.getFrameWidth(), invoker.getFrameHeight());
 		this.invoker = invoker;
 	}
@@ -185,7 +189,7 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 	 * WindowBuilder plugin.
 	 * @wbp.parser.constructor
 	 */
-	private OpenGLVisualizer() {
+	private GLVisualizer() {
 		setPreferredSize(new Dimension(500, 550));
 
 		//		setBounds(100, 100, 467, 338);
@@ -249,6 +253,7 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 		pnlRight.add(chckbxShowConflicts, "cell 0 1,growx");
 		
 		chckbxThreshold = new JCheckBox("Do thresholding");
+		chckbxThreshold.setSelected(true);
 		pnlRight.add(chckbxThreshold, "cell 0 2,growx");
 		
 		panel_3 = new JPanel();
@@ -296,7 +301,7 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 				btnResetSize = new JButton("Reset Canvas");
 				this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
 				
-				tglbtnGpSystem = new JToggleButton("GP [Disabled]", false);
+				tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
 				tglbtnGpSystem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(tglbtnGpSystem.isSelected())
@@ -328,11 +333,19 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 	public void passNewClassifier(Classifier classifier) {
 		synchronized(this.classifiers) {
 			if (!classifiers.contains(classifier)) {
-				ClassifierCheckBox checkbox = new ClassifierCheckBox(classifier);
-				this.checkBoxList.addItem(checkbox);
+				this.checkBoxList.addItem(classifier);
 			}
 	
 			this.classifiers.update(classifier);
+		}
+	}
+	
+	public void removeClassifier(Collection<Classifier> classifiers) {
+		synchronized(this.classifiers) {
+			for (Classifier c : classifiers) {
+				this.checkBoxList.removeItem(c);
+				this.classifiers.remove(c);
+			}
 		}
 	}
 
@@ -408,7 +421,7 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 								this.btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
 								btnPlayPause.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent e) {
-										if (OpenGLVisualizer.this.invoker.togglePaused())
+										if (GLVisualizer.this.invoker.togglePaused())
 											btnPlayPause.setIcon(new ImageIcon(ICON_PLAY));
 										else
 											btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
@@ -422,15 +435,15 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 										this.btnFF.addActionListener(new ActionListener() {
 											public void actionPerformed(ActionEvent e) {
 												throw new RuntimeException("Not implemented yet");
-//												OpenGLVisualizer.this.videoFeeder.pause();
+//												GLVisualizer.this.videoFeeder.pause();
 //												try {
 //													Thread.sleep(1000);
 //												} catch (InterruptedException e1) {
 //													e1.printStackTrace();
 //												}
 //												
-//												OpenGLVisualizer.this.segmentedFrameQueue.clear();
-//												OpenGLVisualizer.this.videoFeeder.getAndPassNextFrame();
+//												GLVisualizer.this.segmentedFrameQueue.clear();
+//												GLVisualizer.this.videoFeeder.getAndPassNextFrame();
 											}
 										});
 										pnlVideoControls.add(btnFF, "cell 2 0");
@@ -438,15 +451,15 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 										this.sliderVidPosition.addMouseListener(new MouseAdapter() {
 											@Override
 											public void mousePressed(MouseEvent e) {
-//												OpenGLVisualizer.this.videoFeeder.pause();
+//												GLVisualizer.this.videoFeeder.pause();
 												throw new RuntimeException("Not implemented yet");
 											}
 
 											@Override
 											public void mouseReleased(MouseEvent e) {
-//												OpenGLVisualizer.this.segmentedFrameQueue.clear();
-//												OpenGLVisualizer.this.videoFeeder.setCurrentPosition(sliderVidPosition.getValue());
-//												OpenGLVisualizer.this.videoFeeder.resume();
+//												GLVisualizer.this.segmentedFrameQueue.clear();
+//												GLVisualizer.this.videoFeeder.setCurrentPosition(sliderVidPosition.getValue());
+//												GLVisualizer.this.videoFeeder.resume();
 												throw new RuntimeException("Not implemented yet");
 											}
 										});
@@ -623,19 +636,66 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 		if (frame == null && haveIndividual)
 			return;
 
+		ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
+		
 		for (Segment s : frame) {
 			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue()  / 100f;
 			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue()  / 100f;
 			
-			int claimers = kernel.call(invoker, drawable, classifiers, s,
+			int claimers = kernel.call(invoker, drawable, pointerToAll, s,
 					chckbxThreshold.isSelected(), threshold, opacity,
 					chckbxShowConflicts.isSelected(), chckbxAutoRetrain.isSelected(), imageWidth, imageHeight);
 			
 			// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
 			if (claimers == 0)
-				invoker.evolveClassifier(frame, s);
-				
+				invoker.evolveClassifier(frame, s, true);
 		}
+		
+		pointerToAll.freeAll();
+		
+		// Resolve retraining issues:
+		Set<Classifier> noHope = new HashSet<Classifier>();	// classifiers who are hopeless!! They are drunk and have done cross-classifications
+//		synchronized (this.classifiers) {
+			
+		 
+		for(Classifier c: classifiers) {
+			if (c.getClaimsCount() == 1)
+				continue;
+			
+			boolean somethingHappened = false;
+			
+			for(Segment claimed : c.getClaims()) {
+				
+				for (Classifier other : classifiers) {
+					if (other == c)
+						continue;
+					
+					if (other.hasClaimed(claimed) && other.getClaimsCount() == 1) {	// claimed by another one as well
+						c.addNegativeExample(claimed.getByteImage());
+						invoker.retrain(c, false);
+						somethingHappened = true;
+					}
+					else {	// claimed by both!
+						noHope.add(other);
+						noHope.add(c);
+						somethingHappened = true;
+					}						
+				}
+			}
+			
+			if (!somethingHappened && c.getClaimsCount() > 1) {
+				List<Segment> claims = c.getClaims();
+				for (int i = 1 ; i < claims.size() ; i++) {
+					c.addNegativeExample(claims.get(i).getByteImage());
+				}
+				
+				invoker.retrain(c, false);
+			}
+		}
+//		}
+		
+		this.invoker.destroyClassifier(noHope);
+		
 	}
 	
 	/**
@@ -740,7 +800,7 @@ public class OpenGLVisualizer extends JFrame implements GLEventListener, Visuali
 ////		FramePasser passer = new FramePasser(new File("textures/video/anim-weird.mp4"));
 //		OpenGLFeeder oglFeeder = new OpenGLFeeder();
 //		oglFeeder.setVisible(true);
-//		OpenGLVisualizer visFiltered = new OpenGLVisualizer(oglFeeder);
+//		GLVisualizer visFiltered = new GLVisualizer(oglFeeder);
 //		oglFeeder.setOwner(visFiltered);
 //
 //		final String[] params = new String[] { "-file", "bin/m2xfilter/m2xfilter.params" };

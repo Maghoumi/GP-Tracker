@@ -1,15 +1,13 @@
 package m2xfilter;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import m2xfilter.datatypes.EvolutionListener;
 import m2xfilter.datatypes.Job;
 import utils.UniqueBlockingQueue;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
-import visualizer.OpenGLVisualizer;
+import utils.cuda.datatypes.Segment;
 import cuda.CudaInterop;
 import cuda.gp.CudaEvolutionState;
 import cuda.gp.CudaSimpleStatistics;
@@ -96,7 +94,6 @@ public class GPSystem extends Evolve implements Runnable {
 		}
 	}
 	
-	
 	/**
 	 * Add an EvolutionListener to the list of this system's listeners
 	 * @param listener
@@ -138,12 +135,24 @@ public class GPSystem extends Evolve implements Runnable {
 	 * @param job
 	 *            The job to be queued
 	 */
-	public void queueJob(Job job) {
+	public boolean queueJob(Job job) {
 		try {
+			
+			for (Job j : this.jobs) {
+				for (ByteImage example : j.getPositiveExamples()) {
+					for (ByteImage jExample : job.getClassfier().getPositiveExamples())
+						if (jExample.imageDiffEqual(example))
+							return false;
+				}
+			}
+			
 			this.jobs.put(job);
+			return true;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -151,6 +160,28 @@ public class GPSystem extends Evolve implements Runnable {
 	 */
 	public boolean isQueueEmpty() {
 		return this.jobs.size() == 0;
+	}
+	
+	/**
+	 * Looks up the current Job queue for a Job that has the provided segment
+	 * as a positive example. In other words, will determine if this segment is
+	 * already queued for processing.
+	 * 
+	 * @param segment	The segment to look for
+	 * @return	True, if the provided segment has already been queued for processing,
+	 * 			False, otherwise
+	 */
+	public boolean isSegmentQueued(Segment segment) {
+		ByteImage otherImage = segment.getByteImage();
+		
+		for (Job j : this.jobs) {
+			for (ByteImage example : j.getPositiveExamples()) {
+				if (example.imageDiffEqual(otherImage))
+					return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

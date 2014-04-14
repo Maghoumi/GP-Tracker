@@ -13,8 +13,6 @@ import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import m2xfilter.GPSystem;
-import m2xfilter.datatypes.Job;
 import utils.cuda.datatypes.CUdeviceptr2D;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ClassifierSet;
@@ -28,7 +26,7 @@ import jcuda.driver.*;
 import jcuda.runtime.JCuda;
 
 /**
- * A wrapper class for the CUDA visualiztion kernel. A kernel call request
+ * A wrapper class for the CUDA visualization kernel. A kernel call request
  * is passed to an object of this class. (Software engineering principles at
  * their best ;-] )
  * The objects of this class are also able to directly draw to the OpenGL buffer
@@ -127,16 +125,14 @@ public class VisualizerKernel {
 	 * @return Returns the number of classifiers that have claimed this segment. Will return -1
 	 * 			if thresholding was not enabled
 	 */
-	public int call(Invoker invoker, GLAutoDrawable drawable, ClassifierSet classifiers, Segment segment,
+	public int call(Invoker invoker, GLAutoDrawable drawable, ClassifierAllocationResult pointerToAll, Segment segment,
 			boolean shouldThreshold, float threshold, float opacity,
 			boolean showConflicts, boolean autoRetrain,
 			int imageWidth, int imageHeight) {
 		
-		// Get the classifier pointers and overlay color pointers
-		ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
-		
 		CUdeviceptr2D devExpression = pointerToAll.expressions;
 		CUdeviceptr overlayColors = pointerToAll.overlayColors;
+		CUdeviceptr enabilityMap = pointerToAll.enabilityMap;
 		
 		// Determine the number of GP expressions
 		int numClassifiers = devExpression.getHeight();
@@ -158,7 +154,7 @@ public class VisualizerKernel {
 		// Setup kernel parameters
 		Pointer kernelParams = Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
 				Pointer.to(devExpression),Pointer.to(devExpression.getPitchInElements()), Pointer.to(new int[] { numClassifiers }),
-				Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
+				Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
 				Pointer.to(devScratchPad),
 				Pointer.to(descData.dev_input), Pointer.to(devOutput),
 				Pointer.to(descData.dev_smallAvg), Pointer.to(descData.dev_mediumAvg), Pointer.to(descData.dev_largeAvg),
@@ -168,7 +164,8 @@ public class VisualizerKernel {
 		
 		
 		// Call kernel
-		cuLaunchKernel(fncDescribe, segment.height, 1, 1, 	// segment height is equal to the number of blocks!
+		cuLaunchKernel(fncDescribe,
+				segment.height, 1, 1, 	// segment height is equal to the number of blocks
 				segment.width, 1, 1,	// segment width is equal to the number of threads in each block
 				0, null,
 				kernelParams, null);
@@ -183,8 +180,6 @@ public class VisualizerKernel {
 		
 		// Housekeeping
 		cuMemFree(devScratchPad);
-		devExpression.free();
-		cuMemFree(overlayColors);
 		
 		// Should we do the thresholding here??
 		if (!shouldThreshold)
@@ -196,12 +191,16 @@ public class VisualizerKernel {
 		
 		for (int i = 0 ; i < scratchPad.length ; i++) {
 			scratchPad[i] /= segment.width * segment.height;
-			if (scratchPad[i] > threshold)
-				claimers.add(pointerToAll.classifiers.get(i));
+			if (scratchPad[i] > threshold) {
+				Classifier claimer = pointerToAll.classifiers.get(i);
+				claimers.add(claimer);
+				claimer.addClaim(segment);
+			}
 		}
 		
 		if (claimers.size() == 1) {
-			OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
+			if (claimers.get(0).isEnabled())	// Overlay time! If a classifier is disabled, we shouldn't paint overlays!
+				OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
 					claimers.get(0).getColor(), opacity,
 					imageWidth, imageHeight ,segment.getRectangle());
 			return claimers.size();
@@ -218,8 +217,7 @@ public class VisualizerKernel {
 		// Retrain all asserters
 		//FIXME should I retrain only specific ones??
 		for (Classifier c : claimers) {
-			if (c.getColor() == Color.GREEN)
-				invoker.retrain(c, false);
+			invoker.retrain(c, false);
 		}
 		
 		return claimers.size();

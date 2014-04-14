@@ -63,6 +63,13 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 		return this.segments.size();
 	}
 	
+	/**
+	 * @return	True if there are any segments in this frame, False otherwise
+	 */
+	public boolean hasSegments() {
+		return size() != 0;
+	}
+	
 	/** 
 	 * @return	The background of this SegmentedVideoFrame object. The background
 	 * segment should be used for training as an instance that is always negative

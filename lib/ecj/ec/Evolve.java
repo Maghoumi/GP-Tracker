@@ -376,8 +376,8 @@ public class Evolve
         // stdout is always log #0.  stderr is always log #1.
         // stderr accepts announcements, and both are fully verbose 
         // by default.
-        output.addLog(ec.util.Log.D_STDOUT,false);
-        output.addLog(ec.util.Log.D_STDERR,true);
+        output.addLog(ec.util.Log.D_STDOUT,true);
+//        output.addLog(ec.util.Log.D_STDERR,true);
                 
         return output;
         }

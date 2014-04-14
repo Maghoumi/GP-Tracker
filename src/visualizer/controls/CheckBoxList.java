@@ -2,15 +2,19 @@ package visualizer.controls;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import utils.cuda.datatypes.Classifier;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CheckBoxList extends JList {
 	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 	
 	/** The list of the items of this list */
-	private ArrayList<ClassifierCheckBox> items;
+	private List<ClassifierCheckBox> items;
 
 	public CheckBoxList() {
 		items = new ArrayList<ClassifierCheckBox>();
@@ -47,6 +51,23 @@ public class CheckBoxList extends JList {
 	public void removeItem (ClassifierCheckBox item) {
 		this.items.remove(item);
 		refreshListData();
+	}
+	
+	public void addItem(Classifier classifier) {
+		ClassifierCheckBox checkbox = new ClassifierCheckBox(classifier);
+		this.addItem(checkbox);
+	}
+	
+	public void removeItem (Classifier classifier) {
+		ClassifierCheckBox toBeRemoved = null;
+		
+		for (ClassifierCheckBox control : this.items)
+			if (control.getBoundedClassifier().equals(classifier)) {
+				toBeRemoved = control;
+				break;
+			}
+		
+		removeItem(toBeRemoved);
 	}
 	
 	public boolean contains(ClassifierCheckBox item) {

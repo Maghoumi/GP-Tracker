@@ -9,10 +9,10 @@ import java.util.TreeSet;
 import cuda.CudaInterop;
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
-
+import static jcuda.driver.JCudaDriver.*;
 
 /**
- * A HashSet of classifiers but with utility methods for transferring all
+ * A TreeSet of classifiers but with utility methods for transferring all
  * individuals to the GPU memory. I have tried to make this set thread-safe.
  * The add/remove/update/getPointerToAll methods are all thread-safe.
  * 
@@ -21,31 +21,27 @@ import jcuda.driver.CUdeviceptr;
  */
 public class ClassifierSet extends TreeSet<Classifier> {
 	
-	/** For synchronization purposes */
+	/**
+	 * For synchronization purposes: when the classifiers are being converted for CUDA,
+	 * no other classifiers must be modified, otherwise a ConcurrentModificationException
+	 * will be thrown!
+	 */
 	private Object mutex = new Object();
 	
 	/** The number of enabled classifiers in this set */
-	private int enabledSize = 0;
 	
 	/** The maximum length of the classifier currently present in this set */
 	private int maxExpLength = 0;
 	
 	@Override
-	public synchronized boolean add(Classifier e) {
+	public boolean add(Classifier e) {
 		synchronized (mutex) {
-			boolean result = super.add(e);
-			e.setOwner(this);
-				
-			if (e.isEnabled()) { // If the classifier is enabled, it's size should be considered for maximum expression length
-				enabledSize++;
-				// Should update the maximum expression length if necessary 
-				int expLength = e.getExpression().length;
-				
-				if (expLength > maxExpLength)
-					maxExpLength = expLength;
-			}
-				
-			return result;
+			int expLength = e.getExpression().length;
+			
+			if (expLength > maxExpLength)
+				maxExpLength = expLength;
+			
+			return super.add(e);
 		}
 	}
 	
@@ -53,7 +49,7 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	 * Updates a classifier that already exists in this list
 	 * @param e	The new classifier
 	 */
-	public synchronized void update(Classifier e) {
+	public void update(Classifier e) {
 		synchronized (mutex) {
 			remove(e);
 			add(e);
@@ -61,89 +57,56 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	}
 	
 	@Override
-	public synchronized boolean remove(Object o) {
+	public boolean remove(Object o) {
 		synchronized (mutex) {
-			Classifier e = (Classifier) o;
+			int length = ((Classifier)o).getExpression().length;
 			boolean result = super.remove(o);
-			
-			if (!result)	// if this classifier was not in the set in the first place, we shouldn't do anything else
-				return result;
-			
-			e.setOwner(null);
-			
-			// Update maximum expression length if necessary
-			if (e.isEnabled()) {
-				
-				enabledSize--;				
-				int length = ((Classifier)o).getExpression().length;
-				
-				if (length == this.maxExpLength) {	// Should scan through all elements
-					this.maxExpLength = getNewMaxLength();
-				}
-			}
+
+			// Update the maxLength if necessary
+			if (length == this.maxExpLength)	
+				this.maxExpLength = getNewMaxLength();
 			
 			return result;
 		}
 	}
 	
-	/**
-	 * @return	Finds the maximum expression length of the classifiers
-	 * currently present in this set.
-	 */
-	private int getNewMaxLength() {
-		int maxLength = -1;
-		
-		for (Classifier e : this) {			
-			int length = e.getExpression().length;
-			
-			if (length > maxLength)
-				maxLength = length;
-		}
-		
-		return maxLength;
-	}
-	
-	/**
-	 * @return Returns the number of enabled classifier in this set.
-	 */
-	public int getEnabledSize() {
-		return this.enabledSize;
-	}
-	
-	/**
-	 * Notify this set that the enable status of a classifier has changed
-	 * @param e
-	 */
-	public void notifyEnabilityChanged(Classifier e) {
-		if (this.contains(e)) {
-			this.update(e);
-		}
-	}
-	
+//	public boolean containsClassifierForSegment(Segment s) {
+//		synchronized (mutex) {
+//			s.getByteImage();
+//			
+//			for (Classifier c : this) {
+//				c.get
+//			}
+//		}		
+//	}
 	
 	/**
 	 * Transfers all expressions to the GPU as a pitched memory and 
 	 * returns the pointer to the allocated space. The disabled classifiers are
-	 * simply ignored as if they never existed
+	 * also converted, however their disability is noted in the enability map!
+	 * Furthermore, when this function is called, the classifiers' claims are
+	 * also reset.
 	 * 
 	 * @return
 	 */
 	public synchronized ClassifierAllocationResult getPointerToAll() {
-		synchronized (mutex) {
-			if (this.getEnabledSize() <= 0)	// Nothing to do if we don't have anything
+		// mutex will ensure that no other classifiers will be added, removed or updated while
+		// we are converting the existing ones to pointers!
+		synchronized (mutex) { 
+			if (this.size() <= 0)	// Nothing to do if we don't have anything
 				return null;
 			
-			byte[] expressions = new byte[this.getEnabledSize() * maxExpLength];	// Holder for 2D host expression array
-			byte[] overlayColors = new byte[this.getEnabledSize() * 4]; // Holder for the overlay colors
+			byte[] expressions = new byte[this.size() * maxExpLength];	// Holder for 2D host expression array
+			byte[] overlayColors = new byte[this.size() * 4]; // Holder for the overlay colors
+			byte[] enabilityMap = new byte[this.size()]; // Holder for the overlay colors
 			
 			int expOffsetIdx = 0 ; // The offset index for the expression array
-			int overlayOffsetIdx = 0; // The offset index for the 
+			int overlayOffsetIdx = 0; // The offset index for the overlay colors 
+			int enMapIndex = 0;	// The offset index for the enability map
 			List<Classifier> activeClassifiers = new ArrayList<Classifier>();	// The classifiers that are enabled and active 
 			
 			for (Classifier classifier : this) {
-				if (!classifier.isEnabled())	// If this classifier is not enabled, don't event bother doing anything for it
-					continue;
-				
+				classifier.resetClaims();	// reset this guy's claims
 				// Add this classifier to the list of active classifiers
 				activeClassifiers.add(classifier);
 				
@@ -156,25 +119,60 @@ public class ClassifierSet extends TreeSet<Classifier> {
 				overlayColors[overlayOffsetIdx++] = (byte) c.getBlue();
 				overlayColors[overlayOffsetIdx++] = (byte) c.getGreen();
 				overlayColors[overlayOffsetIdx++] = (byte) c.getRed();
+				
+				enabilityMap[enMapIndex++] = (byte) (classifier.isEnabled() ? 1 : 0);
 			}
 			
-			CUdeviceptr2D expResult = new CUdeviceptr2D(maxExpLength, this.getEnabledSize(), 1, Sizeof.BYTE);	// Device 2D array
+			CUdeviceptr2D expResult = new CUdeviceptr2D(maxExpLength, this.size(), 1, Sizeof.BYTE);	// Device 2D array
 			expResult.allocTransByte(expressions);
 			CUdeviceptr overlayResult = CudaInterop.allocTransByte(overlayColors);
+			CUdeviceptr enabilityResult = CudaInterop.allocTransByte(enabilityMap);
 			
-			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult);
+			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult, enabilityResult);
 		}
 	}
 	
+	/**
+	 * @return	Finds the maximum expression length of the classifiers
+	 * currently present in this set.
+	 */
+	private int getNewMaxLength() {
+		int maxLength = -1;
+
+		for (Classifier e : this) {			
+			int length = e.getExpression().length;
+
+			if (length > maxLength)
+				maxLength = length;
+		}
+
+		return maxLength;
+	}
+	
 	public class ClassifierAllocationResult {
+		/** The allocated expression trees of these classifier */
 		public CUdeviceptr2D expressions;
+		/** The overlay color of each classifier */
 		public CUdeviceptr overlayColors;
+		/** For each classifier: is it enabled or not? */
+		public CUdeviceptr enabilityMap;
+		/** Just a list containing the classifiers in this set */
 		public List<Classifier> classifiers;
 		
-		public ClassifierAllocationResult(List<Classifier> classifiers, CUdeviceptr2D expressions, CUdeviceptr overlayColors) {
+		public ClassifierAllocationResult(List<Classifier> classifiers, CUdeviceptr2D expressions, CUdeviceptr overlayColors, CUdeviceptr enabilityMap) {
 			this.classifiers = classifiers;
 			this.expressions = expressions;
 			this.overlayColors = overlayColors;
+			this.enabilityMap = enabilityMap;
+		}
+		
+		/**
+		 * Frees the allocated CUDA memory for this classifier
+		 */
+		public void freeAll() {
+			expressions.free();
+			cuMemFree(overlayColors);
+			cuMemFree(enabilityMap);
 		}
 	}
 	
