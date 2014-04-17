@@ -13,14 +13,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -39,15 +36,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import m2xfilter.GPSystem;
-import m2xfilter.datatypes.Job;
 import net.miginfocom.swing.MigLayout;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
@@ -55,14 +49,11 @@ import utils.cuda.datatypes.ClassifierSet;
 import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
 import utils.cuda.datatypes.Segment;
 import utils.opengl.OpenGLUtils;
-import video_interop.OpenGLFeeder;
-import video_interop.VideoFeeder;
 import video_interop.datatypes.SegmentedVideoFrame;
 import visualizer.controls.CheckBoxList;
 import visualizer.controls.ClassifierCheckBox;
 import visualizer.controls.Slider;
 
-import com.googlecode.javacv.FrameGrabber.Exception;
 import com.jogamp.opengl.util.Animator;
 
 import javax.swing.JSpinner;
@@ -326,12 +317,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	 */
 	public void passNewClassifier(Classifier classifier) {
 		synchronized (this.classifiers) {
-			//			if (!classifiers.contains(classifier)) { FIXME?
 			if (this.classifiers.update(classifier))
 				this.checkBoxList.addItem(classifier);
-			//			}
-
-			//			this.classifiers.update(classifier);
 		}
 	}
 
@@ -591,7 +578,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	}
 
 	/**
-	 * Helper function that invokes CUDA if necessary.
+	 * Helper function that invokes CUDA if necessary. Will also determine if classifiers
+	 * have issues and need to be retrained/recreated
 	 * 
 	 * @param drawable
 	 *            OpenGL drawable
@@ -640,15 +628,16 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				if (claimers == 0 && invoker.isQueueEmpty()) {
 					invoker.evolveClassifier(frame, s);
 
-					if (pointerToAll != null) //FIXME
-						pointerToAll.freeAll(); //FIXME
-					return; //FIXME
+					if (pointerToAll != null)
+						pointerToAll.freeAll();
+					
+					return;	// No need to do the rest!
 				}
 			}
 
 			if (pointerToAll != null)
 				pointerToAll.freeAll();
-
+			
 			if (!invoker.isQueueEmpty())
 				return;
 
@@ -668,10 +657,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 							continue;
 
 						if (other.hasClaimed(claimed) && other.getClaimsCount() == 1 && invoker.isQueueEmpty()) { // claimed by another one as well, the other is very certain about his claim
-						//							c.addNegativeExample(claimed.getByteImage()); // retrain this one so that this wouldn't claim others' texture
 							toBeDestroyed.add(c);
-							//							if (invoker.isQueueEmpty())
-							//								invoker.retrain(c, false);
 							somethingHappened = true;
 							break inspect;
 						}
@@ -685,36 +671,12 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 				}
 
-				if (!somethingHappened && c.getClaimsCount() > 1 && invoker.isQueueEmpty()) {
-					/**
-					 * // If here ==> this classifier has claimed multiple textures!! // Add all of these textures to the list of its negative
-					 * examples // and retrain it! List<Segment> claims = c.getClaims(); for (int i = 1 ; i < claims.size() ; i++) {
-					 * c.addNegativeExample(claims.get(i).getByteImage()); }
-					 * 
-					 * invoker.retrain(c, false);
-					 */
+				if (!somethingHappened && c.getClaimsCount() > 1) {
+					// If here ==> this classifier has claimed multiple textures!!
+					// Destroy the sucker
 					toBeDestroyed.add(c);
 				}
 			} // end-for (inspect)
-
-			//		Set<Classifier> claimedMoreThanOne = new HashSet<Classifier>();
-			//		for (Classifier c : classifiers) {
-			//			if (c.getClaimsCount() > 1)
-			//				claimedMoreThanOne.add(c);
-			//		}
-			//		
-			//		for (Classifier c : claimedMoreThanOne) {
-			//			for (Classifier other : claimedMoreThanOne) {
-			//				if (c.equals(other))
-			//					continue;
-			//				
-			//				for (Segment s : other.getClaims()) {
-			//					if (c.getClaims().contains(s)) {
-			//						noHope.add(c);
-			//					}
-			//				}
-			//			}
-			//		}
 
 			// Get rid of problematic classifiers
 			removeClassifier(toBeDestroyed);
