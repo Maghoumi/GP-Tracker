@@ -2,6 +2,7 @@ package utils.cuda.datatypes;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
  
 /**
  * Java Code to get a color name from rgb/hex value/awt color
@@ -13,12 +14,17 @@ import java.util.ArrayList;
  * 
  */
 public class ColorUtils {
+	
+	public ColorUtils() {
+		initColorList();
+	}
+	
+	private List<ColorName> colorList = new ArrayList<ColorName>();
  
 	/**
 	 * Initialize the color list that we have.
 	 */
-	private ArrayList<ColorName> initColorList() {
-		ArrayList<ColorName> colorList = new ArrayList<ColorName>();
+	private void initColorList() {
 		colorList.add(new ColorName("AliceBlue", 0xF0, 0xF8, 0xFF));
 		colorList.add(new ColorName("AntiqueWhite", 0xFA, 0xEB, 0xD7));
 		colorList.add(new ColorName("Aqua", 0x00, 0xFF, 0xFF));
@@ -159,7 +165,6 @@ public class ColorUtils {
 		colorList.add(new ColorName("WhiteSmoke", 0xF5, 0xF5, 0xF5));
 		colorList.add(new ColorName("Yellow", 0xFF, 0xFF, 0x00));
 		colorList.add(new ColorName("YellowGreen", 0x9A, 0xCD, 0x32));
-		return colorList;
 	}
  
 	/**
@@ -171,7 +176,6 @@ public class ColorUtils {
 	 * @return
 	 */
 	public String getColorNameFromRgb(int r, int g, int b) {
-		ArrayList<ColorName> colorList = initColorList();
 		ColorName closestMatch = null;
 		int minMSE = Integer.MAX_VALUE;
 		int mse;
@@ -188,6 +192,10 @@ public class ColorUtils {
 		} else {
 			return "No matched color name.";
 		}
+	}
+	
+	public List<ColorName> getColorList() {
+		return this.colorList;
 	}
  
 	/**
@@ -245,6 +253,10 @@ public class ColorUtils {
  
 		public int getB() {
 			return b;
+		}
+		
+		public Color getColor() {
+			return new Color(r, g,b );
 		}
  
 		public String getName() {

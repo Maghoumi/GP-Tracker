@@ -28,19 +28,9 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	 */
 	private Object mutex = new Object();
 	
-	/** The number of enabled classifiers in this set */
-	
-	/** The maximum length of the classifier currently present in this set */
-	private int maxExpLength = 0;
-	
 	@Override
 	public boolean add(Classifier e) {
 		synchronized (mutex) {
-			int expLength = e.getExpression().length;
-			
-			if (expLength > maxExpLength)
-				maxExpLength = expLength;
-			
 			return super.add(e);
 		}
 	}
@@ -49,36 +39,20 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	 * Updates a classifier that already exists in this list
 	 * @param e	The new classifier
 	 */
-	public void update(Classifier e) {
+	public boolean update(Classifier e) {
 		synchronized (mutex) {
 			remove(e);
-			add(e);
+			boolean result = add(e);
+			return result;
 		}
 	}
 	
 	@Override
 	public boolean remove(Object o) {
 		synchronized (mutex) {
-			int length = ((Classifier)o).getExpression().length;
-			boolean result = super.remove(o);
-
-			// Update the maxLength if necessary
-			if (length == this.maxExpLength)	
-				this.maxExpLength = getNewMaxLength();
-			
-			return result;
+			return super.remove(o);
 		}
 	}
-	
-//	public boolean containsClassifierForSegment(Segment s) {
-//		synchronized (mutex) {
-//			s.getByteImage();
-//			
-//			for (Classifier c : this) {
-//				c.get
-//			}
-//		}		
-//	}
 	
 	/**
 	 * Transfers all expressions to the GPU as a pitched memory and 
@@ -96,6 +70,8 @@ public class ClassifierSet extends TreeSet<Classifier> {
 			if (this.size() <= 0)	// Nothing to do if we don't have anything
 				return null;
 			
+			int maxExpLength = getMaxExpLength();
+			
 			byte[] expressions = new byte[this.size() * maxExpLength];	// Holder for 2D host expression array
 			byte[] overlayColors = new byte[this.size() * 4]; // Holder for the overlay colors
 			byte[] enabilityMap = new byte[this.size()]; // Holder for the overlay colors
@@ -112,6 +88,7 @@ public class ClassifierSet extends TreeSet<Classifier> {
 				
 				byte[] exp = classifier.getExpression();
 				System.arraycopy(exp, 0, expressions, expOffsetIdx * maxExpLength, exp.length);	// Copy the expression into the correct offset
+
 				expOffsetIdx++;
 				
 				Color c = classifier.getColor();
@@ -133,22 +110,20 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	}
 	
 	/**
-	 * @return	Finds the maximum expression length of the classifiers
-	 * currently present in this set.
+	 * @return	Returns the length of the longest GP-expression that currently
+	 * 			exists in this set.
 	 */
-	private int getNewMaxLength() {
-		int maxLength = -1;
-
-		for (Classifier e : this) {			
-			int length = e.getExpression().length;
-
-			if (length > maxLength)
-				maxLength = length;
+	private int getMaxExpLength() {
+		int result = Integer.MIN_VALUE;
+		
+		for (Classifier c : this) {
+			if (c.getExpression().length > result)
+				result = c.getExpression().length;
 		}
-
-		return maxLength;
+		
+		return result;
 	}
-	
+
 	public class ClassifierAllocationResult {
 		/** The allocated expression trees of these classifier */
 		public CUdeviceptr2D expressions;

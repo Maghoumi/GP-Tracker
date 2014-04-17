@@ -52,10 +52,10 @@ breedthreads = 				auto
 #478152468 478152469 478152470 478152471 
 #Seed:     ==> mild boats 
 
-seed.0 =time
-seed.1 =time  
-seed.2 =time  
-seed.3 =time
+#seed.0 =time
+#seed.1 =time  
+#seed.2 =time  
+#seed.3 =time
   
 
 #good set for boats
@@ -82,7 +82,7 @@ seed.3 =time
 #seed.2=-85672467
 #seed.3=-85672466
 
-seed.0=1643136021
-seed.1=1643136022
-seed.2=1643136023
-seed.3=1643136024
+#seed.0=1643136021
+#seed.1=1643136022
+#seed.2=1643136023
+#seed.3=1643136024

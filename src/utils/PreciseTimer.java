@@ -43,6 +43,10 @@ public class PreciseTimer {
 		System.out.println(String.format(startMessage + " took : %5.5fs\n", (stop-start) / 1e9));
 	}
 	
+	public void log(Output output, String startMessage) {
+		output.message(String.format(startMessage + " took : %5.5fs\n", (stop-start) / 1e9));
+	}
+	
 	/**
 	 * Mark the end of the event and log the event in the standard
 	 * output.

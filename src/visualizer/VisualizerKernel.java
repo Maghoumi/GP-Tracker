@@ -211,13 +211,14 @@ public class VisualizerKernel {
 					imageWidth, imageHeight, segment.getRectangle());
 		}
 		
-		if (!autoRetrain)
+		if (!autoRetrain || !invoker.isQueueEmpty())
 			return claimers.size();
 		
 		// Retrain all asserters
 		//FIXME should I retrain only specific ones??
 		for (Classifier c : claimers) {
-			invoker.retrain(c, false);
+			if (invoker.isQueueEmpty())
+				invoker.retrain(c, false);
 		}
 		
 		return claimers.size();

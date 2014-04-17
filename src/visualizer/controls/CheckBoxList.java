@@ -14,11 +14,9 @@ public class CheckBoxList extends JList {
 	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 	
 	/** The list of the items of this list */
-	private List<ClassifierCheckBox> items;
+	private List<ClassifierCheckBox> items = new ArrayList<ClassifierCheckBox>();
 
 	public CheckBoxList() {
-		items = new ArrayList<ClassifierCheckBox>();
-		
 		setCellRenderer(new CellRenderer());
 
 		addMouseListener(new MouseAdapter() {
@@ -39,12 +37,13 @@ public class CheckBoxList extends JList {
 	}
 	
 	public void addItem(ClassifierCheckBox item) {
+		
+		for (ClassifierCheckBox x : items) {
+			if (x.getBoundedClassifier().equals(item.getBoundedClassifier()))
+				return;
+		}
+		
 		this.items.add(item);
-		refreshListData();
-	}
-	
-	public void removeItem(int index) {
-		this.items.remove(index);
 		refreshListData();
 	}
 	
@@ -76,6 +75,7 @@ public class CheckBoxList extends JList {
 	
 	protected void refreshListData() {
 		setListData(this.items.toArray());
+		repaint();
 	}
 
 	protected class CellRenderer implements ListCellRenderer {

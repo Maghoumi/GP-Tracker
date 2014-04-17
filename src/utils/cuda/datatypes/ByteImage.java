@@ -12,11 +12,7 @@ import javax.imageio.ImageIO;
 
 import jogamp.opengl.util.av.impl.FFMPEGMediaPlayer.PixelFormat;
 
-import com.googlecode.javacv.cpp.opencv_core.CvArr;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc;
-
-import utils.cuda.ImageFilters;
 
 /**
  * Represents a 4 byte **ABGR** image in a byte[] array.
@@ -339,24 +335,6 @@ public class ByteImage implements Cloneable {
 		return new ByteImage(getBufferedImage());
 	}
 	
-	/**
-	 * TODO Will do image differencing to determine if the provided image
-	 * "looks" similar to this one
-	 * 
-	 * @param other	The other image to be compared against this one 
-	 * @return True, if the images "look" similar, False otherwise
-	 */
-	public boolean imageDiffEqual(ByteImage other) {
-		int sumOfDiff = 0;
-		
-		for (int i = 0 ; i < getSizeInBytes() ; i++) {
-			sumOfDiff += byteData[i] - other.byteData[i];
-		}
-		
-		return sumOfDiff < 50;
-	}
-	
-
 	public static ByteImage loadFromFile(String path) throws IOException {
 		return new ByteImage(ImageIO.read(new File(path)));
 	}

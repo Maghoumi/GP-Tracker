@@ -32,14 +32,14 @@ import ec.gp.GPIndividual;
  */
 public class GPSystem extends Evolve implements Runnable {
 
-	/** The job queue for the GP system */
-	private UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
-
 	/**
 	 * Number of jobs that can be queued on this GPSystem without blocking the
 	 * calling thread
 	 */
-	private static final int JOB_CAPACITY = 10;
+	private static final int JOB_CAPACITY = 1;
+	
+	/** The job queue for the GP system */
+	private UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
 
 	/** A flag indicating that this GPSystem should no longer wait for jobs */
 	private volatile boolean isFinalized = false;
@@ -87,7 +87,6 @@ public class GPSystem extends Evolve implements Runnable {
 		}
 
 		// Create the worker thread associated with this GPSystem
-		
 		if (startThread) {
 			this.runThread = new Thread(this);
 			this.runThread.start();
@@ -138,14 +137,6 @@ public class GPSystem extends Evolve implements Runnable {
 	public boolean queueJob(Job job) {
 		try {
 			
-			for (Job j : this.jobs) {
-				for (ByteImage example : j.getPositiveExamples()) {
-					for (ByteImage jExample : job.getClassfier().getPositiveExamples())
-						if (jExample.imageDiffEqual(example))
-							return false;
-				}
-			}
-			
 			this.jobs.put(job);
 			return true;
 		} catch (InterruptedException e) {
@@ -163,28 +154,6 @@ public class GPSystem extends Evolve implements Runnable {
 	}
 	
 	/**
-	 * Looks up the current Job queue for a Job that has the provided segment
-	 * as a positive example. In other words, will determine if this segment is
-	 * already queued for processing.
-	 * 
-	 * @param segment	The segment to look for
-	 * @return	True, if the provided segment has already been queued for processing,
-	 * 			False, otherwise
-	 */
-	public boolean isSegmentQueued(Segment segment) {
-		ByteImage otherImage = segment.getByteImage();
-		
-		for (Job j : this.jobs) {
-			for (ByteImage example : j.getPositiveExamples()) {
-				if (example.imageDiffEqual(otherImage))
-					return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Runs a GP run on the calling thread using the passed Job instance.
 	 * Obviously, this call is synchronous.
 	 * @param job
@@ -193,18 +162,18 @@ public class GPSystem extends Evolve implements Runnable {
 		// Set the CUDA context to the calling thread
 		getCudaInterop().switchContext();
 		
-		Classifier passedClassifier = job.getClassfier();
+		Classifier passedClassifier = job.getClassifier();
 		state.setWorkingClassifier(passedClassifier); // set the working classifier of the EvolutionState object
 
 		// Here, I already have a job. Decide which training scheme to adopt:
 		switch (job.getJobType()) {
 
 		case Job.TYPE_POS_NEG:
-			passedClassifier.setIndividual(this.call(job.getPositiveExamples(), job.getNegativeExamples()));
+			passedClassifier.setIndividual(this.call(job.getClassifier().getPositiveExamples(), job.getClassifier().getNegativeExamples()));
 			break;
 
 		case Job.TYPE_GT:
-			passedClassifier.setIndividual(this.call(job.getTrainingImage(), job.getGtImage()));
+			passedClassifier.setIndividual(this.call(job.getClassifier().getTrainingImage(), job.getClassifier().getGtImage()));
 			break;
 			
 		default:
@@ -295,13 +264,13 @@ public class GPSystem extends Evolve implements Runnable {
 
 		while (!isFinalized) {
 			Job newJob = null;
-
+			
 			try {
 				// Wait for a new job however, don't remove it!
 				// Necessary for the auto-retrain function to work! A job should only be queued 
 				// if it is not already being processed! By not removing the job from the job queue,
 				// we can ensure that only new (and of course useful) jobs are successfully queued 
-				// and dupplicated jobs never get a chance of being queued.
+				// and duplicated jobs never get a chance of being queued.
 				newJob = jobs.blockPeek();
 			} catch (InterruptedException e) {
 				// If this thread is interrupted, then we should probably go for a shutdown
@@ -310,29 +279,32 @@ public class GPSystem extends Evolve implements Runnable {
 			}
 
 			getCudaInterop().switchContext(); // Safety measure
-			Classifier passedClassifier = newJob.getClassfier();
+			Classifier passedClassifier = newJob.getClassifier();
 			state.setWorkingClassifier(passedClassifier); // set the working classifier of the EvolutionState object
 
 			// Here, I already have a job. Decide which training scheme to adopt:
+			GPIndividual evolvedIndividual = null;
 			switch (newJob.getJobType()) {
 
 			case Job.TYPE_POS_NEG:
-				passedClassifier.setIndividual(this.call(newJob.getPositiveExamples(), newJob.getNegativeExamples()));
+				evolvedIndividual = this.call(newJob.getClassifier().getPositiveExamples(), newJob.getClassifier().getNegativeExamples());
 				break;
 
 			case Job.TYPE_GT:
-				passedClassifier.setIndividual(this.call(newJob.getTrainingImage(), newJob.getGtImage()));
+				evolvedIndividual = this.call(newJob.getClassifier().getTrainingImage(), newJob.getClassifier().getGtImage());
 				break;
 			default:
 				throw new RuntimeException("Wow! Unknown job type! Shutting down...");
 			}
 			
+			passedClassifier.setIndividual(evolvedIndividual);
+			state.reportIndividual(evolvedIndividual);
 			jobs.poll(); // remove this job from the queue permenantly!
+			System.err.println("Finished processing " + newJob.getClassifier().toString());
 		} // end-while
 		
 		jobs.clear();
 		runThread = null;
 		isFinalized = false;
 	}
-
 }

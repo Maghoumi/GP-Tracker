@@ -456,8 +456,8 @@ public class CudaInterop implements Singleton {
 	 */
 	public void fillAndPerformFilters(ByteImage inputImage, CudaData input) {
 
-		PreciseTimer timer = new PreciseTimer();
-		timer.start();
+//		PreciseTimer timer = new PreciseTimer();
+//		timer.start();
 
 		byte[] byteData = inputImage.getByteData();
 		int imageWidth = inputImage.getWidth();
@@ -469,32 +469,32 @@ public class CudaInterop implements Singleton {
 		input.input = inputImage.getFloatData();
 		input.dev_input = allocTransFloat(input.input);
 
-		System.out.print("Performing small filters...");
+//		System.out.print("Performing small filters...");
 		FilterResult result = performFilter(byteData, imageWidth, imageHeight, smallFilterSize);
 		input.smallAvg = result.averageResult;
 
 		input.smallSd = result.sdResult;
 		input.dev_smallAvg = result.averagePointer;
 		input.dev_smallSd = result.sdPointer;
-		System.out.println("\tDone!");
+//		System.out.println("\tDone!");
 
-		System.out.print("Performing medium filters...");
+//		System.out.print("Performing medium filters...");
 		result = performFilter(byteData, imageWidth, imageHeight, mediumFilterSize);
 		input.mediumAvg = result.averageResult;
 		input.mediumSd = result.sdResult;
 		input.dev_mediumAvg = result.averagePointer;
 		input.dev_mediumSd = result.sdPointer;
-		System.out.println("\tDone!");
+//		System.out.println("\tDone!");
 
-		System.out.print("Performing large filters...");
+//		System.out.print("Performing large filters...");
 		result = performFilter(byteData, imageWidth, imageHeight, largeFilterSize);
 		input.largeAvg = result.averageResult;
 		input.largeSd = result.sdResult;
 		input.dev_largeAvg = result.averagePointer;
 		input.dev_largeSd = result.sdPointer;
-		System.out.println("\tDone!");
+//		System.out.println("\tDone!");
 
-		timer.stopAndLog("Filtering");
+//		timer.stopAndLog("Filtering");
 	}
 
 	/**

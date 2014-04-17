@@ -44,7 +44,6 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	
 	private final JPanel panel = new JPanel();
 	private final JButton btnBrowse = new JButton("Browse and add image...");
-	private final JButton btnAdd = new JButton("Add to canvas");
 	
 	public OpenGLFeeder() {
 		setupUI();
@@ -65,7 +64,7 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		setBounds(600, 100, FRAME_WIDTH, FRAME_HEIGHT);
+		setBounds(1100, 100, 300, 150);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		getContentPane().add(this.panel, BorderLayout.CENTER);
@@ -91,43 +90,9 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 				
 			}
 		});
-		this.btnBrowse.setBounds(58, 98, 173, 23);
+		this.btnBrowse.setBounds(10, 42, 173, 23);
 		
 		this.panel.add(this.btnBrowse);
-		this.btnAdd.setBounds(306, 199, 118, 23);
-		
-		this.panel.add(this.btnAdd);
-		this.btnRunOneFrame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ByteImage frame = getNextFrame();
-				
-				try {
-					ImageIO.write(frame.getBufferedImage(), "png", new File("D:\\frame-dump\\frame-" + position + ".png"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		this.btnRunOneFrame.setBounds(58, 199, 105, 23);
-		
-		this.panel.add(this.btnRunOneFrame);
-		this.btnRunAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				for (int i = 0 ; i < LENGTH_IN_FRAMES ; i++) {
-					ByteImage frame = getNextFrame();
-					try {
-						ImageIO.write(frame.getBufferedImage(), "png", new File("D:\\frame-dump\\frame-" + position + ".png"));
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-				
-			}
-		});
-		this.btnRunAll.setBounds(58, 247, 89, 23);
-		
-		this.panel.add(this.btnRunAll);
 	}
 	
 	private void drawObjectsOnCanvas() {
@@ -255,8 +220,6 @@ public class OpenGLFeeder extends JFrame implements VideoFeeder {
 	
 	
 	private static int y = 0;
-	private final JButton btnRunOneFrame = new JButton("Run one Frame");
-	private final JButton btnRunAll = new JButton("Run all");
 	
 	private static int getNextYPosition() {
 		int result = y;

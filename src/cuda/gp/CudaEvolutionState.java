@@ -61,10 +61,10 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	public CudaData devTrainingInstances;
 	
 	/** Represents a list of positive examples that the system uses for training */
-	private List<ByteImage> positiveExamples;
+	private List<ByteImage> positiveExamples = new ArrayList<ByteImage>();
 	
 	/** Represents a list of negative examples that the system uses for training */
-	private List<ByteImage> negativeExamples;
+	private List<ByteImage> negativeExamples = new ArrayList<ByteImage>();
 	
 	/** The list of positive examples on the GPU */
 	private List<CudaData> devPositiveExamples;
@@ -121,8 +121,14 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 */
 	public void setExamples(List<ByteImage> positives, List<ByteImage> negatives) {
 		this.trainingMode = TRAINING_MODE_POS_NEG;
-		this.positiveExamples = positives;
-		this.negativeExamples = negatives;
+		
+		for (ByteImage example : positives) {
+			this.positiveExamples.add(example.clone());
+		}
+		
+		for (ByteImage example : negatives) {
+			this.negativeExamples.add(example.clone());
+		}
 	}
 	
 	/**
@@ -372,7 +378,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	public int evolve() {
 		long t1 = 0, t2 = 0;
 		if (generation > 0)
-			output.message("Generation " + generation);
+			/*if (generation % 20 == 0)*/ output.message("Generation " + generation);
 
 		// EVALUATION
 		statistics.preEvaluationStatistics(this);
@@ -380,7 +386,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 		PreciseTimer timer = new PreciseTimer();
 		timer.start();
 		evaluator.evaluatePopulation(this);
-		timer.stopAndLog(output, "Evaluation");
+		timer.stop();
+		/*if (generation %20 == 0)*/ timer.log(output, "Evaluation");
 
 		statistics.postEvaluationStatistics(this);
 

@@ -69,11 +69,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 /**
- * And finally... The JCuda/OpenGL visualizer. This class is basically a JFrame
- * designed with WindowBuilder that has an OpenGL Canvas on it. This class is
- * able to run the visualizers evolved by ECJ on CUDA and paint their results
- * using OpenGL. It also provides other functionalities which are yet to be
- * determined!
+ * And finally... The JCuda/OpenGL visualizer. This class is basically a JFrame designed with WindowBuilder that has an OpenGL Canvas on it. This
+ * class is able to run the visualizers evolved by ECJ on CUDA and paint their results using OpenGL. It also provides other functionalities which are
+ * yet to be determined!
  * 
  * @author Mehran Maghoumi
  * 
@@ -85,9 +83,9 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	public static final URL ICON_FFW = GLVisualizer.class.getResource("/icons/ff-icon.png");
 	public static final URL ICON_RW = GLVisualizer.class.getResource("/icons/rw-icon.png");
 	public static final URL KERNEL_PATH = GLVisualizer.class.getResource("/cuda/kernels/visualizer/visualizer-kernel.cu");
-	
+
 	private static final int REPORT_FREQUENCY = 1;
-	
+
 	/** The kernel wrapper object to use for invoking CUDA */
 	private VisualizerKernel kernel;
 
@@ -116,14 +114,12 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private BlockingQueue<SegmentedVideoFrame> segmentedFrameQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 
 	/**
-	 * A set of the evolved classifiers. When a new classifier is passed to this
-	 * object, that classifier is stored in this set. Also, when the CUDA kernel
-	 * needs to be called, the classifiers in this set are passed to the kernel
-	 * function as GP individuals 
+	 * A set of the evolved classifiers. When a new classifier is passed to this object, that classifier is stored in this set. Also, when the CUDA
+	 * kernel needs to be called, the classifiers in this set are passed to the kernel function as GP individuals
 	 */
 	private ClassifierSet classifiers = new ClassifierSet();
 
-	/** The associated invoker reference */ 
+	/** The associated invoker reference */
 	private Invoker invoker;
 
 	/** A flag indicating whether filtering is enabled or not */
@@ -163,8 +159,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private JToggleButton tglbtnGpSystem;
 
 	/**
-	 * Initializes the visualizer with the given image width and height. Use
-	 * this constructor if you want to dynamically pass data to the visualizer.
+	 * Initializes the visualizer with the given image width and height. Use this constructor if you want to dynamically pass data to the visualizer.
 	 * 
 	 * @param imageWidth
 	 *            The width of the image to be visualized
@@ -185,8 +180,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	}
 
 	/**
-	 * Fake constructor! Only here for the purposes of Eclipse's
-	 * WindowBuilder plugin.
+	 * Fake constructor! Only here for the purposes of Eclipse's WindowBuilder plugin.
+	 * 
 	 * @wbp.parser.constructor
 	 */
 	private GLVisualizer() {
@@ -216,7 +211,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		this.pnlContent.setLayout(new BorderLayout(0, 0));
 
 		pnlRight = new JPanel();
-		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP,
+				null, null));
 		pnlContent.add(pnlRight, BorderLayout.EAST);
 		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][][][]"));
 
@@ -251,40 +247,40 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 		chckbxShowConflicts = new JCheckBox("Show conflicts");
 		pnlRight.add(chckbxShowConflicts, "cell 0 1,growx");
-		
+
 		chckbxThreshold = new JCheckBox("Do thresholding");
 		chckbxThreshold.setSelected(true);
 		pnlRight.add(chckbxThreshold, "cell 0 2,growx");
-		
+
 		panel_3 = new JPanel();
 		pnlRight.add(panel_3, "cell 0 3,growx");
 		panel_3.setLayout(new BorderLayout(0, 0));
-		
+
 		lblNewLabel_1 = new JLabel(" Threshold:");
 		panel_3.add(lblNewLabel_1, BorderLayout.WEST);
-		
+
 		spnThreshold = new JSpinner();
 		spnThreshold.setPreferredSize(new Dimension(35, 20));
 		panel_3.add(spnThreshold, BorderLayout.EAST);
 		spnThreshold.setModel(new SpinnerNumberModel(50, 0, 100, 1));
-		
+
 		this.panel_4 = new JPanel();
 		this.pnlRight.add(this.panel_4, "cell 0 4,growx");
 		this.panel_4.setLayout(new BorderLayout(0, 0));
-		
+
 		this.lblOpacity = new JLabel(" Opacity:");
 		this.panel_4.add(this.lblOpacity, BorderLayout.WEST);
-		
+
 		this.spnOpacity = new JSpinner();
 		this.spnOpacity.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 		this.spnOpacity.setPreferredSize(new Dimension(35, 20));
 		this.panel_4.add(this.spnOpacity, BorderLayout.EAST);
-		
+
 		this.chckbxAutoRetrain = new JCheckBox("Auto retrain");
 		this.pnlRight.add(this.chckbxAutoRetrain, "cell 0 5,growx");
 		pnlRight.add(tglbtnToggleFilter, "cell 0 6,growx");
 		pnlRight.add(btnSeedRetrain, "cell 0 7,growx");
-		
+
 		btnRetrain = new JButton("Retrain");
 		btnRetrain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -297,51 +293,50 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 			}
 		});
 		pnlRight.add(btnRetrain, "cell 0 8,growx");
-		
-				btnResetSize = new JButton("Reset Canvas");
-				this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
-				
-				tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
-				tglbtnGpSystem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if(tglbtnGpSystem.isSelected())
-							tglbtnGpSystem.setText("GP [Enabled]");
-						else
-							tglbtnGpSystem.setText("GP [Disabled]");
-						
-						invoker.setGPStatus(tglbtnGpSystem.isSelected());
-					}
-				});
-				pnlRight.add(tglbtnGpSystem, "cell 0 11,growx");
-				btnResetSize.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
-						pack();
-					}
-				});
+
+		btnResetSize = new JButton("Reset Canvas");
+		this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
+
+		tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
+		tglbtnGpSystem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (tglbtnGpSystem.isSelected())
+					tglbtnGpSystem.setText("GP [Enabled]");
+				else
+					tglbtnGpSystem.setText("GP [Disabled]");
+
+				invoker.setGPStatus(tglbtnGpSystem.isSelected());
+			}
+		});
+		pnlRight.add(tglbtnGpSystem, "cell 0 11,growx");
+		btnResetSize.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
+				pack();
+			}
+		});
 	}
 
 	/**
-	 * Used to pass a new individual to the visualizer. Usually, when a fitter
-	 * individual is found in the run, this fncDescribe should be called. Note
-	 * that the calling thread will be blocked if the individual queue of this
-	 * instance is full.
+	 * Used to pass a new individual to the visualizer. Usually, when a fitter individual is found in the run, this fncDescribe should be called. Note
+	 * that the calling thread will be blocked if the individual queue of this instance is full.
 	 * 
 	 * @param classifier
 	 *            The new classifier that is found during the GP run
 	 */
 	public void passNewClassifier(Classifier classifier) {
-		synchronized(this.classifiers) {
-			if (!classifiers.contains(classifier)) {
+		synchronized (this.classifiers) {
+			//			if (!classifiers.contains(classifier)) { FIXME?
+			if (this.classifiers.update(classifier))
 				this.checkBoxList.addItem(classifier);
-			}
-	
-			this.classifiers.update(classifier);
+			//			}
+
+			//			this.classifiers.update(classifier);
 		}
 	}
-	
+
 	public void removeClassifier(Collection<Classifier> classifiers) {
-		synchronized(this.classifiers) {
+		synchronized (this.classifiers) {
 			for (Classifier c : classifiers) {
 				this.checkBoxList.removeItem(c);
 				this.classifiers.remove(c);
@@ -350,8 +345,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	}
 
 	/**
-	 * Used to pass a new video frame (image) to the visualizer. Usually should
-	 * be called after grabbing a frame of the video. Note that the calling
+	 * Used to pass a new video frame (image) to the visualizer. Usually should be called after grabbing a frame of the video. Note that the calling
 	 * thread will be blocked if the frame queue of the visualizer is full
 	 * 
 	 * @param frame
@@ -366,15 +360,13 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		}
 		setCurrentFrame(currentPosition);
 	}
-	
+
 	/**
-	 * Initializes the OpenGL canvas and window. Usually this method must be
-	 * called after the constructor. Note that the calling thread will be
-	 * blocked until the canvas is ready and OpenGL thread has done its
-	 * initialization magic.
+	 * Initializes the OpenGL canvas and window. Usually this method must be called after the constructor. Note that the calling thread will be
+	 * blocked until the canvas is ready and OpenGL thread has done its initialization magic.
 	 */
 	private void setup() {
-		
+
 		setupUIElements();
 
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -394,7 +386,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		pnlCenter.setLayout(new BorderLayout(0, 0));
 		this.pnlOpenGL = new JPanel();
 		pnlCenter.add(pnlOpenGL);
-		this.pnlOpenGL.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "OpenGL", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		this.pnlOpenGL.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "OpenGL", TitledBorder.LEADING,
+				TitledBorder.TOP, null, null));
 
 		// Initialize the GL component and the animator
 		glComponent = new GLCanvas(capabilities);
@@ -408,66 +401,66 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		this.pnlOpenGL.add(glComponent);
 
 		animator = new Animator(glComponent);
-		
-				pnlVideoControls = new JPanel();
-				this.pnlContent.add(this.pnlVideoControls, BorderLayout.SOUTH);
-				pnlVideoControls.setLayout(new MigLayout("", "[][][][grow]", "[]"));
-				
-						btnRew = new JButton("");
-						btnRew.setIcon(new ImageIcon(ICON_RW));
-						pnlVideoControls.add(btnRew, "cell 0 0");
-						
-								btnPlayPause = new JButton("");
-								this.btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
-								btnPlayPause.addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent e) {
-										if (GLVisualizer.this.invoker.togglePaused())
-											btnPlayPause.setIcon(new ImageIcon(ICON_PLAY));
-										else
-											btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
-									}
-								});
-								btnPlayPause.setFont(new Font("Tahoma", Font.PLAIN, 11));
-								pnlVideoControls.add(btnPlayPause, "cell 1 0");
-								
-										btnFF = new JButton();
-										btnFF.setIcon(new ImageIcon(ICON_FFW));
-										this.btnFF.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												throw new RuntimeException("Not implemented yet");
-//												GLVisualizer.this.videoFeeder.pause();
-//												try {
-//													Thread.sleep(1000);
-//												} catch (InterruptedException e1) {
-//													e1.printStackTrace();
-//												}
-//												
-//												GLVisualizer.this.segmentedFrameQueue.clear();
-//												GLVisualizer.this.videoFeeder.getAndPassNextFrame();
-											}
-										});
-										pnlVideoControls.add(btnFF, "cell 2 0");
-										sliderVidPosition = new Slider();
-										this.sliderVidPosition.addMouseListener(new MouseAdapter() {
-											@Override
-											public void mousePressed(MouseEvent e) {
-//												GLVisualizer.this.videoFeeder.pause();
-												throw new RuntimeException("Not implemented yet");
-											}
 
-											@Override
-											public void mouseReleased(MouseEvent e) {
-//												GLVisualizer.this.segmentedFrameQueue.clear();
-//												GLVisualizer.this.videoFeeder.setCurrentPosition(sliderVidPosition.getValue());
-//												GLVisualizer.this.videoFeeder.resume();
-												throw new RuntimeException("Not implemented yet");
-											}
-										});
-										this.sliderVidPosition.setValue(0);
-										this.sliderVidPosition.setMajorTickSpacing(1);
-										this.sliderVidPosition.setMinorTickSpacing(1);
-										sliderVidPosition.setMinimum(1);
-										pnlVideoControls.add(sliderVidPosition, "cell 3 0,growx");
+		pnlVideoControls = new JPanel();
+		this.pnlContent.add(this.pnlVideoControls, BorderLayout.SOUTH);
+		pnlVideoControls.setLayout(new MigLayout("", "[][][][grow]", "[]"));
+
+		btnRew = new JButton("");
+		btnRew.setIcon(new ImageIcon(ICON_RW));
+		pnlVideoControls.add(btnRew, "cell 0 0");
+
+		btnPlayPause = new JButton("");
+		this.btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
+		btnPlayPause.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (GLVisualizer.this.invoker.togglePaused())
+					btnPlayPause.setIcon(new ImageIcon(ICON_PLAY));
+				else
+					btnPlayPause.setIcon(new ImageIcon(ICON_PAUSE));
+			}
+		});
+		btnPlayPause.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		pnlVideoControls.add(btnPlayPause, "cell 1 0");
+
+		btnFF = new JButton();
+		btnFF.setIcon(new ImageIcon(ICON_FFW));
+		this.btnFF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				throw new RuntimeException("Not implemented yet");
+				//												GLVisualizer.this.videoFeeder.pause();
+				//												try {
+				//													Thread.sleep(1000);
+				//												} catch (InterruptedException e1) {
+				//													e1.printStackTrace();
+				//												}
+				//												
+				//												GLVisualizer.this.segmentedFrameQueue.clear();
+				//												GLVisualizer.this.videoFeeder.getAndPassNextFrame();
+			}
+		});
+		pnlVideoControls.add(btnFF, "cell 2 0");
+		sliderVidPosition = new Slider();
+		this.sliderVidPosition.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				//												GLVisualizer.this.videoFeeder.pause();
+				throw new RuntimeException("Not implemented yet");
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				//												GLVisualizer.this.segmentedFrameQueue.clear();
+				//												GLVisualizer.this.videoFeeder.setCurrentPosition(sliderVidPosition.getValue());
+				//												GLVisualizer.this.videoFeeder.resume();
+				throw new RuntimeException("Not implemented yet");
+			}
+		});
+		this.sliderVidPosition.setValue(0);
+		this.sliderVidPosition.setMajorTickSpacing(1);
+		this.sliderVidPosition.setMinorTickSpacing(1);
+		sliderVidPosition.setMinimum(1);
+		pnlVideoControls.add(sliderVidPosition, "cell 3 0,growx");
 		animator.setUpdateFPSFrames(30, null); // animator will use 30 FPS
 		animator.start();
 
@@ -486,7 +479,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 		// Initialize CUDA
 		this.kernel = new VisualizerKernel();
-		
+
 		initBuffers(drawable);
 		initTexture(drawable);
 		this.isReady = true; // Indicate that I am ready an loaded! Gimme data!
@@ -502,10 +495,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		glBuffer = buffer[0];
 
 		/*
-		 * Bind the generated buffer. Note that I am using the pixel unpack
-		 * buffer here. I think the reason is that I want to bind the data to a
-		 * texture later. Per OpenGL's documentation, glTexSubImage2D will use
-		 * pixel unpack buffer data if a buffer is bound to pixel unpack buffer.
+		 * Bind the generated buffer. Note that I am using the pixel unpack buffer here. I think the reason is that I want to bind the data to a
+		 * texture later. Per OpenGL's documentation, glTexSubImage2D will use pixel unpack buffer data if a buffer is bound to pixel unpack buffer.
 		 */
 		gl.glBindBuffer(GL2.GL_PIXEL_UNPACK_BUFFER, glBuffer);
 		// Specify the size of the buffer (no data is pre-loaded in this buffer)
@@ -539,12 +530,11 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		// Will invoke CUDA if necessary
 		if (this.invoker == null)
 			return;
-		
+
 		if (filterEnabled)
 			runCuda(drawable);
 		else
 			copyCat(drawable);
-
 
 		GL2 gl = drawable.getGL().getGL2();
 
@@ -556,8 +546,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 		// Ask OpenGL to use the data which exist in the pixel unpack buffer as the texture
 		/**
-		 * Also note that RGBA was specified earlier, however right now, I have
-		 * asked OpenGL to do the pixel format conversion
+		 * Also note that RGBA was specified earlier, however right now, I have asked OpenGL to do the pixel format conversion
 		 */
 		gl.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, 0); //ZERO! NOT NULL! :-) because I want the content of the PIXEL_UNPACK_BUFFER to be used
 
@@ -609,100 +598,136 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	 */
 	public void runCuda(GLAutoDrawable drawable) {
 
-		// This fncDescribe only needs to invoke CUDA kernel if:
-		// 		1) There is a new frame in the frame queue 
-		//		2) There is a new individual in the individual queue **AND** we
-		//		   have had at least one frame in our frame queue
-		//
-		// If neither of these conditions are true, the OpenGL buffer
-		// should not be touched and CUDA should not be invoked
+		/**
+		 * When CUDA is to be called, the classifiers must be locked so that
+		 * CUDA can finish processing and then GP can interfere
+		 * Otherwise, in the middle of processing, a classifier may be updated
+		 * or added to the system and we may not be able to see that it has actually
+		 * changed
+		 */		
+		synchronized (this.classifiers) {
 
-		// Check my queues and see what I should do
-		SegmentedVideoFrame frame = segmentedFrameQueue.poll();
-		boolean haveIndividual = !classifiers.isEmpty();
+			// This fncDescribe only needs to invoke CUDA kernel if:
+			// 		1) There is a new frame in the frame queue 
+			//		2) There is a new individual in the individual queue **AND** we
+			//		   have had at least one frame in our frame queue
+			//
+			// If neither of these conditions are true, the OpenGL buffer
+			// should not be touched and CUDA should not be invoked
 
-		if (!haveIndividual) {
+			// Check my queues and see what I should do
+			SegmentedVideoFrame frame = segmentedFrameQueue.poll();
+
+			// Either way we need to copy the frame in the queue to the OpenGL buffer
 			copyCat(drawable);
-			return;
-		}
 
-		if (frame == null && !haveIndividual)
-			return; // We did not have anything new. No need to wake CUDA ;-]
-		
-		// Either way we need to copy the frame in the queue to the OpenGL buffer
-		copyCat(drawable);
+			if (frame == null)
+				return;
 
+			// We obtain the pointer to all, if there are no classifiers, we have null here
+			ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
 
-		if (frame == null && haveIndividual)
-			return;
+			for (Segment s : frame) {
+				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
+				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
 
-		ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
-		
-		for (Segment s : frame) {
-			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue()  / 100f;
-			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue()  / 100f;
-			
-			int claimers = kernel.call(invoker, drawable, pointerToAll, s,
-					chckbxThreshold.isSelected(), threshold, opacity,
-					chckbxShowConflicts.isSelected(), chckbxAutoRetrain.isSelected(), imageWidth, imageHeight);
-			
-			// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
-			if (claimers == 0)
-				invoker.evolveClassifier(frame, s, true);
-		}
-		
-		pointerToAll.freeAll();
-		
-		// Resolve retraining issues:
-		Set<Classifier> noHope = new HashSet<Classifier>();	// classifiers who are hopeless!! They are drunk and have done cross-classifications
-//		synchronized (this.classifiers) {
-			
-		 
-		for(Classifier c: classifiers) {
-			if (c.getClaimsCount() == 1)
-				continue;
-			
-			boolean somethingHappened = false;
-			
-			for(Segment claimed : c.getClaims()) {
-				
-				for (Classifier other : classifiers) {
-					if (other == c)
-						continue;
-					
-					if (other.hasClaimed(claimed) && other.getClaimsCount() == 1) {	// claimed by another one as well
-						c.addNegativeExample(claimed.getByteImage());
-						invoker.retrain(c, false);
-						somethingHappened = true;
+				// If there are no classifiers, then there are no claimers for this texture!
+				int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
+						chckbxThreshold.isSelected(), threshold, opacity,
+						chckbxShowConflicts.isSelected(), chckbxAutoRetrain.isSelected(), imageWidth, imageHeight);
+
+				// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
+				if (claimers == 0 && invoker.isQueueEmpty()) {
+					invoker.evolveClassifier(frame, s);
+
+					if (pointerToAll != null) //FIXME
+						pointerToAll.freeAll(); //FIXME
+					return; //FIXME
+				}
+			}
+
+			if (pointerToAll != null)
+				pointerToAll.freeAll();
+
+			if (!invoker.isQueueEmpty())
+				return;
+
+			// Resolve retraining issues:
+			Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
+
+			inspect: for (Classifier c : classifiers) {
+				if (c.getClaimsCount() == 1)
+					continue;
+
+				boolean somethingHappened = false;
+
+				for (Segment claimed : c.getClaims()) {
+
+					for (Classifier other : classifiers) {
+						if (other == c)
+							continue;
+
+						if (other.hasClaimed(claimed) && other.getClaimsCount() == 1 && invoker.isQueueEmpty()) { // claimed by another one as well, the other is very certain about his claim
+						//							c.addNegativeExample(claimed.getByteImage()); // retrain this one so that this wouldn't claim others' texture
+							toBeDestroyed.add(c);
+							//							if (invoker.isQueueEmpty())
+							//								invoker.retrain(c, false);
+							somethingHappened = true;
+							break inspect;
+						}
+						else if (other.hasClaimed(claimed)) { // claimed by both!
+							toBeDestroyed.add(other);
+							toBeDestroyed.add(c);
+							somethingHappened = true;
+							break inspect;
+						}
 					}
-					else {	// claimed by both!
-						noHope.add(other);
-						noHope.add(c);
-						somethingHappened = true;
-					}						
+
 				}
-			}
-			
-			if (!somethingHappened && c.getClaimsCount() > 1) {
-				List<Segment> claims = c.getClaims();
-				for (int i = 1 ; i < claims.size() ; i++) {
-					c.addNegativeExample(claims.get(i).getByteImage());
+
+				if (!somethingHappened && c.getClaimsCount() > 1 && invoker.isQueueEmpty()) {
+					/**
+					 * // If here ==> this classifier has claimed multiple textures!! // Add all of these textures to the list of its negative
+					 * examples // and retrain it! List<Segment> claims = c.getClaims(); for (int i = 1 ; i < claims.size() ; i++) {
+					 * c.addNegativeExample(claims.get(i).getByteImage()); }
+					 * 
+					 * invoker.retrain(c, false);
+					 */
+					toBeDestroyed.add(c);
 				}
-				
-				invoker.retrain(c, false);
-			}
-		}
-//		}
-		
-		this.invoker.destroyClassifier(noHope);
-		
+			} // end-for (inspect)
+
+			//		Set<Classifier> claimedMoreThanOne = new HashSet<Classifier>();
+			//		for (Classifier c : classifiers) {
+			//			if (c.getClaimsCount() > 1)
+			//				claimedMoreThanOne.add(c);
+			//		}
+			//		
+			//		for (Classifier c : claimedMoreThanOne) {
+			//			for (Classifier other : claimedMoreThanOne) {
+			//				if (c.equals(other))
+			//					continue;
+			//				
+			//				for (Segment s : other.getClaims()) {
+			//					if (c.getClaims().contains(s)) {
+			//						noHope.add(c);
+			//					}
+			//				}
+			//			}
+			//		}
+
+			// Get rid of problematic classifiers
+			removeClassifier(toBeDestroyed);
+
+		}// end-synchronized
+
 	}
-	
+
 	/**
-	 * Bypasses CUDA and will directly copy the frame in the frame queue to the
-	 * OpenGL buffer.
+	 * Bypasses CUDA and will directly copy the frame in the frame queue to the OpenGL buffer.
 	 * 
-	 * @param drawable	OpenGL drawable
+	 * @param drawable
+	 *            OpenGL drawable
 	 */
 	private void copyCat(GLAutoDrawable drawable) {
 		// Grab the next frame from the frame queue
@@ -714,7 +739,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		OpenGLUtils.copyBuffer(frame, glBuffer, drawable);
 	}
 
@@ -751,8 +776,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	}
 
 	/**
-	 * Blocks the calling thread until this instance of the visualizer is loaded
-	 * and ready to accept data.
+	 * Blocks the calling thread until this instance of the visualizer is loaded and ready to accept data.
 	 */
 	public void waitReady() {
 		System.out.println(System.lineSeparator() + "Waiting for the visualizer to get ready...");
@@ -782,71 +806,70 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		}
 	}
 
-//	public static GPSystem gp;
-//	public static ByteImage positive1;
-//	public static ByteImage positive2;
-//	public static ByteImage mozakhraf;
-//	public static ByteImage background;
-//	public static ByteImage background_brown;
-//	
-//
-//	public static void main(String[] args) throws Exception, IOException {
-//		try {
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		
-////		FramePasser passer = new FramePasser(new File("textures/video/anim-weird.mp4"));
-//		OpenGLFeeder oglFeeder = new OpenGLFeeder();
-//		oglFeeder.setVisible(true);
-//		GLVisualizer visFiltered = new GLVisualizer(oglFeeder);
-//		oglFeeder.setOwner(visFiltered);
-//
-//		final String[] params = new String[] { "-file", "bin/m2xfilter/m2xfilter.params" };
-//
-//		gp = new GPSystem(params, false);
-////		gp.addEvolutionListener(visFiltered);
-//
-//		positive1 = ByteImage.loadFromFile("textures/part/positive-1.png");
-//		positive2 = ByteImage.loadFromFile("textures/part/negative-2.png");
-//		mozakhraf = ByteImage.loadFromFile("textures/part/positive-2.png");
-//		background = ByteImage.loadFromFile("textures/part/background.png");
-//		background_brown = ByteImage.loadFromFile("textures/part/background-brown.png");
-//
-//		List<ByteImage> j1Positives = new ArrayList<ByteImage>();
-//		List<ByteImage> j1Negatives = new ArrayList<ByteImage>();
-//		List<ByteImage> j2Positives = new ArrayList<ByteImage>();
-//		List<ByteImage> j2Negatives = new ArrayList<ByteImage>();
-//		List<ByteImage> j3Positives = new ArrayList<ByteImage>();
-//		List<ByteImage> j3Negatives = new ArrayList<ByteImage>();
-//
-//		j1Positives.add(positive1);
-//		j1Negatives.add(positive2);
-//		j1Negatives.add(background);
-//		Job job1 = new Job(new Classifier(j1Positives, j1Negatives));
-//
-//		j2Positives.add(positive2);
-//		j2Negatives.add(positive1);
-//		j2Negatives.add(background);
-//		Job job2 = new Job(new Classifier(j2Positives, j2Negatives));
-//
-//		j3Positives.add(mozakhraf);
-//		j3Negatives.add(positive1);
-//		j3Negatives.add(positive2);
-//		j3Negatives.add(background);
-//		Job job3 = new Job(new Classifier(j3Positives, j3Negatives));
-//
-//		gp.queueJob(job1);
-//		gp.queueJob(job2);
-//		gp.queueJob(job3);
-//
-//		oglFeeder.start();
-//	}
+	//	public static GPSystem gp;
+	//	public static ByteImage positive1;
+	//	public static ByteImage positive2;
+	//	public static ByteImage mozakhraf;
+	//	public static ByteImage background;
+	//	public static ByteImage background_brown;
+	//	
+	//
+	//	public static void main(String[] args) throws Exception, IOException {
+	//		try {
+	//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	//		} catch (Throwable e) {
+	//			e.printStackTrace();
+	//		}
+	//		
+	////		FramePasser passer = new FramePasser(new File("textures/video/anim-weird.mp4"));
+	//		OpenGLFeeder oglFeeder = new OpenGLFeeder();
+	//		oglFeeder.setVisible(true);
+	//		GLVisualizer visFiltered = new GLVisualizer(oglFeeder);
+	//		oglFeeder.setOwner(visFiltered);
+	//
+	//		final String[] params = new String[] { "-file", "bin/m2xfilter/m2xfilter.params" };
+	//
+	//		gp = new GPSystem(params, false);
+	////		gp.addEvolutionListener(visFiltered);
+	//
+	//		positive1 = ByteImage.loadFromFile("textures/part/positive-1.png");
+	//		positive2 = ByteImage.loadFromFile("textures/part/negative-2.png");
+	//		mozakhraf = ByteImage.loadFromFile("textures/part/positive-2.png");
+	//		background = ByteImage.loadFromFile("textures/part/background.png");
+	//		background_brown = ByteImage.loadFromFile("textures/part/background-brown.png");
+	//
+	//		List<ByteImage> j1Positives = new ArrayList<ByteImage>();
+	//		List<ByteImage> j1Negatives = new ArrayList<ByteImage>();
+	//		List<ByteImage> j2Positives = new ArrayList<ByteImage>();
+	//		List<ByteImage> j2Negatives = new ArrayList<ByteImage>();
+	//		List<ByteImage> j3Positives = new ArrayList<ByteImage>();
+	//		List<ByteImage> j3Negatives = new ArrayList<ByteImage>();
+	//
+	//		j1Positives.add(positive1);
+	//		j1Negatives.add(positive2);
+	//		j1Negatives.add(background);
+	//		Job job1 = new Job(new Classifier(j1Positives, j1Negatives));
+	//
+	//		j2Positives.add(positive2);
+	//		j2Negatives.add(positive1);
+	//		j2Negatives.add(background);
+	//		Job job2 = new Job(new Classifier(j2Positives, j2Negatives));
+	//
+	//		j3Positives.add(mozakhraf);
+	//		j3Negatives.add(positive1);
+	//		j3Negatives.add(positive2);
+	//		j3Negatives.add(background);
+	//		Job job3 = new Job(new Classifier(j3Positives, j3Negatives));
+	//
+	//		gp.queueJob(job1);
+	//		gp.queueJob(job2);
+	//		gp.queueJob(job3);
+	//
+	//		oglFeeder.start();
+	//	}
 
 	/**
-	 * Set the length of the video that this visualizer shows. This method will
-	 * set the maximum value for the slider that shows the video position.
+	 * Set the length of the video that this visualizer shows. This method will set the maximum value for the slider that shows the video position.
 	 * 
 	 * @param lengthInFrames
 	 *            The video length in frames

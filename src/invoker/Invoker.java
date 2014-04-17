@@ -1,13 +1,7 @@
 package invoker;
 
-
-
-import java.util.Collection;
-
-import javax.swing.UIManager;
-
 import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.ClassifierSet;
+import utils.cuda.datatypes.ColorUtils;
 import utils.cuda.datatypes.Segment;
 import video_interop.VideoFeeder;
 import video_interop.datatypes.SegmentedVideoFrame;
@@ -39,13 +33,10 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	protected VideoFeeder feeder;
 	
 	/** The GPSystem instance that this Invoker uses to evolve classifiers */
-	protected GPSystem gpSystem;
+	private GPSystem gpSystem;
 	
 	/** The Visualizer that this instance uses to visualize the evolution results */
 	protected Visualizer visualizer;
-	
-	/** The list of all evolved classifiers */
-	protected ClassifierSet evolvedClassifiers = new ClassifierSet();
 	
 	/**
 	 * The worker thread of this Invoker that constantly obtains frames from the
@@ -96,51 +87,15 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 			// Obtain the next frame from the VideoFeeder
 			SegmentedVideoFrame newFrame = this.feeder.getNextSegmentedFrame();
 			
-//			if (this.evolvedClassifiers.size() < newFrame.size()) {	// if so, then we probably need to queue for training
-//				
-//				if (this.evolvedClassifiers.) {
-//					for(Segment s : newFrame) {	// For each segment,
-//						if (!this.gpSystem.isSegmentQueued(s)) {	// look in GPSystem's queue for this segment
-//							evolveClassifier(newFrame, s);	// Not found? ==> queue for evolution of a new classifier for this dude
-//						}
-//					}
-//				}
-//			}
-
-			// Decide if GP should be invoked
-		   /**
-			* THESISNOTE: Based on the things we discussed with Brian, we should request the evolution
-			* of one classifier at the very beginning, if the list of classifiers is empty.
-			* After that, the Visualizer has to let us know that there are unclaimed textures and
-			* additional classifiers should be evolved
-			*/
-			
-			if (newFrame.hasSegments() && this.evolvedClassifiers.size() == 0/*FIXME*//*FIXME*//*FIXME*//*FIXME*/)
-				/*FIXME*/
-				/*FIXME*/
-				/*FIXME*/
-				/*FIXME*/
-				/*FIXME*/
-				/*FIXME*/
-				/*FIXME*/
-				
-					evolveClassifier(newFrame, newFrame.iterator().next(), true);	// evolve one new classifier for the very first segment
-			
-			// pass the new frame to the visualizer for visualization
+			// We only obtain the frame and then pass it!
+			// It's up to the Visualizer to let us know that there are problems
+			// and that we should handle them			
 			visualizer.passNewFrame(newFrame, 0);			
 		}		
 	}
 	
-	/**
-	 * Invokes the GPSystem for (probably) the first time when there are no
-	 * evolved classifiers in the system.
-	 * 
-	 * @param frame	The frame containing segments that need classifiers
-	 * @deprecated
-	 */
-	protected void invokeGPFromScratch(SegmentedVideoFrame frame) {
-//		for(Segment segment : frame)
-//			evolveClassifier(frame, segment);
+	public boolean isQueueEmpty() {
+		return gpSystem.isQueueEmpty();
 	}
 	
 	/**
@@ -149,22 +104,10 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 * 
 	 * @param frame		A frame containing various textures, including the target
 	 * @param target	The target for positive classification
-	 * @param shouldBeEmpty		A flag indicating whether this evolution job should only scheduled if
-	 * 							there are no other jobs currently queued on the gp system. 
 	 */
-	public void evolveClassifier(SegmentedVideoFrame frame, Segment target, boolean shouldBeEmpty) {
-//		if (shouldBeEmpty && !this.gpSystem.isQueueEmpty())
-//			return;
-		
-		if (gpSystem.isSegmentQueued(target))
+	public void evolveClassifier(SegmentedVideoFrame frame, Segment target) {
+		if (!this.gpSystem.isQueueEmpty())
 			return;
-		
-		//FIXME
-		//FIXME
-		//FIXME
-		//FIXME
-		//FIXME
-		
 		
 		Classifier classifier = new Classifier(Classifier.TYPE_POS_NEG);
 		classifier.addPositiveExample(target.getByteImage());
@@ -178,7 +121,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 		
 		Job j = new Job(classifier);
 		gpSystem.queueJob(j);
-		System.err.println("Queued for " + classifier.getColor());
+		ColorUtils ut = new ColorUtils();
 	}
 	
 	/**
@@ -187,36 +130,12 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 * @param shouldSeed	Should the existing GPTree be used as the initial population seed?  
 	 */
 	public void retrain(Classifier classifier, boolean shouldSeed) {
-		System.err.println("###################### Retrain requested for " + classifier.toString());
 		classifier.setShouldSeed(shouldSeed);
 		gpSystem.queueJob(new Job(classifier));
 	}
 	
-	/**
-	 * Permanently removes the specified classifiers from the system. Should usually be called
-	 * for the classifiers that are constantly making mistakes and must be evolved from scratch.
-	 * 
-	 * @param classifiers
-	 */
-	public void destroyClassifier(Collection<Classifier> classifiers) {
-		for (Classifier c : classifiers) {
-			this.evolvedClassifiers.remove(c);
-		}
-	}
-	
-	/**
-	 * Permanently removes the specified classifiers from the system. Should usually be called
-	 * for the classifiers that are constantly making mistakes and must be evolved from scratch.
-	 * 
-	 * @param classifier
-	 */
-	public void destroyClassifier(Classifier classifier) {
-		this.evolvedClassifiers.remove(classifier);
-	}
-	
 	@Override
 	public void reportClassifier(Classifier classifier) {
-		this.evolvedClassifiers.add(classifier);
 		this.visualizer.passNewClassifier(classifier);
 	}
 

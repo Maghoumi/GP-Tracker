@@ -337,21 +337,15 @@ public class Classifier implements Comparable<Classifier>{
 		return this.color.equals(other.color);
 	}
 	
+	@Override
+	public int hashCode() {
+		return this.color.hashCode();
+	}
+	
 	/**
 	 * A utility class for assigning a random color to the classifier. 
 	 */
 	static class ColorSelector {
-		/** A list of colors to use. This list is predefined. */
-		private static Color[] colors = new Color[] {
-			Color.GREEN,
-			Color.ORANGE,
-			Color.BLUE,
-			Color.MAGENTA,
-			Color.PINK,
-			Color.CYAN,
-			Color.RED
-		};
-		
 		/** Index of the current predifined color that has not been used yet */
 		private static int index = 0;
 		
@@ -361,20 +355,21 @@ public class Classifier implements Comparable<Classifier>{
 		 * color exists.
 		 */
 		public static Color getNextColor() {
-			if (index >=colors.length)
+			if (index >= colorList.getColorList().size())
 				throw new RuntimeException("Out of colors for the classifiers");
 			
-			return colors[index++];
+			return colorList.getColorList().get(index++).getColor();
 		}
 		
 		public static int compareTo(Color c1, Color c2) {
+			//FIXME SERIOUS PERFORMANCE ISSUE!
 			int i = 0, j = 0;
-			for (; i < colors.length ; i++)
-				if (c1.equals(colors[i]))
+			for (; i < colorList.getColorList().size() ; i++)
+				if (c1.equals(colorList.getColorList().get(i).getColor()))
 					break;
 			
-			for (; j < colors.length ; j++)
-				if (c2.equals(colors[j]))
+			for (; j < colorList.getColorList().size() ; j++)
+				if (c2.equals(colorList.getColorList().get(j).getColor()))
 					break;
 			if (i < j)
 				return -1;
@@ -388,7 +383,7 @@ public class Classifier implements Comparable<Classifier>{
 
 	@Override
 	public int compareTo(Classifier o) {
-		return ColorSelector.compareTo(this.color, o.getColor());
+		return ColorSelector.compareTo(this.color, o.color);
 	}
 	
 	@Override
