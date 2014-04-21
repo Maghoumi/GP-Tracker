@@ -289,13 +289,6 @@ public class SimpleShortStatistics extends Statistics
                         bestOfGeneration[x] = state.population.subpops[x].individuals[y];
                         if (bestSoFar[x]==null || bestOfGeneration[x].fitness.betterThan(bestSoFar[x].fitness)) {
                             bestSoFar[x] = (Individual)(bestOfGeneration[x].clone());
-                            ec.gp.GPIndividual bestInd = (ec.gp.GPIndividual) bestSoFar[x];
-                            cuda.gp.CudaNode root = (cuda.gp.CudaNode) bestInd.trees[0].child;
-                            
-//                            synchronized (m2xfilter.datatypes.ProblemData.cudaCaller.visualizer.indExpressionLock) {
-//                            	m2xfilter.datatypes.ProblemData.cudaCaller.visualizer.indExpression = root.byteTraverse();
-//                            	m2xfilter.datatypes.ProblemData.cudaCaller.visualizer.isChanged = true; // Post re-display
-//                            }
                         }
                         }
             

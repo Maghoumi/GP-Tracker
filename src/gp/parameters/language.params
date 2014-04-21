@@ -1,0 +1,79 @@
+parent.0 = types.params
+
+tournament.size.0 = 4
+breed.elite.0 = 2
+
+##############################
+#   LANGUAGE SPECIFICATIONS  #
+##############################
+
+gp.fs.size = 1
+gp.fs.0 = cuda.gp.CudaFunctionSet
+gp.fs.0.name = f0
+gp.fs.0.size = 24
+
+##################
+#	FUNCTIONS	 #
+##################
+
+gp.fs.0.func.0 = gp.functions.Add
+gp.fs.0.func.0.nc = nc2
+gp.fs.0.func.1 = gp.functions.Sub
+gp.fs.0.func.1.nc = nc2
+gp.fs.0.func.2 = gp.functions.Mul
+gp.fs.0.func.2.nc = nc2
+gp.fs.0.func.3 = gp.functions.Div
+gp.fs.0.func.3.nc = nc2
+
+gp.fs.0.func.4 = gp.functions.Neg
+gp.fs.0.func.4.nc = nc1
+gp.fs.0.func.5 = gp.functions.Exp
+gp.fs.0.func.5.nc = nc1
+gp.fs.0.func.6 = gp.functions.Log
+gp.fs.0.func.6.nc = nc1
+gp.fs.0.func.7 = gp.functions.IfGT
+gp.fs.0.func.7.nc = nc4
+gp.fs.0.func.8 = gp.functions.Max
+gp.fs.0.func.8.nc = nc2
+gp.fs.0.func.9 = gp.functions.Min
+gp.fs.0.func.9.nc = nc2
+gp.fs.0.func.10 = gp.functions.Cos
+gp.fs.0.func.10.nc = nc1
+gp.fs.0.func.11 = gp.functions.Sin
+gp.fs.0.func.11.nc = nc1
+
+##################
+#	TERMINALS	 #
+##################
+gp.fs.0.func.12 = gp.terminals.channels.AttrRed
+gp.fs.0.func.12.nc = colorterminal
+gp.fs.0.func.13 = gp.terminals.channels.AttrGreen
+gp.fs.0.func.13.nc = colorterminal
+gp.fs.0.func.14 = gp.terminals.channels.AttrBlue
+gp.fs.0.func.14.nc = colorterminal
+gp.fs.0.func.15 = gp.terminals.channels.AttrGrayscale
+gp.fs.0.func.15.nc = colorterminal
+
+gp.fs.0.func.16 = gp.terminals.DoubleErc
+gp.fs.0.func.16.nc = nc0
+
+##########################
+#	 PSUEDO TERMINALS	 #
+##########################
+
+gp.fs.0.func.17 = gp.terminals.center_pixel.InputColor
+gp.fs.0.func.17.nc = psuedoterminal
+
+gp.fs.0.func.18 = gp.terminals.center_pixel.SmallAvg
+gp.fs.0.func.18.nc = psuedoterminal
+gp.fs.0.func.19 = gp.terminals.center_pixel.MediumAvg
+gp.fs.0.func.19.nc = psuedoterminal
+gp.fs.0.func.20 = gp.terminals.center_pixel.LargeAvg
+gp.fs.0.func.20.nc = psuedoterminal
+
+gp.fs.0.func.21 = gp.terminals.center_pixel.SmallSd
+gp.fs.0.func.21.nc = psuedoterminal
+gp.fs.0.func.22 = gp.terminals.center_pixel.MediumSd
+gp.fs.0.func.22.nc = psuedoterminal
+gp.fs.0.func.23 = gp.terminals.center_pixel.LargeSd
+gp.fs.0.func.23.nc = psuedoterminal

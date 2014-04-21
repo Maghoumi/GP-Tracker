@@ -1,5 +1,6 @@
 package visualizer;
 
+import feeder.datatypes.SegmentedVideoFrame;
 import invoker.Invoker;
 
 import java.awt.BorderLayout;
@@ -39,8 +40,6 @@ import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 import utils.cuda.datatypes.ByteImage;
@@ -49,7 +48,6 @@ import utils.cuda.datatypes.ClassifierSet;
 import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
 import utils.cuda.datatypes.Segment;
 import utils.opengl.OpenGLUtils;
-import video_interop.datatypes.SegmentedVideoFrame;
 import visualizer.controls.CheckBoxList;
 import visualizer.controls.ClassifierCheckBox;
 import visualizer.controls.Slider;
@@ -78,7 +76,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private static final int REPORT_FREQUENCY = 1;
 
 	/** The kernel wrapper object to use for invoking CUDA */
-	private VisualizerKernel kernel;
+	private GLVisualizerKernel kernel;
 
 	/** The width of the image (frame) to be displayed */
 	private int imageWidth;
@@ -129,7 +127,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private JButton btnResetSize;
 	private JPanel pnlRight;
 	private CheckBoxList checkBoxList;
-	private JToggleButton tglbtnToggleFilter;
 	private JButton btnSeedRetrain;
 	private JPanel pnlCenter;
 	private JPanel pnlVideoControls;
@@ -143,7 +140,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private JSpinner spnThreshold;
 	private JPanel panel_3;
 	private JLabel lblNewLabel_1;
-	private JCheckBox chckbxAutoRetrain;
 	private JPanel panel_4;
 	private JLabel lblOpacity;
 	private JSpinner spnOpacity;
@@ -205,7 +201,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP,
 				null, null));
 		pnlContent.add(pnlRight, BorderLayout.EAST);
-		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][][][]"));
+		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][][]"));
 
 		checkBoxList = new CheckBoxList();
 		pnlRight.add(checkBoxList, "cell 0 0,grow");
@@ -219,20 +215,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 				Classifier classifier = ((ClassifierCheckBox) selected).getBoundedClassifier();
 				invoker.retrain(classifier, true);
-			}
-		});
-
-		tglbtnToggleFilter = new JToggleButton("Filter Enabled");
-		tglbtnToggleFilter.setPreferredSize(new Dimension(100, 23));
-		tglbtnToggleFilter.setSelected(true);
-		tglbtnToggleFilter.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				filterEnabled = tglbtnToggleFilter.isSelected();
-
-				if (filterEnabled)
-					tglbtnToggleFilter.setText("Filter Enabled");
-				else
-					tglbtnToggleFilter.setText("Filter Disabled");
 			}
 		});
 
@@ -266,11 +248,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		this.spnOpacity.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 		this.spnOpacity.setPreferredSize(new Dimension(35, 20));
 		this.panel_4.add(this.spnOpacity, BorderLayout.EAST);
-
-		this.chckbxAutoRetrain = new JCheckBox("Auto retrain");
-		this.pnlRight.add(this.chckbxAutoRetrain, "cell 0 5,growx");
-		pnlRight.add(tglbtnToggleFilter, "cell 0 6,growx");
-		pnlRight.add(btnSeedRetrain, "cell 0 7,growx");
+		pnlRight.add(btnSeedRetrain, "cell 0 6,growx");
 
 		btnRetrain = new JButton("Retrain");
 		btnRetrain.addActionListener(new ActionListener() {
@@ -283,10 +261,10 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				invoker.retrain(classifier, false);
 			}
 		});
-		pnlRight.add(btnRetrain, "cell 0 8,growx");
+		pnlRight.add(btnRetrain, "cell 0 7,growx");
 
 		btnResetSize = new JButton("Reset Canvas");
-		this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
+		this.pnlRight.add(this.btnResetSize, "cell 0 8,growx");
 
 		tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
 		tglbtnGpSystem.addActionListener(new ActionListener() {
@@ -299,7 +277,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				invoker.setGPStatus(tglbtnGpSystem.isSelected());
 			}
 		});
-		pnlRight.add(tglbtnGpSystem, "cell 0 11,growx");
+		pnlRight.add(tglbtnGpSystem, "cell 0 10,growx");
 		btnResetSize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
@@ -465,7 +443,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		gl.glDisable(GL.GL_DEPTH_TEST);
 
 		// Initialize CUDA
-		this.kernel = new VisualizerKernel();
+		this.kernel = new GLVisualizerKernel();
 
 		initBuffers(drawable);
 		initTexture(drawable);
@@ -622,7 +600,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				// If there are no classifiers, then there are no claimers for this texture!
 				int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
 						chckbxThreshold.isSelected(), threshold, opacity,
-						chckbxShowConflicts.isSelected(), chckbxAutoRetrain.isSelected(), imageWidth, imageHeight);
+						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
 
 				// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
 				if (claimers == 0 && invoker.isQueueEmpty()) {
@@ -767,68 +745,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 			}
 		}
 	}
-
-	//	public static GPSystem gp;
-	//	public static ByteImage positive1;
-	//	public static ByteImage positive2;
-	//	public static ByteImage mozakhraf;
-	//	public static ByteImage background;
-	//	public static ByteImage background_brown;
-	//	
-	//
-	//	public static void main(String[] args) throws Exception, IOException {
-	//		try {
-	//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	//		} catch (Throwable e) {
-	//			e.printStackTrace();
-	//		}
-	//		
-	////		FramePasser passer = new FramePasser(new File("textures/video/anim-weird.mp4"));
-	//		OpenGLFeeder oglFeeder = new OpenGLFeeder();
-	//		oglFeeder.setVisible(true);
-	//		GLVisualizer visFiltered = new GLVisualizer(oglFeeder);
-	//		oglFeeder.setOwner(visFiltered);
-	//
-	//		final String[] params = new String[] { "-file", "bin/m2xfilter/m2xfilter.params" };
-	//
-	//		gp = new GPSystem(params, false);
-	////		gp.addEvolutionListener(visFiltered);
-	//
-	//		positive1 = ByteImage.loadFromFile("textures/part/positive-1.png");
-	//		positive2 = ByteImage.loadFromFile("textures/part/negative-2.png");
-	//		mozakhraf = ByteImage.loadFromFile("textures/part/positive-2.png");
-	//		background = ByteImage.loadFromFile("textures/part/background.png");
-	//		background_brown = ByteImage.loadFromFile("textures/part/background-brown.png");
-	//
-	//		List<ByteImage> j1Positives = new ArrayList<ByteImage>();
-	//		List<ByteImage> j1Negatives = new ArrayList<ByteImage>();
-	//		List<ByteImage> j2Positives = new ArrayList<ByteImage>();
-	//		List<ByteImage> j2Negatives = new ArrayList<ByteImage>();
-	//		List<ByteImage> j3Positives = new ArrayList<ByteImage>();
-	//		List<ByteImage> j3Negatives = new ArrayList<ByteImage>();
-	//
-	//		j1Positives.add(positive1);
-	//		j1Negatives.add(positive2);
-	//		j1Negatives.add(background);
-	//		Job job1 = new Job(new Classifier(j1Positives, j1Negatives));
-	//
-	//		j2Positives.add(positive2);
-	//		j2Negatives.add(positive1);
-	//		j2Negatives.add(background);
-	//		Job job2 = new Job(new Classifier(j2Positives, j2Negatives));
-	//
-	//		j3Positives.add(mozakhraf);
-	//		j3Negatives.add(positive1);
-	//		j3Negatives.add(positive2);
-	//		j3Negatives.add(background);
-	//		Job job3 = new Job(new Classifier(j3Positives, j3Negatives));
-	//
-	//		gp.queueJob(job1);
-	//		gp.queueJob(job2);
-	//		gp.queueJob(job3);
-	//
-	//		oglFeeder.start();
-	//	}
 
 	/**
 	 * Set the length of the video that this visualizer shows. This method will set the maximum value for the slider that shows the video position.

@@ -1,8 +1,8 @@
 package cuda.gp;
 
-import m2xfilter.datatypes.ProblemData;
 import ec.EvolutionState;
 import ec.simple.SimpleFinisher;
+import gp.datatypes.ProblemData;
 
 /**
  * A finisher which will make sure to deallocate all CUDA allocations and 

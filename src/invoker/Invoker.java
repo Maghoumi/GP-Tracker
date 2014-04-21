@@ -1,14 +1,14 @@
 package invoker;
 
+import feeder.VideoFeeder;
+import feeder.datatypes.SegmentedVideoFrame;
+import gp.GPSystem;
+import gp.datatypes.EvolutionListener;
+import gp.datatypes.Job;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ColorUtils;
 import utils.cuda.datatypes.Segment;
-import video_interop.VideoFeeder;
-import video_interop.datatypes.SegmentedVideoFrame;
 import visualizer.Visualizer;
-import m2xfilter.GPSystem;
-import m2xfilter.datatypes.EvolutionListener;
-import m2xfilter.datatypes.Job;
 
 /**
  * An Invoker is the missing link between the VideoFeeder, the Visualizer and the GPSystem.
@@ -33,7 +33,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	protected VideoFeeder feeder;
 	
 	/** The GPSystem instance that this Invoker uses to evolve classifiers */
-	private GPSystem gpSystem;
+	protected GPSystem gpSystem;
 	
 	/** The Visualizer that this instance uses to visualize the evolution results */
 	protected Visualizer visualizer;

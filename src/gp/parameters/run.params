@@ -1,0 +1,88 @@
+parent.0 = cuda.params
+
+##################
+#	STATISTICS	 #
+##################
+
+stat = cuda.gp.CudaSimpleStatistics
+stat.file = $out.stat
+#stat.num-children = 1
+#stat.child.0 = ec.simple.SimpleShortStatistics
+#stat.child.0.file = $filter.simple.stat
+#stat.child.0.gather-full = true
+
+######################
+#	PROBLEM CONFIG	 #
+######################
+
+eval.problem = gp.M2XFilter
+eval.problem.data = gp.datatypes.ProblemData
+
+# file extension
+eval.problem.inputExt = .png
+eval.problem.path = textures/boats
+eval.problem.positiveImage = more-boats
+eval.problem.groundTruth = more-boats-gt
+eval.problem.testImage = more-boats
+eval.problem.testGroundTruth = more-boats-gt
+
+problem.smallWindowSize = 15
+problem.mediumWindowSize = 17
+problem.largeWindowSize = 19
+
+eval.problem.blockWindowSize = 32
+
+# sounds good for textures! mutation rate is 20%
+problem.positiveExamples = 256
+problem.negativeExamples = 768
+
+#############################
+#	THREADING AND RUNTIME   #
+#############################
+generations = 100
+pop.subpop.0.size = 512
+
+#jobs = 10
+eval.evaluationMethod = gpu
+eval.visualize = false
+
+evalthreads = 				auto
+breedthreads = 				auto
+
+#478152468 478152469 478152470 478152471 
+#Seed:     ==> mild boats 
+
+#seed.0 =time
+#seed.1 =time  
+#seed.2 =time  
+#seed.3 =time
+  
+
+#good set for boats
+#seed.0 = -1965145378
+#seed.1 = -1965145377
+#seed.2 = -1965145376
+#seed.3 = -1965145375
+
+# Best seed for wierd anim [Seed: -1470112666 -1470112665 -1470112664 -1470112663]
+#seed.0 =-1470112666
+#seed.1 =-1470112665
+#seed.2 =-1470112664
+#seed.3 =-1470112663
+
+#good blue seed Seed: -772115029 -772115028 -772115027 -772115026
+#seed.0 =-772115029
+#seed.1 =-772115028
+#seed.2 =-772115027
+#seed.3 =-772115026
+
+# very interesting seed
+#seed.0=-85672469
+#seed.1=-85672468
+#seed.2=-85672467
+#seed.3=-85672466
+
+#seed.0=1643136021
+#seed.1=1643136022
+#seed.2=1643136023
+#seed.3=1643136024

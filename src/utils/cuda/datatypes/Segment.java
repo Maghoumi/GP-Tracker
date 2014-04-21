@@ -17,21 +17,27 @@ import jcuda.driver.CUmodule;
  */
 public class Segment implements Cloneable {
 	
+	/** The CudaData instance that holds the GPU data of this segment */
 	private NewCudaData data;
+	
+	/** The image data of this segment */
 	private ByteImage image;
 	
-	public int x;
-	public int y;
-	public int width;
-	public int height;
+	/** An arbitrary unique ID that is associated to this segment to distinguish it from other segments */
+	protected String id;
 	
-	public Segment(ByteImage image, int x, int y, int width, int height) {
+	/** The boundaries of this segment */
+	protected Rectangle bounds;
+	
+	public Segment(ByteImage image, int x, int y, int width, int height, String id) {
+		this(image, new Rectangle(x, y, width, height), id);
+	}
+	
+	public Segment(ByteImage image, Rectangle bounds, String id) {
 		this.data = new NewCudaData(image);
 		this.image = image;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		this.bounds = new Rectangle(bounds);
+		this.id = id;
 	}
 	
 	/**
@@ -57,31 +63,31 @@ public class Segment implements Cloneable {
 		return this.image;
 	}
 	
-	public Rectangle getRectangle() {
-		return new Rectangle(this.x, this.y, this.width, this.height);
+	/**
+	 * @return The boundaries of this segment as a rectangle
+	 */
+	public Rectangle getBounds() {
+		return this.bounds;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		Segment other = (Segment) obj;
 		
-		if(this.x == other.x &&	this.y == other.y &&
-			this.width == other.width && this.height == other.height)
+		if(this.bounds.x == other.bounds.x &&	this.bounds.y == other.bounds.y &&
+			this.bounds.width == other.bounds.width && this.bounds.height == other.bounds.height)
 			return true;
 					
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()
-			.append(this.x)
-			.append(this.y)
-			.append(this.width)
-			.append(this.height)
+			.append(this.bounds.x)
+			.append(this.bounds.y)
+			.append(this.bounds.width)
+			.append(this.bounds.height)
 			.toHashCode();
 	}
 	
@@ -91,7 +97,12 @@ public class Segment implements Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		return new Segment(image, x, y, width, height);
+		return new Segment(image, bounds.x, bounds.y, bounds.width, bounds.height, id + "_cloned");
+	}
+	
+	@Override
+	public String toString() {
+		return this.id;
 	}
 	
 }

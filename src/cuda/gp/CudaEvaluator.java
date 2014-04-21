@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import m2xfilter.M2XFilter;
-import m2xfilter.datatypes.ProblemData;
 import ec.Evaluator;
 import ec.EvolutionState;
 import ec.Subpopulation;
@@ -15,6 +13,8 @@ import ec.simple.SimpleFitness;
 import ec.simple.SimpleProblemForm;
 import ec.util.Parameter;
 import gnu.trove.list.array.TByteArrayList;
+import gp.M2XFilter;
+import gp.datatypes.ProblemData;
 
 /**
  * An evaluator which works exactly like SimpleEvaluator but performs the

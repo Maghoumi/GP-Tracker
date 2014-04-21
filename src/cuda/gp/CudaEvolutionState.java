@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import m2xfilter.datatypes.DataInstance;
-import m2xfilter.datatypes.EvolutionListener;
 import cuda.CudaInterop;
 import utils.PreciseTimer;
 import utils.cuda.datatypes.ByteImage;
@@ -18,6 +16,8 @@ import ec.gp.GPIndividual;
 import ec.simple.SimpleEvolutionState;
 import ec.util.Checkpoint;
 import ec.util.Parameter;
+import gp.datatypes.DataInstance;
+import gp.datatypes.EvolutionListener;
 
 /**
  * A generational evolution state which will also contain required CUDA objects

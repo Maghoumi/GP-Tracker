@@ -4,14 +4,14 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.UIManager;
 
-import video_interop.OpenGLFeeder;
+import feeder.GLFeeder;
 import visualizer.GLVisualizer;
 
 public class GLFeededInvoker extends Invoker {
 
 	public GLFeededInvoker() {
-		super(new String[] { "-file", "bin/m2xfilter/m2xfilter.params" });
-		this.feeder = new OpenGLFeeder();
+		super(new String[] { "-file", "bin/gp/object-tracker.params" });
+		this.feeder = new GLFeeder();
 		this.visualizer = new GLVisualizer(this);
 	}
 	

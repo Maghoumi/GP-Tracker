@@ -2,10 +2,9 @@ package utils.cuda.datatypes;
 
 import static cuda.CudaInterop.*;
 import static jcuda.driver.JCudaDriver.*;
+import gp.datatypes.DataInstance;
 
 import java.util.List;
-
-import m2xfilter.datatypes.DataInstance;
 
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;

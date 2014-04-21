@@ -1,8 +1,8 @@
 package visualizer;
 
+import feeder.datatypes.SegmentedVideoFrame;
 import invoker.Invoker;
 import utils.cuda.datatypes.Classifier;
-import video_interop.datatypes.SegmentedVideoFrame;
 
 /**
  * Defines the interface that is required for any object that wants to act as a 
