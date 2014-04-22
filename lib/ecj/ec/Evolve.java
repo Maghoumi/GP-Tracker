@@ -377,7 +377,7 @@ public class Evolve
         // stderr accepts announcements, and both are fully verbose 
         // by default.
         output.addLog(ec.util.Log.D_STDOUT,true);
-//        output.addLog(ec.util.Log.D_STDERR,true);
+        output.addLog(ec.util.Log.D_STDERR,false);
                 
         return output;
         }

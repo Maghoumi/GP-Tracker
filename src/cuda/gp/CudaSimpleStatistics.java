@@ -29,6 +29,10 @@ public class CudaSimpleStatistics extends SimpleStatistics {
 
 	// The exact same as super but the best individual is flattened and passed to the visualizer 
 	public void postEvaluationStatistics(final EvolutionState state) {
+		// super.super.postEvaluationStatistics
+		for(int x=0;x<children.length;x++)
+            children[x].postEvaluationStatistics(state);
+		
 		// for now we just print the best fitness per subpopulation.
 		Individual[] best_i = new Individual[state.population.subpops.length]; // quiets
 																				// compiler

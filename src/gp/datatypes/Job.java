@@ -23,9 +23,13 @@ public class Job {
 	/** The classifier container used for this job */
 	private Classifier classifier;
 	
-	public Job(Classifier classifier) {
+	/** An ID to distinguish this job from other jobs in the GP system -- used for stat purposes */
+	protected String id;
+	
+	public Job(Classifier classifier, String id) {
 		this.jobType = classifier.getTrainingType();
 		this.classifier = classifier;
+		this.id = id;
 	}
 	
 	/**
@@ -40,6 +44,14 @@ public class Job {
 	 */
 	public Classifier getClassifier() {
 		return classifier;
+	}
+	
+	/**
+	 * @return	The ID string of this job which distinguishes this job from other
+	 * 			jobs added to the system. Should be primarily used for stat purposes
+	 */
+	public String getId() {
+		return this.id;
 	}
 
 	/**

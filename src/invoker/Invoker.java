@@ -119,7 +119,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 			}
 		}
 		
-		Job j = new Job(classifier);
+		Job j = new Job(classifier, target.toString());
 		gpSystem.queueJob(j);
 		ColorUtils ut = new ColorUtils();
 	}
@@ -131,7 +131,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 */
 	public void retrain(Classifier classifier, boolean shouldSeed) {
 		classifier.setShouldSeed(shouldSeed);
-		gpSystem.queueJob(new Job(classifier));
+		gpSystem.queueJob(new Job(classifier, "__retrain"));
 	}
 	
 	@Override

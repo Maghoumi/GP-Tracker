@@ -83,6 +83,9 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	
 	/** The classifier that this state is currently working on */
 	private Classifier classifier;
+	
+	/** The Job's ID to use in the statistics */
+	public String jobId;
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -344,15 +347,21 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	}
 
 
+	/**
+	 * The function's name is a little bit misleading, I had to override it but this
+	 * actually sets up the EvolutionState and should be called if no GP run has been
+	 * done yet. To start the whole thing, "resumeStart" should be called 
+	 */
 	@Override
 	public void startFresh() {
 		output.message("Setting up");
 		setup(this, null); // a garbage Parameter
-		start();
 	}
 	
-	public void startAgain() {
-		output.message("Restarting the previous state");
+	/**
+	 * Sets the generation number to zero and calls the start function
+	 */
+	public void resumeStart() {
 		generation = 0;	// reset the generation number
 		start();
 	}

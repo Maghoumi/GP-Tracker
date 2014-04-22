@@ -1,5 +1,18 @@
-Renamed the package "video_interop" to "feeder"
-Renamed package "m2xfilter" to "gp"
-GPSystem:
-	startThread and stopThread now work fine
-Added the "id" field for each segment
+Fixes the problem with CudaSimpleStatistics: if other statistic hooks were
+added to the system, they were not called because the code that was responsible
+to call the child stat hooks was missing.
+
+Job:
+	Added the "id" field so that each job can be distinguished uniquely from
+	other jobs that are done by the GPSystem.
+
+Added CudaSimpleShortStatistics:
+	This stat hook is able to spit out stats per GP job. When a job is queued
+	on the system, the job's ID is logged and separated from all other jobs
+	that the system has performed.
+
+CudaEvolutionState:
+	Fixed the problem with the initial start of the GP system: now the state
+	is initialized but the initial population is not created until a job is
+	queued on the system -- this fix was necessary for correct operations of
+	the CudaSimpleShortStatistics hook

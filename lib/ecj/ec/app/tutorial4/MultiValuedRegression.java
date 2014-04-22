@@ -63,5 +63,9 @@ public class MultiValuedRegression extends GPProblem implements SimpleProblemFor
             ind.evaluated = true;
             }
         }
+    
+    public static void main(String[] args) {
+    	ec.Evolve.main(new String[] { "-file", "lib/ecj/ec/app/tutorial4/tutorial4.params" });
+    }
     }
 
