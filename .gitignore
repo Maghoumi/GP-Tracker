@@ -2,3 +2,5 @@ bin/
 out.stat
 /textures
 /simple.stat
+/stat
+/stat-dump

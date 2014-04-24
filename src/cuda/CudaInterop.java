@@ -42,11 +42,6 @@ import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
  */
 public class CudaInterop implements Singleton {
 
-	public void cleanUp() {
-		// TODO: should deallocate memories, should deallocate CUDA examples and everything else
-		throw new RuntimeException("Not implemented yet!");
-	}
-
 	private KernelLauncher kernel = null;
 	private String kernelCode;
 
@@ -456,9 +451,6 @@ public class CudaInterop implements Singleton {
 	 */
 	public void fillAndPerformFilters(ByteImage inputImage, CudaData input) {
 
-//		PreciseTimer timer = new PreciseTimer();
-//		timer.start();
-
 		byte[] byteData = inputImage.getByteData();
 		int imageWidth = inputImage.getWidth();
 		int imageHeight = inputImage.getHeight();
@@ -469,32 +461,24 @@ public class CudaInterop implements Singleton {
 		input.input = inputImage.getFloatData();
 		input.dev_input = allocTransFloat(input.input);
 
-//		System.out.print("Performing small filters...");
 		FilterResult result = performFilter(byteData, imageWidth, imageHeight, smallFilterSize);
 		input.smallAvg = result.averageResult;
 
 		input.smallSd = result.sdResult;
 		input.dev_smallAvg = result.averagePointer;
 		input.dev_smallSd = result.sdPointer;
-//		System.out.println("\tDone!");
 
-//		System.out.print("Performing medium filters...");
 		result = performFilter(byteData, imageWidth, imageHeight, mediumFilterSize);
 		input.mediumAvg = result.averageResult;
 		input.mediumSd = result.sdResult;
 		input.dev_mediumAvg = result.averagePointer;
 		input.dev_mediumSd = result.sdPointer;
-//		System.out.println("\tDone!");
 
-//		System.out.print("Performing large filters...");
 		result = performFilter(byteData, imageWidth, imageHeight, largeFilterSize);
 		input.largeAvg = result.averageResult;
 		input.largeSd = result.sdResult;
 		input.dev_largeAvg = result.averagePointer;
 		input.dev_largeSd = result.sdPointer;
-//		System.out.println("\tDone!");
-
-//		timer.stopAndLog("Filtering");
 	}
 
 	/**
@@ -683,17 +667,6 @@ public class CudaInterop implements Singleton {
 		float fitness = ((float) (tp + tn)) / (ProblemData.positiveExamples + ProblemData.negativeExamples);
 		return fitness;
 	}
-
-	// /**
-	// * Destroys the CUDA context that was created when this instance of the
-	// * class compiled (loaded) the kernel.
-	// *
-	// */
-	// public void destroy() {
-	// CUcontext currentCtx = new CUcontext();
-	// cuCtxGetCurrent(currentCtx);
-	// cuCtxDestroy(currentCtx);
-	// }
 
 	/**
 	 * Allocates and transfers a float array to the CUDA memory.

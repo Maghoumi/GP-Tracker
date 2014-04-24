@@ -212,7 +212,7 @@ public class GPSystem extends Evolve implements Runnable {
 	private GPIndividual call(List<ByteImage> positives, List<ByteImage> negatives) {
 		// Switch context
 		getCudaInterop().switchContext();
-		state.setExamples(positives, negatives);
+		state.setExamples(positives, negatives);asdasd
 
 		// Ask the State to be started
 		state.resumeStart();
@@ -243,7 +243,7 @@ public class GPSystem extends Evolve implements Runnable {
 		// Switch context
 		getCudaInterop().switchContext();
 
-		state.setTrainingImages(trainingImage, gtImage);
+		state.setTrainingImages(trainingImage, gtImage);asdasd
 
 		// Ask the State to be started
 		state.resumeStart();
@@ -281,9 +281,7 @@ public class GPSystem extends Evolve implements Runnable {
 			}
 
 			getCudaInterop().switchContext(); // Safety measure
-			Classifier passedClassifier = newJob.getClassifier();
-			state.setWorkingClassifier(passedClassifier); // set the working classifier of the EvolutionState object
-			state.jobId = newJob.getId();	// set the ID of the current job
+			state.setActiveJob(newJob);
 
 			// Here, I already have a job. Decide which training scheme to adopt:
 			GPIndividual evolvedIndividual = null;

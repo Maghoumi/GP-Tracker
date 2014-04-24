@@ -22,10 +22,9 @@ public class CudaSimpleShortStatistics extends SimpleShortStatistics {
 		
 		// Make the job id and put it as the first line of the stat
 		CudaEvolutionState cuState = (CudaEvolutionState) state;
-		String jobId = cuState.jobId + " -- " + System.currentTimeMillis();
 		
 		if (output)
-			if (output) state.output.println(jobId, statisticslog);
+			if (output) state.output.println(cuState.getActiveJob().toString(), statisticslog);
 			
 	}
 	

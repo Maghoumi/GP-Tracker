@@ -24,18 +24,14 @@ public class CudaData {
 	public CUdeviceptr dev_labels = null;
 	public CUdeviceptr dev_output = null;
 	
-	public float[] input;
-	
+	public float[] input;	
 	public float[] smallAvg;
 	public float[] mediumAvg;
-	public float[] largeAvg;
-	
+	public float[] largeAvg;	
 	public float[] smallSd;
 	public float[] mediumSd;
-	public float[] largeSd;
-	
-	public int[] labels;
-	
+	public float[] largeSd;	
+	public int[] labels;	
 	public byte[] output;
 	
 	/** Indicates the pitch of the float pointers if this object is allocated

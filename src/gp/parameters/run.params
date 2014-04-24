@@ -5,11 +5,10 @@ parent.0 = cuda.params
 ##################
 
 stat = cuda.gp.CudaSimpleStatistics
-stat.file = $out.stat
+stat.file = $stat-dump/out.stat
 stat.num-children = 1
 stat.child.0 = cuda.gp.CudaSimpleShortStatistics
-stat.child.0.file = $simple.stat
-#stat.child.0.gather-full = true
+stat.child.0.file = $stat-dump/simple.stat
 
 ######################
 #	PROBLEM CONFIG	 #

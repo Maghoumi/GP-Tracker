@@ -26,10 +26,14 @@ public class Job {
 	/** An ID to distinguish this job from other jobs in the GP system -- used for stat purposes */
 	protected String id;
 	
+	/** Timestamp of the moment this job was created */
+	protected long timeStamp;
+	
 	public Job(Classifier classifier, String id) {
 		this.jobType = classifier.getTrainingType();
 		this.classifier = classifier;
 		this.id = id;
+		this.timeStamp = System.currentTimeMillis();
 	}
 	
 	/**
@@ -53,6 +57,13 @@ public class Job {
 	public String getId() {
 		return this.id;
 	}
+	
+	/**
+	 * @return	The timestamp of the creation of this job
+	 */
+	public long getTimestamp() {
+		return this.timeStamp;
+	}
 
 	/**
 	 * @param classifier the classifier to set
@@ -71,6 +82,10 @@ public class Job {
 		return this.classifier.equals(otherClassifier);
 	}
 	
+	@Override
+	public String toString() {
+		return this.id + " -- " + this.timeStamp;
+	}
 	
 	
 	

@@ -18,6 +18,7 @@ import ec.util.Checkpoint;
 import ec.util.Parameter;
 import gp.datatypes.DataInstance;
 import gp.datatypes.EvolutionListener;
+import gp.datatypes.Job;
 
 /**
  * A generational evolution state which will also contain required CUDA objects
@@ -47,13 +48,6 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	/** Interop instance for CUDA communications*/
 	private CudaInterop cudaInterop = null;
 	
-	/**
-	 * Indicates whether this state was started fresh. This flag should be used
-	 * to decide whether the kernel should be compiled or not, whether the
-	 * variables should be loaded or not and so on.
-	 */
-	private boolean isStartFresh = false;
-	
 	/** Stores the training instances that the GP system needs for training */
 	public List<DataInstance> trainingInstances = new ArrayList<DataInstance>();
 	
@@ -81,11 +75,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	/** The ground truth to train on (should be supplied with a training image) */
 	private ByteImage gtImage;
 	
-	/** The classifier that this state is currently working on */
-	private Classifier classifier;
-	
-	/** The Job's ID to use in the statistics */
-	public String jobId;
+	/** The job that the GP system is currently processing */ 
+	private Job activeJob;
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -115,7 +106,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	
 	/**
 	 * Sets the lists of examples for this evolution state. Note that the
-	 * passed lists are not cloned.
+	 * passed lists ARE cloned.
 	 * 
 	 * @param positives
 	 * 		A list containing all positive examples
@@ -307,25 +298,29 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	}
 	
 	/**
-	 * Sets the working classifier of this EvolutionState
-	 * @param classifier	The classifier that this EvolutionState should work on
+	 * Set the active job that the system should work on
+	 * @param job
 	 */
-	public void setWorkingClassifier(Classifier classifier) {
-		this.classifier = classifier;
+	public void setActiveJob(Job job) {
+		this.activeJob = job;
+	}
+	
+	/**
+	 * @return	Return the active job that the system is currently working on
+	 */
+	public Job getActiveJob() {
+		return this.activeJob;
 	}
 	
 	/** 
 	 * @return	Whether the previous classifier's individual should be used to seed the population.
 	 */
 	public boolean shouldSeed() {
-		if (this.classifier != null)
-			return this.classifier.shouldSeed();
-		
-		return false;
+		return this.activeJob.getClassifier().shouldSeed();
 	}
 	
 	public Individual getPopulationSeed() {
-		return this.classifier.getIndividual();
+		return this.activeJob.getClassifier().getIndividual();
 	}
 	
 	/**
@@ -334,7 +329,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * @param classifier
 	 */
 	public void reportIndividual(GPIndividual individual) {
-		this.classifier.setIndividual(individual);
+		this.activeJob.getClassifier().setIndividual(individual);
 		
 		for (EvolutionListener listener : this.evolutionListeners) {
 			int indReportFrequency = listener.getIndReportingFrequency();
