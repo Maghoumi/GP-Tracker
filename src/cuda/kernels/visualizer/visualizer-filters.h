@@ -13,7 +13,7 @@ extern "C"
 __global__ void avgSdFilter(float4 *smallAvg, float4 *smallSdm,
 		float4 *mediumAvg, float4 *mediumSdm,
 		float4 *largeAvg, float4 *largeSdm,
-		const int imageWidth, const int imageHeight,
+		const int imageWidth, const int imageHeight, const int pitchInElements,
 		const int smallMaskWidth, const int mediumMaskWidth, const int largeMaskWidth) {
 
 	// get indices
@@ -27,7 +27,7 @@ __global__ void avgSdFilter(float4 *smallAvg, float4 *smallSdm,
 	if (xIndex >= width || yIndex >= height)
 		return;
 
-	int index = yIndex * width + xIndex;	// For linear addressing later
+	int index = yIndex * pitchInElements + xIndex;	// For linear addressing later
 
 	int smallOffset = smallMaskWidth / 2;
 	int mediumOffset = mediumMaskWidth / 2;

@@ -3,6 +3,13 @@ package utils.cuda.datatypes.pointers;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 
+/**
+ * Represents a primitive array of floats which is synchronized with a float pointer
+ * in CUDA.
+ * 
+ * @author Mehran Maghoumi
+ *
+ */
 public class CudaFloat2D extends CudaPrimitive2D {
 	
 	/** The CPU value of this GPU pointer. This is the cached value */
@@ -72,14 +79,24 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	}
 	
 	/**
-	 * @return	A copy (i.e. a clone) of the underlying array of this Integer2D object
+	 * @return	A copy (i.e. a clone) of the underlying array of this Float2D object
 	 */
 	public float[] getArray() {
 		return this.array.clone();
 	}
 	
 	/**
-	 * Sets the array of this Integer2D object to the specified array.
+	 * @return	The underlying array of this Float2D object
+	 * 			WARNING: Do not modify this array directly! Use getArray()
+	 * 					 if you need to modify the returned array!
+	 * 
+	 */
+	public float[] getUnclonedArray() {
+		return this.array.clone();
+	}
+	
+	/**
+	 * Sets the array of this Float2D object to the specified array.
 	 * The new array must meet the original specifications (i.e. same width, height etc.)
 	 * After the array is set, the new values are automatically writted back to the GPU
 	 * memory.

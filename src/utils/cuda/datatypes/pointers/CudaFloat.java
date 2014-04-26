@@ -76,4 +76,9 @@ public class CudaFloat extends CudaPrimitive {
 	protected Object clone() {
 		return new CudaFloat(floatValue);
 	}
+
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new float[] {this.floatValue});
+	}
 }

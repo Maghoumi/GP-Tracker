@@ -5,7 +5,9 @@ import jcuda.driver.CUdeviceptr;
 import static jcuda.driver.JCudaDriver.*;
 
 /**
- * 
+ * An extension of CUdeviceptr that represents a primitive variable in CUDA with
+ * an equivalent variable in Java. The values are synched between the GPU and the
+ * CPU.  
  * 
  * @author Mehran Maghoumi
  *

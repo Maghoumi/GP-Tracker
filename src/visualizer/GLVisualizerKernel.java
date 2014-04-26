@@ -1,6 +1,9 @@
 package visualizer;
 
+import static jcuda.driver.CUaddress_mode.CU_TR_ADDRESS_MODE_CLAMP;
+import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
 import static jcuda.driver.JCudaDriver.*;
+import gp.datatypes.FilteredImage;
 import invoker.Invoker;
 
 import java.awt.Color;
@@ -13,12 +16,13 @@ import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import utils.cuda.datatypes.CUdeviceptr2D;
+import utils.ImageFilterProvider;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ClassifierSet;
 import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
-import utils.cuda.datatypes.NewCudaData;
 import utils.cuda.datatypes.Segment;
+import utils.cuda.datatypes.pointers.CudaByte2D;
+import utils.cuda.datatypes.pointers.CudaFloat2D;
 import utils.opengl.OpenGLUtils;
 import jcuda.Pointer;
 import jcuda.Sizeof;
@@ -35,12 +39,24 @@ import jcuda.runtime.JCuda;
  * @author Mehran Maghoumi
  *
  */
-public class GLVisualizerKernel {
+public class GLVisualizerKernel implements ImageFilterProvider {
 	
 	/** Recompile flag ** FOR DEBUGGING PURPOSES** */
-	public static final boolean RECOMPILE = false;
+	public static final boolean RECOMPILE = true;
 	/** Generate debug info ** FOR DEBUGGING PURPOSES** */
 	public static final boolean GEN_DEBUG = false;
+	
+	/** The size of the small image filter */
+	public static final int FILTER_SIZE_SMALL = 15;
+	
+	/** The size of the medium image filter */
+	public static final int FILTER_SIZE_MEDIUM = 17;
+	
+	/** The size of the large image filter */
+	public static final int FILTER_SIZE_LARGE = 19;
+	
+	/** The block size to use for the filter function */
+	protected static final int FILTER_BLOCK_SIZE = 16;
 	
 	/** The CUDA module of the compiled kernel */
 	private CUmodule codeModule = new CUmodule();
@@ -129,16 +145,16 @@ public class GLVisualizerKernel {
 			boolean shouldThreshold, float threshold, float opacity,
 			boolean showConflicts, int imageWidth, int imageHeight) {
 		
-		CUdeviceptr2D devExpression = pointerToAll.expressions;
-		CUdeviceptr overlayColors = pointerToAll.overlayColors;
-		CUdeviceptr enabilityMap = pointerToAll.enabilityMap;
+		CudaByte2D devExpression = pointerToAll.expressions;
+		CudaByte2D overlayColors = pointerToAll.overlayColors;
+		CudaByte2D enabilityMap = pointerToAll.enabilityMap;
 		
 		// Determine the number of GP expressions
 		int numClassifiers = devExpression.getHeight();
 		
-		NewCudaData descData = segment.getImageData();
-		// Perform filters for the describe data
-		descData.setCudaObjects(codeModule, fncFilter);
+		// First, we must filter the segment using the context associated with this thread! Otherwise, CUDA will complain!
+		segment.filterImage(this);
+		FilteredImage filteredImage = segment.getFilteredImage();
 		
 		// Allocate and transfer the scratchpad
 		float[] scratchPad = new float[numClassifiers];
@@ -152,13 +168,13 @@ public class GLVisualizerKernel {
 		
 		// Setup kernel parameters
 		Pointer kernelParams = Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
-				Pointer.to(devExpression),Pointer.to(devExpression.getPitchInElements()), Pointer.to(new int[] { numClassifiers }),
+				Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
 				Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
 				Pointer.to(devScratchPad),
-				Pointer.to(descData.dev_input), Pointer.to(devOutput),
-				Pointer.to(descData.dev_smallAvg), Pointer.to(descData.dev_mediumAvg), Pointer.to(descData.dev_largeAvg),
-				Pointer.to(descData.dev_smallSd), Pointer.to(descData.dev_mediumSd), Pointer.to(descData.dev_largeSd),
-				Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), 
+				filteredImage.getInput().toPointer(), Pointer.to(devOutput),
+				filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
+				filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
+				Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), Pointer.to(new int[] { (int) filteredImage.getInput().getDevPitchInElements()[0] }),
 				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
 		
 		
@@ -172,7 +188,7 @@ public class GLVisualizerKernel {
 		
 		// Unmap OpenGL buffer from CUDA
 		cuGraphicsUnmapResources(1, new CUgraphicsResource[] { bufferResource }, null);
-		descData.freeAll();
+		filteredImage.freeAll();
 		
 		// Copy the scratchpad back 
 		cuMemcpyDtoH(Pointer.to(scratchPad), devScratchPad, Sizeof.FLOAT * numClassifiers);
@@ -212,6 +228,20 @@ public class GLVisualizerKernel {
 		
 		return claimers.size();
 	}	
+	
+	/**
+	 * @return	The CUmodule of the compiled kernel
+	 */
+	public CUmodule getModule() {
+		return this.codeModule;
+	}
+	
+	/**
+	 * @return	The handle to the image filter function
+	 */
+	public CUfunction getFilterFunction() {
+		return this.fncFilter;
+	}
 	
 	/**
 	 * The extension of the given file name is replaced with "ptx". If the file
@@ -287,6 +317,85 @@ public class GLVisualizerKernel {
 			baos.write(buffer, 0, read);
 		}
 		return baos.toByteArray();
+	}
+
+	@Override
+	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {
+		int imageWidth = byteInput.getWidth();
+		int imageHeight = byteInput.getHeight();
+		int numChannels = byteInput.getNumFields();
+		
+		// Allocate device array
+		CUarray devTexture = new CUarray();
+		CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
+		desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
+		desc.NumChannels = numChannels;
+		desc.Width = imageWidth;
+		desc.Height = imageHeight;
+		JCudaDriver.cuArrayCreate(devTexture, desc);
+
+		// Copy the host input to the array
+		CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
+		copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
+		copyHD.srcHost = byteInput.hostDataToPointer();
+		copyHD.srcPitch = byteInput.getSourcePitch();
+		copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
+		copyHD.dstArray = devTexture;
+		copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
+		copyHD.Height = imageHeight;
+
+		cuMemcpy2D(copyHD);
+
+		// Set texture reference properties
+		CUtexref inputTexRef = new CUtexref();
+		cuModuleGetTexRef(inputTexRef, this.codeModule, "inputTexture");
+		cuTexRefSetFilterMode(inputTexRef, CU_TR_FILTER_MODE_POINT);
+		cuTexRefSetAddressMode(inputTexRef, 0, CU_TR_ADDRESS_MODE_CLAMP);
+		cuTexRefSetAddressMode(inputTexRef, 1, CU_TR_ADDRESS_MODE_CLAMP);
+		cuTexRefSetFlags(inputTexRef, CU_TRSF_READ_AS_INTEGER);
+		cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, numChannels);
+		cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
+
+		// Allocate results array
+		Pointer kernelParams = Pointer.to(smallAvg.toPointer(), smallSd.toPointer(),
+				mediumAvg.toPointer(), mediumSd.toPointer(),
+				largeAvg.toPointer(), largeSd.toPointer(),
+				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) smallAvg.getDevPitchInElements()[0] }),
+				Pointer.to(new int[] { getSmallFilterSize() }), Pointer.to(new int[] { getMediumFilterSize() }), Pointer.to(new int[] { getLargeFilterSize() }));
+
+		// Call kernel
+		cuLaunchKernel(this.fncFilter,
+				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
+				FILTER_BLOCK_SIZE, FILTER_BLOCK_SIZE, 1,
+				0, null,
+				kernelParams, null);
+		cuCtxSynchronize();
+		
+		smallAvg.refresh();
+		mediumAvg.refresh();
+		largeAvg.refresh();
+		
+		smallSd.refresh();
+		mediumSd.refresh();
+		largeSd.refresh();
+		
+		// A little housekeeping
+		cuArrayDestroy(devTexture);		
+	}
+
+	@Override
+	public int getSmallFilterSize() {
+		return FILTER_SIZE_SMALL;
+	}
+
+	@Override
+	public int getMediumFilterSize() {
+		return FILTER_SIZE_MEDIUM;
+	}
+
+	@Override
+	public int getLargeFilterSize() {
+		return FILTER_SIZE_LARGE;
 	}
 	
 }

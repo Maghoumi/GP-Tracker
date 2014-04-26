@@ -16,38 +16,40 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import feeder.datatypes.SegmentedVideoFrame;
+import utils.ImageFilterProvider;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Segment;
 import utils.opengl.OpenGLUtils;
 
 public class GLFeeder extends JFrame implements VideoFeeder {
-	private final static int NUM_CHANNELS = 4;
-	private final static int LENGTH_IN_FRAMES = 170;
-	private final static int FRAME_WIDTH = 854;
-	private final static int FRAME_HEIGHT = 640;
-	private final static int VERTICAL_MARGIN = 10;
-	private final static int OBJECT_HEIGHT = 64;
+	//TODO document me
+	protected final static int NUM_CHANNELS = 4;
+	protected final static int LENGTH_IN_FRAMES = 170;
+	protected final static int FRAME_WIDTH = 854;
+	protected final static int FRAME_HEIGHT = 640;
+	protected final static int VERTICAL_MARGIN = 10;
+	protected final static int OBJECT_HEIGHT = 64;
 	
-	private byte[] buffer = new byte[FRAME_WIDTH * FRAME_HEIGHT * NUM_CHANNELS];
+	protected byte[] buffer = new byte[FRAME_WIDTH * FRAME_HEIGHT * NUM_CHANNELS];
 	
-	private volatile boolean paused = false;
-	private volatile int position = 0;
+	protected volatile boolean paused = false;
+	protected volatile int position = 0;
 	
 	/** the list of the objects that should be painted on the canvas */
-	private Set<Segment> objects = new HashSet<Segment>();
+	protected Set<Segment> objects = new HashSet<Segment>();
 	
 	/** The background segment (used for negative example when there are no other segments in the image) */
-	private Segment background = null;
+	protected Segment background = null;
 	
-	private JFileChooser dlgOpen = new JFileChooser("textures/part");	
+	protected JFileChooser dlgOpen = new JFileChooser("textures/part-small");	
 	
 	
-	private final JPanel panel = new JPanel();
-	private final JButton btnBrowse = new JButton("Browse and add image...");
+	protected final JPanel panel = new JPanel();
+	protected final JButton btnBrowse = new JButton("Browse and add image...");
 	
 	public GLFeeder() {
 		setupUI();
-		
+				
 		try {
 			ByteImage bgImage = ByteImage.loadFromFile("textures/part/background.png");
 			this.background = new Segment(bgImage, 0, 0, 128, 128, "background");
@@ -60,7 +62,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 		setVisible(true);
 	}
 	
-	private void setupUI() {
+	protected void setupUI() {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -95,7 +97,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 		this.panel.add(this.btnBrowse);
 	}
 	
-	private void drawObjectsOnCanvas() {
+	protected void drawObjectsOnCanvas() {
 		// Clear the canvas
 		Arrays.fill(buffer, (byte)255);
 		
@@ -187,41 +189,9 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 		return this.paused;
 	}
 	
+	protected static int y = 0;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private static int y = 0;
-	
-	private static int getNextYPosition() {
+	protected static int getNextYPosition() {
 		int result = y;
 		y += OBJECT_HEIGHT + VERTICAL_MARGIN;
 		return result;

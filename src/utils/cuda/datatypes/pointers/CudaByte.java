@@ -76,4 +76,9 @@ public class CudaByte extends CudaPrimitive {
 	protected Object clone() {
 		return new CudaInteger(byteValue);
 	}
+
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new byte[] {this.byteValue});
+	}
 }

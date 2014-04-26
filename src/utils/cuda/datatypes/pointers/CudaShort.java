@@ -76,4 +76,9 @@ public class CudaShort extends CudaPrimitive {
 	protected Object clone() {
 		return new CudaShort(shortValue);
 	}
+
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new short[] {this.shortValue});
+	}
 }

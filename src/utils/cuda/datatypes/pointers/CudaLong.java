@@ -14,14 +14,14 @@ import static jcuda.driver.JCudaDriver.*;
 public class CudaLong extends CudaPrimitive {
 	
 	/** The CPU value of this GPU pointer. This is the cached value */
-	protected long byteValue = 0;
+	protected long longValue = 0;
 	
 	public CudaLong() {
 		this(0);
 	}
 	
 	public CudaLong (long initialValue) {
-		this.byteValue = initialValue;
+		this.longValue = initialValue;
 		cuMemAlloc(this, getSizeInBytes());
 	}
 	
@@ -30,7 +30,7 @@ public class CudaLong extends CudaPrimitive {
 	 * 			Again, note that this is a cached value!
 	 */
 	public long getValue() {
-		return this.byteValue;
+		return this.longValue;
 	}
 	
 	/**
@@ -42,8 +42,8 @@ public class CudaLong extends CudaPrimitive {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
-		this.byteValue = newValue;
-		return cuMemcpyHtoD(this, Pointer.to(new long[] {byteValue}), getSizeInBytes());
+		this.longValue = newValue;
+		return cuMemcpyHtoD(this, Pointer.to(new long[] {longValue}), getSizeInBytes());
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class CudaLong extends CudaPrimitive {
 		
 		long[] newValue = new long[1];
 		int errCode = cuMemcpyDtoH(Pointer.to(newValue), this, getSizeInBytes());  
-		this.byteValue = newValue[0];
+		this.longValue = newValue[0];
 		return errCode;
 	}
 	
@@ -69,11 +69,16 @@ public class CudaLong extends CudaPrimitive {
 		
 		freed = false;		
 		cuMemAlloc(this, getSizeInBytes());
-		return setValue(this.byteValue);
+		return setValue(this.longValue);
 	}
 
 	@Override
 	protected Object clone() {
-		return new CudaLong(byteValue);
+		return new CudaLong(longValue);
+	}
+
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new long[] {this.longValue});
 	}
 }

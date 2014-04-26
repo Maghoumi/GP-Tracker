@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import ec.EvolutionState;
+import ec.Problem;
+import ec.gp.ADFStack;
+import ec.gp.GPData;
+import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import gnu.trove.list.TByteList;
 import gnu.trove.list.array.TByteArrayList;
@@ -84,30 +89,10 @@ public abstract class CudaNode extends GPNode {
 	}
 	
 	/**
-	 * Creates a postfix representation of this node and its child nodes
-	 * @deprecated This method should no longer be used!
-	 */
-	public StringBuilder traverse() {
-    	StringBuilder result = new StringBuilder();
-    	Stack<CudaNode> stack = new Stack<CudaNode>();
-    	stack.push(this);
-    	CudaNode node;
-    	
-    	while (!stack.isEmpty()) {
-    		node = stack.pop();
-    		result.insert(0, node.toStringForHumans());
-    		
-    		for (int i = 0 ; i < node.children.length ; i++ ) {
-    			stack.push((CudaNode) node.children[i]);
-    		}
-    	}
-    	
-    	return result.append((char)0);
-	}
-	
-	/**
 	 * Makes a postfix expression of this node and its child nodes.
 	 * Note that this is a recursive function.
+	 * 
+	 * @return The byte string of the postfix-converted of this node and its child nodes
 	 */
 	public byte[] makePostfixExpression() {
 		TByteList result = new TByteArrayList();
@@ -132,6 +117,12 @@ public abstract class CudaNode extends GPNode {
     	// Reverse the thing
     	result.reverse();
     	return result.toArray();
+	}
+	
+	@Override
+	public void eval(EvolutionState state, int thread, GPData input, ADFStack stack, GPIndividual individual, Problem problem) {
+		// Do nothing!
+		throw new RuntimeException("CPU Evaluation not implemented!");
 	}
 	
 	

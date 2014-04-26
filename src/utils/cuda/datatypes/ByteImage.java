@@ -111,6 +111,10 @@ public class ByteImage implements Cloneable {
 		System.arraycopy(input,0,this.byteData,0,input.length);
 	}
 	
+	/**
+	 * Converts the underlying byte array data to a float array and returns it
+	 * @return	This object's byteData but converted to a float[] array
+	 */
 	public float[] getFloatData() {
 		float[] result = new float[byteData.length];
 		for (int i = 0 ; i < result.length ; i++)

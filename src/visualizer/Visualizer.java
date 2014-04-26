@@ -2,6 +2,7 @@ package visualizer;
 
 import feeder.datatypes.SegmentedVideoFrame;
 import invoker.Invoker;
+import utils.ImageFilterProvider;
 import utils.cuda.datatypes.Classifier;
 
 /**
@@ -53,4 +54,10 @@ public interface Visualizer {
 	 * 		frame number)
 	 */
 	public void passNewFrame(SegmentedVideoFrame frame, int currentPosition);
+	
+	/**
+	 * @return	The ImageFilterProvider implementation that this visualizer uses to filter
+	 * 			images and display them
+	 */
+	public ImageFilterProvider getImageFilterProvider();
 }

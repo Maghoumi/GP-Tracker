@@ -2,14 +2,10 @@ package utils.cuda.datatypes;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
-import cuda.CudaInterop;
-import jcuda.Sizeof;
-import jcuda.driver.CUdeviceptr;
-import static jcuda.driver.JCudaDriver.*;
+import utils.cuda.datatypes.pointers.CudaByte2D;
 
 /**
  * A TreeSet of classifiers but with utility methods for transferring all
@@ -100,10 +96,14 @@ public class ClassifierSet extends TreeSet<Classifier> {
 				enabilityMap[enMapIndex++] = (byte) (classifier.isEnabled() ? 1 : 0);
 			}
 			
-			CUdeviceptr2D expResult = new CUdeviceptr2D(maxExpLength, this.size(), 1, Sizeof.BYTE);	// Device 2D array
-			expResult.allocTransByte(expressions);
-			CUdeviceptr overlayResult = CudaInterop.allocTransByte(overlayColors);
-			CUdeviceptr enabilityResult = CudaInterop.allocTransByte(enabilityMap);
+			CudaByte2D expResult = new CudaByte2D(maxExpLength, this.size(), 1, expressions);
+			CudaByte2D overlayResult = new CudaByte2D(this.size(), 1, 4, overlayColors);
+			CudaByte2D enabilityResult = new CudaByte2D(this.size(), 1, 1, enabilityMap);
+			
+//			CUdeviceptr2D expResult = new CUdeviceptr2D(maxExpLength, this.size(), 1, Sizeof.BYTE);	// Device 2D array
+//			expResult.allocTransByte(expressions);
+//			CUdeviceptr overlayResult = CudaInterop.allocTransByte(overlayColors);
+//			CUdeviceptr enabilityResult = CudaInterop.allocTransByte(enabilityMap);
 			
 			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult, enabilityResult);
 		}
@@ -126,15 +126,18 @@ public class ClassifierSet extends TreeSet<Classifier> {
 
 	public class ClassifierAllocationResult {
 		/** The allocated expression trees of these classifier */
-		public CUdeviceptr2D expressions;
+		public CudaByte2D expressions;
+		
 		/** The overlay color of each classifier */
-		public CUdeviceptr overlayColors;
+		public CudaByte2D overlayColors;
+		
 		/** For each classifier: is it enabled or not? */
-		public CUdeviceptr enabilityMap;
+		public CudaByte2D enabilityMap;
+		
 		/** Just a list containing the classifiers in this set */
 		public List<Classifier> classifiers;
 		
-		public ClassifierAllocationResult(List<Classifier> classifiers, CUdeviceptr2D expressions, CUdeviceptr overlayColors, CUdeviceptr enabilityMap) {
+		public ClassifierAllocationResult(List<Classifier> classifiers, CudaByte2D expressions, CudaByte2D overlayColors, CudaByte2D enabilityMap) {
 			this.classifiers = classifiers;
 			this.expressions = expressions;
 			this.overlayColors = overlayColors;
@@ -146,8 +149,8 @@ public class ClassifierSet extends TreeSet<Classifier> {
 		 */
 		public void freeAll() {
 			expressions.free();
-			cuMemFree(overlayColors);
-			cuMemFree(enabilityMap);
+			overlayColors.free();
+			enabilityMap.free();
 		}
 	}
 	

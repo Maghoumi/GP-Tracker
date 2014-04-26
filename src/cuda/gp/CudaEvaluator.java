@@ -1,10 +1,8 @@
 package cuda.gp;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import ec.Evaluator;
 import ec.EvolutionState;
 import ec.Subpopulation;
 import ec.gp.GPIndividual;
@@ -13,8 +11,6 @@ import ec.simple.SimpleFitness;
 import ec.simple.SimpleProblemForm;
 import ec.util.Parameter;
 import gnu.trove.list.array.TByteArrayList;
-import gp.M2XFilter;
-import gp.datatypes.ProblemData;
 
 /**
  * An evaluator which works exactly like SimpleEvaluator but performs the
@@ -137,12 +133,11 @@ public class CudaEvaluator extends SimpleEvaluator {
 			}
 			
 			// Call the CUDA kernel
-			float[] fitnesses = cuState.getCudaInterop().evaluatePopulation(threadExpList, cuState.devTrainingInstances);
+			float[] fitnesses = cuState.getCudaInterop().evaluatePopulation(threadExpList, cuState.getActiveJob());
 			
-			if (fitnesses.length != count) {
-				System.out.println("Mismatched count");
-				System.exit(0);
-			}
+//			if (fitnesses.length != count) {
+//				throw new RuntimeException("");
+//			}
 				
 			
 			// Clean the expressions! Will clean it bellow!

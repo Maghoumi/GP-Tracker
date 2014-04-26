@@ -13,7 +13,6 @@ public class ProblemData extends GPData
 	public static final String DESCRIBE_BLOCK = "block";
 	
 	public float value; // node value
-	public DataInstance instance; // the test/training data associated with this ProblemData
 	
 	// these data are shared among all instances of ProblemData, therefore they are declared as static and they don't need to be cloned
 	public static String path = null;
@@ -31,23 +30,4 @@ public class ProblemData extends GPData
 	
 	public static int positiveExamples; // number of positive examples
 	public static int negativeExamples; // number of negative examples
-	
-	public static ByteImage byteInputImage;
-	public static ByteImage byteInputGt;
-	public static ByteImage byteTestImage;
-	public static ByteImage byteTestGt;
-	
-	/**
-	 * CUDA ZODE 
-	 */	
-	public static CudaData inputData = null;
-	public static CudaData trainingData = null;
-	public static CudaData testingData = null;
-	
-	@Override
-	public void copyTo(final GPData gpd) // copy my stuff to another ProblemData
-	{
-		((ProblemData) gpd).value = value;
-		((ProblemData) gpd).instance = (DataInstance) instance.clone();
-	}
 }

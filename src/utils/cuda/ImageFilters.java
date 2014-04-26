@@ -11,7 +11,6 @@ import static jcuda.driver.JCudaDriver.cuTexRefSetArray;
 import static jcuda.driver.JCudaDriver.cuTexRefSetFilterMode;
 import static jcuda.driver.JCudaDriver.cuTexRefSetFlags;
 import static jcuda.driver.JCudaDriver.cuTexRefSetFormat;
-import utils.cuda.datatypes.FilterResult;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.CUDA_ARRAY_DESCRIPTOR;
@@ -147,4 +146,22 @@ public class ImageFilters {
         
         return new FilterResult(average, stdDev);
 	}
+	
+	/**
+	 * Represents the box filter results obtained using CUDA
+	 * NOTE: the underlying representation is probably ABGR!
+	 * 
+	 * @author Mehran Maghoumi
+	 *
+	 */
+	public class FilterResult {
+		public float[] avgFilter;
+		public float[] sdFilter;
+		
+		public FilterResult(float[] avgFilter, float[] sdFilter) {
+			this.avgFilter = avgFilter;
+			this.sdFilter = sdFilter;
+		}
+	}
+
 }

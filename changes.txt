@@ -1,3 +1,24 @@
+Complete code clean-up and change in the way classes work.
+Many of the classes have been completely removed
+Added CudaPrimitive and CudaPrimitive2D classes that provide wrappers to 1D and 2D CUDA/Java arrays
+
+By adding CudaPrimitive, all allocation/copy/deallocation operations are now encapsulated in the Primitive
+classes and the code is much more clean. 
+
+Added the interface ImageFilterProvider. This interface was created for the sole purpose of
+	encapsulating image filtering using CUDA.
+	
+Added the class FilteredImage to simplify the task of representing filtered images in the GP system
+		
+Added TrainingInstance in order to completely replace the poorly written CudaData and NewCudaData class
+Added CudaTrainingInstance which is a CUDA equivalent of the TrainingInstance
+
 Job:
 	Added the timestamp field. Now we know exactly when a Job object
 	was created.
+ 
+GLVisualizerKernel:
+ 	Now implements ImageFilterProvider and can filter images
+ 	
+filter.cu:
+ 	Added pitchInElements to add the support for pitched images

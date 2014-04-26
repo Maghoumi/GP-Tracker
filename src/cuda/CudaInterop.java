@@ -4,6 +4,7 @@ import static jcuda.driver.JCudaDriver.*;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -12,19 +13,18 @@ import org.apache.commons.io.FileUtils;
 
 import cuda.gp.CudaEvolutionState;
 import ec.EvolutionState;
-import ec.Individual;
 import ec.Singleton;
-import ec.gp.GPIndividual;
 import ec.util.Parameter;
 import gnu.trove.list.array.TByteArrayList;
-import gp.datatypes.DataInstance;
+import gp.datatypes.CudaTrainingInstance;
+import gp.datatypes.FilteredImage;
+import gp.datatypes.Job;
 import gp.datatypes.ProblemData;
-import utils.PreciseTimer;
-import utils.StringUtils;
+import gp.datatypes.TrainingInstance;
+import utils.ImageFilterProvider;
 import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.CudaData;
-import utils.cuda.datatypes.Float4;
-import visualizer.GLVisualizer;
+import utils.cuda.datatypes.pointers.CudaByte2D;
+import utils.cuda.datatypes.pointers.CudaFloat2D;
 import jcuda.*;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;
@@ -40,12 +40,10 @@ import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
  * @author Mehran Maghoumi
  *
  */
-public class CudaInterop implements Singleton {
+public class CudaInterop implements Singleton, ImageFilterProvider {
 
 	private KernelLauncher kernel = null;
 	private String kernelCode;
-
-	private ProblemData gpData; // for CPU evaluation purposes
 
 	private int FILTER_BLOCK_SIZE = 16;
 
@@ -68,12 +66,6 @@ public class CudaInterop implements Singleton {
 	private CUfunction fncDescribe = null; // Function handle for the "Describe" function
 	private CUfunction fncFilter = null; // Function handle for the image filter function
 
-	/** The visualizer instance that can display data in realtime */
-	public GLVisualizer visualizer;
-
-	/** Flag indicating whether the data should be visualized using OpenGL */
-	private boolean visualize;
-	
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
 		// Set the number of training points as well as the maximum CUDA grid size
@@ -88,7 +80,7 @@ public class CudaInterop implements Singleton {
 		this.largeFilterSize = state.parameters.getInt(new Parameter("problem.largeWindowSize"), null);
 
 		try {
-			prepareKernel(false);
+			prepareKernel(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -100,26 +92,30 @@ public class CudaInterop implements Singleton {
 	 * starting the evolutionary loop. Essentially after calling this method, the 
 	 * training data is transferred to the GPU and the training samples are selected. 
 	 * 
-	 * @param state
-	 * 		An evolution state to use for seting up the data
+	 * @param job	The job object that is queued on the GPSystem
+	 * 
 	 */
-	public void prepareDataForRun(CudaEvolutionState state) {
-		prepareImages(state);
-		randomSample(state);
+	public void prepareDataForRun(CudaEvolutionState state, Job job) {
+		prepareImages(job);
+		randomSample(state, job);
 	}
 
 	/**
 	 * Obtains the passed samples to the CudaEvolutionState, performs filters on
 	 * the training images and stores them in CUDA memory.
+	 * 
+	 * @param job	The current active job
 	 */
-	private void prepareImages(EvolutionState state) {
-		CudaEvolutionState cuState = (CudaEvolutionState) state;
+	private void prepareImages(Job job) {
 		
-		if (cuState.getTrainingMode() == CudaEvolutionState.TRAINING_MODE_GT) {
-			gtPrepare(cuState);
-		}
-		else if (cuState.getTrainingMode() == CudaEvolutionState.TRAINING_MODE_POS_NEG) {
-			posNegPrepare(cuState);
+		switch(job.getJobType()) {
+		case Job.TYPE_GT:
+			gtPrepare(job);
+			break;
+			
+		case Job.TYPE_POS_NEG:
+			posNegPrepare(job);
+			break;
 		}
 	}
 	
@@ -127,47 +123,41 @@ public class CudaInterop implements Singleton {
 	 * A helper function that prepares the images (ie. calculates the filters)
 	 * for the evolutionary run for the GT training mode.
 	 * 
-	 * @param state	The EvolutionState object to work with
+	 * @param job	The current active job
 	 */
-	private void gtPrepare(CudaEvolutionState cuState) {
-		CudaData data = new CudaData();
-		fillAndPerformFilters(cuState.getTrainingImage(), data);
-		cuState.setDevTrainingImage(data);
+	private void gtPrepare(Job job) {
+		FilteredImage image = new FilteredImage(job.getTrainingImage(), this);
+		job.setFilteredTrainingImage(image);
 	}
 	
 	/**
 	 * A helper function that prepares the images (ie. calculates the filters)
 	 * for the evolutionary run for the positive-negative training mode.
 	 * 
-	 * @param state	The EvolutionState object to work with
+	 * @param job The current active job
 	 */
-	private void posNegPrepare(CudaEvolutionState cuState) {
-		// FIXME is it even necessary to have everything on the GPU??
-		// FIXME for all I know, there is so much traffic on the PCI bus
-		// FIXME and maybe we just need the training data to reside on
-		// FIXME the GPU memory... Will have too look at it further
-		for (ByteImage image : cuState.getPositiveExamples()) {
-			CudaData data = new CudaData();
-			fillAndPerformFilters(image, data);
-			cuState.addDevPositiveExample(data);
+	private void posNegPrepare(Job job) {
+		for (ByteImage image : job.getPositiveExamples()) {
+			FilteredImage filtered = new FilteredImage(image, this);
+			job.addFilteredPositiveImage(filtered);
 		}
 
-		for (ByteImage image : cuState.getNegativeExamples()) {
-			CudaData data = new CudaData();
-			fillAndPerformFilters(image, data);
-			cuState.addDevNegativeExample(data);
+		for (ByteImage image : job.getNegativeExamples()) {
+			FilteredImage filtered = new FilteredImage(image, this);
+			job.addFilteredNegativeImage(filtered);
 		}
 	}
 
-	private void randomSample(EvolutionState state) {
-		state.output.message("Selecting training points...");
-		CudaEvolutionState cuState = (CudaEvolutionState) state;
+	private void randomSample(CudaEvolutionState state, Job job) {
 		
-		if (cuState.getTrainingMode() == CudaEvolutionState.TRAINING_MODE_GT) {
-			gtSample(cuState);			
-		}
-		else if (cuState.getTrainingMode() == CudaEvolutionState.TRAINING_MODE_POS_NEG) {
-			posNegSample(cuState);
+		switch(job.getJobType()) {
+		case Job.TYPE_GT:
+			gtSample(state, job);
+			break;
+			
+		case Job.TYPE_POS_NEG:
+			posNegSample(state, job);
+			break;
 		}
 	}
 	
@@ -176,19 +166,19 @@ public class CudaInterop implements Singleton {
 	 * 
 	 * @param cuState	The EvolutionState object to use
 	 */
-	private void gtSample(CudaEvolutionState cuState) {
+	private void gtSample(CudaEvolutionState state, Job job) {
 		HashSet<Integer> trainingPoints = new HashSet<Integer>(); // To prevent duplicated training points		
-		List<DataInstance> instances = cuState.trainingInstances;
-		ByteImage inputImage = cuState.getTrainingImage();
-		CudaData cudaDataInput = cuState.getDevTrainingImage();
-		ByteImage gtImage = cuState.getGtImage();
+		List<TrainingInstance> instances = new ArrayList<TrainingInstance>(this.POSITIVE_COUNT + this.NEGATIVE_COUNT);
+		ByteImage inputImage = job.getTrainingImage();
+		ByteImage gtImage = job.getGtImage();
 		
 		int pos = 0, neg = 0;
 		int width = inputImage.getWidth();
 		int height = inputImage.getHeight();
+		int numChannels = inputImage.getNumChannels();
 		
 		while (pos < this.POSITIVE_COUNT || neg < this.NEGATIVE_COUNT) {
-			int index = cuState.random[0].nextInt(width * height);
+			int index = state.random[0].nextInt(width * height);
 			
 			if (trainingPoints.contains(new Integer(index)))
 				continue;	// This training point was selected before...
@@ -209,22 +199,8 @@ public class CudaInterop implements Singleton {
 			}
 			
 			if (haveInstance) {
-				
-				Float4 input = Float4.getFloat4(cudaDataInput.input, index);
-				
-				Float4 smallAvg = Float4.getFloat4(cudaDataInput.smallAvg, index);
-				Float4 mediumAvg = Float4.getFloat4(cudaDataInput.mediumAvg, index);
-				Float4 largeAvg = Float4.getFloat4(cudaDataInput.largeAvg, index);
-				
-				
-				Float4 smallSd = Float4.getFloat4(cudaDataInput.smallSd, index);
-				Float4 mediumSd = Float4.getFloat4(cudaDataInput.mediumSd, index);
-				Float4 largeSd = Float4.getFloat4(cudaDataInput.largeSd, index);
-				
-				DataInstance instance = new DataInstance(input,
-						smallAvg, mediumAvg, largeAvg,
-						smallSd, mediumSd, largeSd,
-						label);
+				FilteredImage filtered = job.getFilteredTrainingImage();
+				TrainingInstance instance = new TrainingInstance(filtered, index, label);
 				instances.add(instance);
 				trainingPoints.add(new Integer(index));
 			} // end-if
@@ -234,9 +210,9 @@ public class CudaInterop implements Singleton {
 		// Shuffle the samples
 		Collections.shuffle(instances);
 			
-		// Create a CudaData instance to hold the same training points
+		// Create a CudaTrainingData instance to hold the same training points
 		// This call will also transfer the training data to GPU
-		cuState.devTrainingInstances = new CudaData(instances);
+		job.setCudaTrainingInstances(new CudaTrainingInstance(instances, numChannels));
 	}
 	
 	
@@ -246,17 +222,18 @@ public class CudaInterop implements Singleton {
 	 * 
 	 * @param cuState	The EvolutionState object to use
 	 */
-	private void posNegSample(CudaEvolutionState cuState) {
+	private void posNegSample(CudaEvolutionState state, Job job) {
 		HashSet<Integer> trainingPoints = new HashSet<Integer>(); // To prevent duplicated training points
 		
-		List<DataInstance> instances = cuState.trainingInstances;
+		List<TrainingInstance> instances = new ArrayList<TrainingInstance>(this.POSITIVE_COUNT + this.NEGATIVE_COUNT);
 
 		int sampleCount;
 		List<ByteImage> samples;
-		List<CudaData> cuSamples;
+		List<FilteredImage> filteredSamples;
 
-		samples = cuState.getPositiveExamples();
-		cuSamples = cuState.getDevPositiveExamples();
+		samples = job.getPositiveExamples();
+		filteredSamples = job.getFilteredPositiveImages();
+		int numChannels = 0;
 
 		// Would like to evenly select positive examples from all existing positive images
 		// Therefore, we find the portion for each sample image (using the ceiling value)
@@ -264,11 +241,12 @@ public class CudaInterop implements Singleton {
 
 		for (int i = 0; i < samples.size(); i++) {
 			ByteImage image = samples.get(i);
-			CudaData cuImage = cuSamples.get(i);
+			FilteredImage filteredImage = filteredSamples.get(i);
 			sampleCount = 0;
+			numChannels = image.getNumChannels();
 
 			while (sampleCount < portion) { // Should loop until we have sampled the desired number of pixels from this image
-				int index = cuState.random[0].nextInt(image.getWidth() * image.getHeight());
+				int index = state.random[0].nextInt(image.getWidth() * image.getHeight());
 
 				if (trainingPoints.contains(new Integer(index)))
 					continue; // Oops! We have already sampled this pixel
@@ -277,40 +255,31 @@ public class CudaInterop implements Singleton {
 				if (image.getColor(index).getAlpha() == 0)
 					continue;
 
-				trainingPoints.add(new Integer(index));
-
-				Float4 input = Float4.getFloat4(cuImage.input, index);
-
-				Float4 smallAvg = Float4.getFloat4(cuImage.smallAvg, index);
-				Float4 mediumAvg = Float4.getFloat4(cuImage.mediumAvg, index);
-				Float4 largeAvg = Float4.getFloat4(cuImage.largeAvg, index);
-
-				Float4 smallSd = Float4.getFloat4(cuImage.smallSd, index);
-				Float4 mediumSd = Float4.getFloat4(cuImage.mediumSd, index);
-				Float4 largeSd = Float4.getFloat4(cuImage.largeSd, index);
-
-				DataInstance instance = new DataInstance(input, smallAvg, mediumAvg, largeAvg, smallSd, mediumSd, largeSd, 1);
+				// Add this point as the already used point
+				trainingPoints.add(new Integer(index));				
+				
+				TrainingInstance instance = new TrainingInstance(filteredImage, index, 1);
 				instances.add(instance);
 				sampleCount++;
 			}
 		}
 		
-		// FIXME could adjust the number of POSITIVE_COUNT here, but who cares...? ;)
+		// Could adjust the number of POSITIVE_COUNT here, but who cares...? ;)
 		sampleCount = 0;
 		trainingPoints.clear();
 		
-		samples = cuState.getNegativeExamples();
-		cuSamples = cuState.getDevNegativeExamples();
+		samples = job.getNegativeExamples();
+		filteredSamples = job.getFilteredNegativeImages();
 		
 		portion = (NEGATIVE_COUNT - 1) / samples.size() + 1;
 
 		for (int i = 0; i < samples.size(); i++) {
 			ByteImage image = samples.get(i);
-			CudaData cuImage = cuSamples.get(i);
+			FilteredImage filteredImage = filteredSamples.get(i);
 			sampleCount = 0;
 
 			while (sampleCount < portion) { // Should loop until we have sampled the desired number of pixels from this image
-				int index = cuState.random[0].nextInt(image.getWidth() * image.getHeight());
+				int index = state.random[0].nextInt(image.getWidth() * image.getHeight());
 
 				if (trainingPoints.contains(new Integer(index)))
 					continue; // Oops! We have already sampled this pixel
@@ -320,17 +289,7 @@ public class CudaInterop implements Singleton {
 
 				trainingPoints.add(new Integer(index));
 
-				Float4 input = Float4.getFloat4(cuImage.input, index);
-
-				Float4 smallAvg = Float4.getFloat4(cuImage.smallAvg, index);
-				Float4 mediumAvg = Float4.getFloat4(cuImage.mediumAvg, index);
-				Float4 largeAvg = Float4.getFloat4(cuImage.largeAvg, index);
-
-				Float4 smallSd = Float4.getFloat4(cuImage.smallSd, index);
-				Float4 mediumSd = Float4.getFloat4(cuImage.mediumSd, index);
-				Float4 largeSd = Float4.getFloat4(cuImage.largeSd, index);
-
-				DataInstance instance = new DataInstance(input, smallAvg, mediumAvg, largeAvg, smallSd, mediumSd, largeSd, 2);
+				TrainingInstance instance = new TrainingInstance(filteredImage, index, 2);
 				instances.add(instance);
 				sampleCount++;
 			}
@@ -339,15 +298,11 @@ public class CudaInterop implements Singleton {
 		// Shuffle the samples
 		Collections.shuffle(instances);
 		
-		// Create a CudaData instance to hold the same training points
+		// Create a CudaTrainingData instance to hold the same training points
 		// This call will also transfer the training data to GPU
-		cuState.devTrainingInstances = new CudaData(instances);		 
+		job.setCudaTrainingInstances(new CudaTrainingInstance(instances, numChannels));	 
 	}
 
-	public CudaInterop(boolean visualize) {
-		this.visualize = visualize;
-	}
-	
 	/**
 	 * Sets the kernel's code template. This method must be called before the kernel is compiled.
 	 * Also note that the method should be called when the function sets and everything else has
@@ -372,7 +327,7 @@ public class CudaInterop implements Singleton {
 
 		if (recompile || !kernelCodeFile.exists()) {
 			// Read the template code and insert the actions for the functions
-			kernelTemplate = StringUtils.TextToString("bin/cuda/kernels/gp/evaluator-template.cu").replace("/*@@actions@@*/", kernelCode);
+			kernelTemplate = FileUtils.readFileToString(new File("bin/cuda/kernels/gp/evaluator-template.cu")).replace("/*@@actions@@*/", kernelCode);
 			// Set the value of the constants in the kernel
 			kernelTemplate = kernelTemplate.replace("/*@@fitness-cases@@*/", String.valueOf(EVAL_FITNESS_CASES));
 			kernelTemplate = kernelTemplate.replace("/*@@eval-block-size@@*/", String.valueOf(EVAL_BLOCK_SIZE));
@@ -390,9 +345,7 @@ public class CudaInterop implements Singleton {
 
 		System.out.println(recompile ? "Kernel COMPILED" : "Kernel loaded");
 
-		// Save the current context. I want to use this context later for
-		// multithreaded
-		// operations
+		// Save the current context. I want to use this context later for multithreaded operations
 		this.context = new CUcontext();
 		cuCtxGetCurrent(context);
 
@@ -404,25 +357,6 @@ public class CudaInterop implements Singleton {
 	}
 
 	/**
-	 * Sets the CPU data (for CPU evaluation purposes) and the visualizer data.
-	 * Note that if the use of visualizer was indicated in the setup file, this
-	 * method will initialize the visualizer and block the calling thread untill
-	 * the visualizer instance is fully loaded and ready.
-	 * 
-	 * 
-	 * @param gpData
-	 *            The CPU-evaluation data
-	 * @param describeData
-	 *            The visualizer data
-	 */
-	public void setDescribeData(CudaEvolutionState state, ProblemData gpData, CudaData describeData) {
-		this.gpData = gpData;
-
-		if (visualize)
-			initVisualizer(state, describeData);
-	}
-	
-	/**
 	 * This method will switch the context to the calling thread so that another host
 	 * thread can access the CUDA functionality offered by this class.
 	 */
@@ -431,82 +365,36 @@ public class CudaInterop implements Singleton {
 	}
 
 	/**
-	 * Initializes the visualizer using the provided data. This will block the
-	 * calling thread until the visualizer instance is ready and fully loaded.
-	 * 
-	 * @param testingData
-	 *            The data that should be visualized
-	 */
-	private void initVisualizer(CudaEvolutionState state, CudaData testingData) {
-		// Create a proper title for the window
-		String title = "CUDA/OpenGL Interop -- Job #" + state.job[0].toString();
-		throw new RuntimeException("OOps! Commented out!");
-//		visualizer = new Visualizer(testingData.lightClone(), title);
-//		visualizer.waitReady();
-	}
-
-	/**
-	 * Performs all filters on the input image and stores the results in an
-	 * instance of CudaData that was provided to this function
-	 */
-	public void fillAndPerformFilters(ByteImage inputImage, CudaData input) {
-
-		byte[] byteData = inputImage.getByteData();
-		int imageWidth = inputImage.getWidth();
-		int imageHeight = inputImage.getHeight();
-		input.imageHeight = imageHeight;
-		input.imageWidth = imageWidth;
-
-		// Fill the input values
-		input.input = inputImage.getFloatData();
-		input.dev_input = allocTransFloat(input.input);
-
-		FilterResult result = performFilter(byteData, imageWidth, imageHeight, smallFilterSize);
-		input.smallAvg = result.averageResult;
-
-		input.smallSd = result.sdResult;
-		input.dev_smallAvg = result.averagePointer;
-		input.dev_smallSd = result.sdPointer;
-
-		result = performFilter(byteData, imageWidth, imageHeight, mediumFilterSize);
-		input.mediumAvg = result.averageResult;
-		input.mediumSd = result.sdResult;
-		input.dev_mediumAvg = result.averagePointer;
-		input.dev_mediumSd = result.sdPointer;
-
-		result = performFilter(byteData, imageWidth, imageHeight, largeFilterSize);
-		input.largeAvg = result.averageResult;
-		input.largeSd = result.sdResult;
-		input.dev_largeAvg = result.averagePointer;
-		input.dev_largeSd = result.sdPointer;
-	}
-
-	/**
 	 * Performs the average and standard deviation filters on the provided input
-	 * and returns the results
+	 * and stores the results in the provided CudaFloat2D objects
 	 * 
-	 * @param input
-	 * @param maskSize
-	 * @return
+	 * @param byteInput	The input image data
+	 * @param averageResult Placeholder to store the result of the average filter
+	 * @param sdResult Placeholder to store the result of the standard deviation filter
+	 * @param maskSize	the mask size to use for the filter
 	 */
-	private FilterResult performFilter(byte[] input, int imageWidth, int imageHeight, int maskSize) {
+	private void performFilter(CudaByte2D byteInput, CudaFloat2D averageResult, CudaFloat2D sdResult, int maskSize) {
+		int imageWidth = byteInput.getWidth();
+		int imageHeight = byteInput.getHeight();
+		int numChannels = byteInput.getNumFields();
+		
 		// Allocate device array
 		CUarray devTexture = new CUarray();
 		CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
 		desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
-		desc.NumChannels = 4;
+		desc.NumChannels = numChannels;
 		desc.Width = imageWidth;
 		desc.Height = imageHeight;
 		JCudaDriver.cuArrayCreate(devTexture, desc);
-
+		
 		// Copy the host input to the array
 		CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
 		copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
-		copyHD.srcHost = Pointer.to(input);
-		copyHD.srcPitch = imageWidth * Sizeof.BYTE * 4;
+		copyHD.srcHost = byteInput.hostDataToPointer();
+		copyHD.srcPitch = byteInput.getSourcePitch();
 		copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
 		copyHD.dstArray = devTexture;
-		copyHD.WidthInBytes = imageWidth * Sizeof.BYTE * 4;
+		copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
 		copyHD.Height = imageHeight;
 
 		cuMemcpy2D(copyHD);
@@ -521,39 +409,56 @@ public class CudaInterop implements Singleton {
 		cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, 4);
 		cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
 
-		// Allocate results array
-		CUdeviceptr devAverage = new CUdeviceptr();
-		cuMemAlloc(devAverage, imageWidth * imageHeight * Sizeof.FLOAT * 4);
-		CUdeviceptr devSd = new CUdeviceptr();
-		cuMemAlloc(devSd, imageWidth * imageHeight * Sizeof.FLOAT * 4);
-
-		Pointer kernelParams = Pointer.to(Pointer.to(devAverage), Pointer.to(devSd), Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { maskSize }));
+		Pointer kernelParams = Pointer.to(averageResult.toPointer(), sdResult.toPointer(),
+				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) averageResult.getDevPitchInElements()[0] }),
+				Pointer.to(new int[] { maskSize }));
 
 		// Call kernel
-		cuLaunchKernel(fncFilter, (imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1, 16, 16, 1, 0, null, kernelParams, null);
+		cuLaunchKernel(fncFilter,
+				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
+				16, 16, 1,
+				0, null,
+				kernelParams, null);
 		cuCtxSynchronize();
 
 		// Retrieve results
-		float[] average = new float[imageWidth * imageHeight * 4];
-		float[] sd = new float[imageWidth * imageHeight * 4];
-		cuMemcpyDtoH(Pointer.to(average), devAverage, imageWidth * imageHeight * Sizeof.FLOAT * 4);
-		cuMemcpyDtoH(Pointer.to(sd), devSd, imageWidth * imageHeight * Sizeof.FLOAT * 4);
+		averageResult.refresh();
+		sdResult.refresh();
 
 		// A little housekeeping
 		cuArrayDestroy(devTexture);
-		return new FilterResult(average, sd, devAverage, devSd);
+	}
+	
+	@Override
+	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {
+		performFilter(byteInput, smallAvg, smallSd, getSmallFilterSize());
+		performFilter(byteInput, mediumAvg, mediumSd, getMediumFilterSize());
+		performFilter(byteInput, largeAvg, largeSd, getLargeFilterSize());
+	}
+	
+	@Override
+	public int getSmallFilterSize() {
+		return smallFilterSize;
 	}
 
+	@Override
+	public int getMediumFilterSize() {
+		return mediumFilterSize;
+	}
+
+	@Override
+	public int getLargeFilterSize() {
+		return largeFilterSize;
+	}
+	
 	/**
-	 * Evaluates a population of individuals given as a list of list of byte[].
+	 * Evaluates a list of invidivuals on the GPU and returns their fitness array
 	 * 
-	 * @param expressions
-	 * @param data
-	 * @param indCount
-	 * @return
+	 * @param expressions	List of list of list of expressions that are unevaluated per each evaluator thread! 
+	 * @param job	The active job
+	 * @return	The fitness array
 	 */
-	public float[] evaluatePopulation(List<List<TByteArrayList>> expressions, CudaData data) {
-		// Convert expressions to byte[]
+	public float[] evaluatePopulation(List<List<TByteArrayList>> expressions, Job job) {
 		// First determine how many unevals we have in total
 		int indCount = 0;
 		int maxExpLength = 0;
@@ -567,8 +472,8 @@ public class CudaInterop implements Singleton {
 					maxExpLength = exp.size();
 		}
 
+		// Convert expressions to byte[]
 		byte[] population = new byte[indCount * maxExpLength];
-
 		int i = 0;
 
 		for (List<TByteArrayList> thExps : expressions) {
@@ -579,167 +484,23 @@ public class CudaInterop implements Singleton {
 			}
 		}
 
-		return evaluatePopulation(population, indCount, maxExpLength, data);
-	}
-
-	/**
-	 * A helper function to evaluate individuals that are represented in a
-	 * NON-RAGGED array of byte[]. All of the individuals are transferred to
-	 * memory in one go.
-	 * 
-	 * @param expressions
-	 * @param indCount
-	 * @param maxLength
-	 * @param data
-	 * @return returns the fitness vector of the evaluated individuals.
-	 */
-	public float[] evaluatePopulation(byte[] expressions, int indCount, int maxLength, CudaData data) {
+		CudaTrainingInstance ti = job.getTrainingInstances();		
 		// Allocate expressions memory
-		CUdeviceptr devExpressions = allocTransByte(expressions);
-
-		// Create the output fitnesses array
-		CUdeviceptr devFitnesses = new CUdeviceptr();
-		cuMemAlloc(devFitnesses, indCount * Sizeof.FLOAT);
-
+		CudaByte2D devExpressions = new CudaByte2D(population.length, 1, 1, population);
+		
 		kernel.setGridSize(indCount, 1);
 		kernel.setBlockSize(EVAL_BLOCK_SIZE, 1, 1);
-		kernel.call(devExpressions, indCount, maxLength, data.dev_input, data.dev_smallAvg, data.dev_mediumAvg, data.dev_largeAvg, data.dev_smallSd, data.dev_mediumSd, data.dev_largeSd, data.dev_labels, devFitnesses);
+		kernel.call(devExpressions, indCount, maxExpLength,
+				ti.getInputs(),
+				ti.getSmallAvgs(), ti.getMediumAvgs(), ti.getLargeAvgs(),
+				ti.getSmallSds(), ti.getMediumSds(), ti.getLargeSds(),
+				ti.getLabels(), ti.getOutputs());
 
-		// grab the fitnesses array
-		float[] fitnesses = new float[indCount];
-		cuMemcpyDtoH(Pointer.to(fitnesses), devFitnesses, indCount * Sizeof.FLOAT);
-		cuMemFree(devFitnesses);
-		cuMemFree(devExpressions);
+		
+		// Refresh fitnesses (aka outputs)
+		ti.getOutputs().refresh();
+		devExpressions.free();
 
-		return fitnesses;
-	}
-
-	public ByteImage describeIndividual(byte[] expression, CudaData data) {
-		CUdeviceptr devExpression = allocTransByte(expression);
-		data.initOutput();
-		Pointer kernelParams = Pointer.to(Pointer.to(devExpression), Pointer.to(data.dev_input), Pointer.to(data.dev_output), Pointer.to(data.dev_smallAvg), Pointer.to(data.dev_mediumAvg), Pointer.to(data.dev_largeAvg), Pointer.to(data.dev_smallSd), Pointer.to(data.dev_mediumSd), Pointer.to(data.dev_largeSd), Pointer.to(new int[] { data.imageWidth }), Pointer.to(new int[] { data.imageHeight }));
-
-		int gridSize = (int) Math.ceil(data.imageWidth * data.imageHeight / (double) DESC_BLOCK_SIZE);
-
-		cuLaunchKernel(fncDescribe, gridSize, 1, 1, DESC_BLOCK_SIZE, 1, 1, 0, null, kernelParams, null);
-		cuCtxSynchronize();
-
-		// Copy the output image
-		byte[] byteData = new byte[data.imageWidth * data.imageHeight * 4];
-		cuMemcpyDtoH(Pointer.to(byteData), data.dev_output, data.imageWidth * data.imageHeight * 4 * Sizeof.BYTE);
-		cuMemFree(devExpression);
-
-		return new ByteImage(byteData, data.imageWidth, data.imageHeight);
-	}
-
-	/**
-	 * Evaluates an individual on the CPU. Use it for debugging purposes only
-	 * :-)
-	 * 
-	 * @param state
-	 * @param ind
-	 * @param trainingInstances
-	 * @return
-	 */
-	public synchronized float cpuEvaluate(final EvolutionState state, final Individual ind, List<DataInstance> trainingInstances) {
-		int tp = 0, tn = 0;
-		int fp = 0, fn = 0;
-
-		for (DataInstance instance : trainingInstances) {
-			// set the instance as the input
-			gpData.instance = instance;
-
-			((GPIndividual) ind).trees[0].child.eval(state, 0, gpData, null, ((GPIndividual) ind), null);
-
-			boolean obtained = gpData.value > 0;
-			boolean expected = instance.label == 1;
-
-			if (obtained && expected)
-				tp++;
-			else if (!obtained && !expected)
-				tn++;
-			else if (obtained && !expected)
-				fp++;
-			else
-				fn++;
-		}
-
-		float fitness = ((float) (tp + tn)) / (ProblemData.positiveExamples + ProblemData.negativeExamples);
-		return fitness;
-	}
-
-	/**
-	 * Allocates and transfers a float array to the CUDA memory.
-	 * 
-	 * @param array
-	 *            The input float array
-	 * @return A device pointer to the allocated array
-	 */
-	public static CUdeviceptr allocTransFloat(float[] array) {
-		CUdeviceptr devPointer = new CUdeviceptr();
-		cuMemAlloc(devPointer, array.length * Sizeof.FLOAT);
-		cuMemcpyHtoD(devPointer, Pointer.to(array), array.length * Sizeof.FLOAT);
-
-		return devPointer;
-	}
-
-	/**
-	 * Allocates and transfers an integer array to the CUDA memory.
-	 * 
-	 * @param array
-	 *            The input integer array
-	 * @return A device pointer to the allocated array
-	 */
-	public static CUdeviceptr allocTransInt(int[] array) {
-		CUdeviceptr devPointer = new CUdeviceptr();
-		cuMemAlloc(devPointer, array.length * Sizeof.INT);
-		cuMemcpyHtoD(devPointer, Pointer.to(array), array.length * Sizeof.INT);
-
-		return devPointer;
-	}
-
-	/**
-	 * Allocates and transfers a byte array to the CUDA memory.
-	 * 
-	 * @param array
-	 *            The input byte array
-	 * @return A device pointer to the allocated array
-	 */
-	public static CUdeviceptr allocTransByte(byte[] array) {
-		CUdeviceptr devPointer = new CUdeviceptr();
-		int x = cuMemAlloc(devPointer, array.length * Sizeof.BYTE);
-		x = cuMemcpyHtoD(devPointer, Pointer.to(array), array.length * Sizeof.BYTE);
-
-		return devPointer;
-	}
-
-	/**
-	 * Allocates a single double pointer on the device memory with the given
-	 * initial value
-	 * 
-	 * @param initialValue
-	 *            The initial value for the allocated double
-	 * @return The pointer to the allocated memory.
-	 */
-	public static CUdeviceptr allocateDouble(double initialValue) {
-		CUdeviceptr devPointer = new CUdeviceptr();
-		cuMemAlloc(devPointer, Sizeof.DOUBLE);
-		cuMemcpyHtoD(devPointer, Pointer.to(new double[] { initialValue }), Sizeof.DOUBLE);
-
-		return devPointer;
-	}
-
-	class FilterResult {
-		float[] averageResult;
-		float[] sdResult;
-		CUdeviceptr averagePointer;
-		CUdeviceptr sdPointer;
-
-		public FilterResult(float[] averageResult, float[] sdResult, CUdeviceptr averagePoiner, CUdeviceptr sdPointer) {
-			this.averageResult = averageResult;
-			this.sdResult = sdResult;
-			this.averagePointer = averagePoiner;
-			this.sdPointer = sdPointer;
-		}
+		return ti.getOutputs().getUnclonedArray();
 	}
 }

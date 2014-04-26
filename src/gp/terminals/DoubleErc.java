@@ -2,20 +2,11 @@ package gp.terminals;
 
 import java.nio.ByteBuffer;
 
-import utils.cuda.datatypes.CudaData;
-
-
-
 import cuda.gp.CudaERC;
 import jcuda.Sizeof;
 import ec.EvolutionState;
-import ec.Problem;
-import ec.gp.ADFStack;
-import ec.gp.GPData;
-import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Code;
-import gp.datatypes.ProblemData;
 
 public class DoubleErc extends CudaERC {
 	public float value;
@@ -34,13 +25,6 @@ public class DoubleErc extends CudaERC {
 
 	public String toStringForHumans() {
 		return String.format("%.2f", value);
-	}
-
-	public void eval(final EvolutionState state, final int thread,
-			final GPData input, final ADFStack stack,
-			final GPIndividual individual, final Problem problem) {
-		ProblemData rd = ((ProblemData) (input));
-		rd.value = value;
 	}
 
 	@Override
@@ -64,19 +48,6 @@ public class DoubleErc extends CudaERC {
 		// This is a double ERC. A double is 8 bytes.
 		// I will convert this ERC to a byte code using the
 		// constant value of this ERC.
-		/*byte[] bytes = new byte[Sizeof.DOUBLE];	
-		
-		ByteBuffer.wrap(bytes).putDouble(0, value);
-		byte[] result = new byte[1 + Sizeof.DOUBLE];
-		result[result.length - 1] = this.opcode;	// The first element should be the OPCODE of this ERC
-		 
-		// Copy the result of the bytes
-		for (int i = 0 ; i < bytes.length ; i++) {
-			// I am NOT changing the endian!
-			result[i] = bytes[i];
-		}
-		
-		return result;*/
 		
 		byte[] bytes = new byte[Sizeof.FLOAT + 1];	
 		

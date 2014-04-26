@@ -1,6 +1,5 @@
 #include <curand_kernel.h>
 #include "filters.cu"
-//#include "shared-filters.cu"
 
 #define STACK_SIZE 128
 #define FIT_CASES_COUNT /*@@fitness-cases@@*/
@@ -101,14 +100,6 @@ __global__ void evaluate(const char* __restrict__ individuals, const int indCoun
 
 	// calculate the total fitness and assign it
 	if (threadIndex == 0) {
-//		int tpp = 0;
-//		int tnn = 0;
-//
-//		for (int k = 0 ; k < EVAL_BLOCK_SIZE ; k++) {
-//			tpp += totTp[k] + totTn[k];
-//		}
-//
-//		fitnesses[bid] = (tpp )/ (float)1280.0
 		fitnesses[bid] = (totTp[0] + totTn[0]) / (float)FIT_CASES_COUNT;
 	}
 }

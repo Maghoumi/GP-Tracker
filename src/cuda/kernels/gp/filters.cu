@@ -9,7 +9,7 @@ texture<uchar4, 2, cudaReadModeElementType> inputTexture;
  */
 extern "C"
 __global__ void avgSdFilter(float4 *average, float4 *stdDev,
-		const int imageWidth, const int imageHeight,
+		const int imageWidth, const int imageHeight, const int pitchInElements,
 		const int maskWidth) {
 
 	// get indices
@@ -73,7 +73,7 @@ __global__ void avgSdFilter(float4 *average, float4 *stdDev,
 	sumSd.z = sqrt(sumSd.z);
 	sumSd.w = sqrt(sumSd.w);
 
-	int index = yIndex * width + xIndex;
+	int index = yIndex * pitchInElements + xIndex;
 	average[index] = sum;
 	stdDev[index] = sumSd;
 }

@@ -1,22 +1,17 @@
 package cuda.gp;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import cuda.CudaInterop;
 import utils.PreciseTimer;
-import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.CudaData;
 import ec.EvolutionState;
 import ec.Individual;
 import ec.gp.GPIndividual;
 import ec.simple.SimpleEvolutionState;
 import ec.util.Checkpoint;
 import ec.util.Parameter;
-import gp.datatypes.DataInstance;
 import gp.datatypes.EvolutionListener;
 import gp.datatypes.Job;
 
@@ -48,33 +43,6 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	/** Interop instance for CUDA communications*/
 	private CudaInterop cudaInterop = null;
 	
-	/** Stores the training instances that the GP system needs for training */
-	public List<DataInstance> trainingInstances = new ArrayList<DataInstance>();
-	
-	/** The training instances that are transferred to the GPU */
-	public CudaData devTrainingInstances;
-	
-	/** Represents a list of positive examples that the system uses for training */
-	private List<ByteImage> positiveExamples = new ArrayList<ByteImage>();
-	
-	/** Represents a list of negative examples that the system uses for training */
-	private List<ByteImage> negativeExamples = new ArrayList<ByteImage>();
-	
-	/** The list of positive examples on the GPU */
-	private List<CudaData> devPositiveExamples;
-	
-	/**The list of negative examples on the GPU */
-	private List<CudaData> devNegativeExamples;
-	
-	/** The image to train on (should be supplemented with a ground-truth image as well) */
-	private ByteImage trainingImage;
-	
-	/** The prepared (ie. filtered) training image on the GPU */
-	private CudaData devTrainingImage;
-	
-	/** The ground truth to train on (should be supplied with a training image) */
-	private ByteImage gtImage;
-	
 	/** The job that the GP system is currently processing */ 
 	private Job activeJob;
 
@@ -86,151 +54,13 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 
 		// Setup the languages, problems and everything else
 		if (this.cudaInterop == null)
-			this.cudaInterop = new CudaInterop(false);
+			this.cudaInterop = new CudaInterop();
 		
 		super.setup(state, base);
 		
 		cudaInterop.setup(this, null);
-	}
+	}	
 	
-	/**
-	 * Set the image and the ground-truth image for training
-	 * @param image	The image
-	 * @param gtImage	The ground truth image
-	 */
-	public void setTrainingImages(ByteImage image, ByteImage gtImage) {
-		this.trainingMode = TRAINING_MODE_GT;	// Set the training mode
-		this.trainingImage = image;
-		this.gtImage = gtImage;
-	}
-	
-	/**
-	 * Sets the lists of examples for this evolution state. Note that the
-	 * passed lists ARE cloned.
-	 * 
-	 * @param positives
-	 * 		A list containing all positive examples
-	 * @param negatives
-	 * 		A list containing all negative examples
-	 */
-	public void setExamples(List<ByteImage> positives, List<ByteImage> negatives) {
-		this.trainingMode = TRAINING_MODE_POS_NEG;
-		
-		for (ByteImage example : positives) {
-			this.positiveExamples.add(example.clone());
-		}
-		
-		for (ByteImage example : negatives) {
-			this.negativeExamples.add(example.clone());
-		}
-	}
-	
-	/**
-	 * Adds a positive example to the positives list of this state
-	 * 
-	 * @param positiveImage
-	 * 		A positive example to add
-	 */
-	public void addPositiveExample(ByteImage positiveImage) {
-		positiveExamples.add(positiveImage);
-	}
-	
-	/**
-	 * Adds a negative example to the negativess list of this state
-	 * 
-	 * @param negativeImage
-	 * 		A negative example to add
-	 */
-	public void addNegativeExample(ByteImage negativeImage) {
-		negativeExamples.add(negativeImage);
-	}
-	
-	/**
-	 * Returns the positive examples list of this state
-	 * @return
-	 */
-	public List<ByteImage> getPositiveExamples() {
-		return this.positiveExamples;
-	}
-	
-	/**
-	 * Returns the negative examples list of this state
-	 * @return
-	 */
-	public List<ByteImage> getNegativeExamples() {
-		return this.negativeExamples;
-	}
-	
-	/**
-	 * Resets the examples list for this state object. Will deallocate CUDA memories
-	 * as well. This function should be called by the finisher after the evolutionary run.
-	 */
-	public void resetExamples() {
-		//FIXME TODO check and see if extra operations are needed here
-		trainingInstances.clear();
-		devTrainingInstances.freeAll();
-		
-		if (trainingMode == TRAINING_MODE_GT) {
-			trainingImage = null;
-			devTrainingImage.freeAll();
-			gtImage = null;
-		}
-		else if (trainingMode == TRAINING_MODE_POS_NEG) {
-			positiveExamples.clear();
-			negativeExamples.clear();
-			
-			for (CudaData data : devPositiveExamples)
-				data.freeAll();
-			devPositiveExamples.clear();
-			
-			for (CudaData data : devNegativeExamples)
-				data.freeAll();
-			devNegativeExamples.clear();
-		}
-	}
-	
-	
-	/**
-	 * Adds a GPU positive example to the positives list of this state
-	 * 
-	 * @param positiveImage
-	 * 		A positive example to add
-	 */
-	public void addDevPositiveExample(CudaData positiveImage) {
-		if (devPositiveExamples == null)
-			devPositiveExamples = new ArrayList<CudaData>();
-		
-		devPositiveExamples.add(positiveImage);
-	}
-	
-	/**
-	 * Adds a GPU negative example to the positives list of this state
-	 * 
-	 * @param positiveImage
-	 * 		A positive example to add
-	 */
-	public void addDevNegativeExample(CudaData negativeImage) {
-		if (devNegativeExamples == null)
-			devNegativeExamples = new ArrayList<CudaData>();
-		
-		devNegativeExamples.add(negativeImage);
-	}
-	
-	/**
-	 * Returns the GPU positive examples list of this state
-	 * @return
-	 */
-	public List<CudaData> getDevPositiveExamples() {
-		return this.devPositiveExamples;
-	}
-	
-	/**
-	 * Returns the GPU negative examples list of this state
-	 * @return
-	 */
-	public List<CudaData> getDevNegativeExamples() {
-		return this.devNegativeExamples;
-	}
 	
 	/**
 	 * Returns the training mode of the current evolution state
@@ -238,38 +68,6 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 */
 	public int getTrainingMode() {
 		return this.trainingMode;
-	}
-	
-	/**
-	 * Returns the original training image
-	 * @return
-	 */
-	public ByteImage getTrainingImage() {
-		return this.trainingImage;
-	}
-	
-	/**
-	 * Returns the GPU training image of this state
-	 * @return
-	 */
-	public CudaData getDevTrainingImage() {
-		return this.devTrainingImage;
-	}
-	
-	/**
-	 * Set the GPU training image for this state
-	 * @param data
-	 */
-	public void setDevTrainingImage(CudaData data) {
-		this.devTrainingImage = data;
-	}
-	
-	/**
-	 * Returns the ground truth of the training image
-	 * @return
-	 */
-	public ByteImage getGtImage() {
-		return this.gtImage;
 	}
 	
 	/**
@@ -329,7 +127,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * @param classifier
 	 */
 	public void reportIndividual(GPIndividual individual) {
-		this.activeJob.getClassifier().setIndividual(individual);
+		Classifier classifier = activeJob.getClassifier(); 
+		classifier.setIndividual(individual);
 		
 		for (EvolutionListener listener : this.evolutionListeners) {
 			int indReportFrequency = listener.getIndReportingFrequency();
@@ -380,9 +179,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 * @throws InternalError
 	 */
 	public int evolve() {
-		long t1 = 0, t2 = 0;
 		if (generation > 0)
-			/*if (generation % 20 == 0)*/ output.message("Generation " + generation);
+			output.message("Generation " + generation);
 
 		// EVALUATION
 		statistics.preEvaluationStatistics(this);
@@ -391,7 +189,7 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 		timer.start();
 		evaluator.evaluatePopulation(this);
 		timer.stop();
-		/*if (generation %20 == 0)*/ timer.log(output, "Evaluation");
+		timer.log(output, "Evaluation");
 
 		statistics.postEvaluationStatistics(this);
 
@@ -456,21 +254,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 
 	@Override
 	public void run(int condition) {
-		
-		if (this.trainingMode == TRAINING_MODE_POS_NEG) {
-		
-			if (positiveExamples == null || negativeExamples == null)
-				output.fatal("The list of positive/negative examples is not initialized");
-			
-			if (positiveExamples.size() == 0 || negativeExamples.size() == 0)
-				output.fatal("No positive/negative examples were provided to the GP system");
-		}
-		else if (this.trainingMode == TRAINING_MODE_GT) {
-			//TODO what?? :D
-		}
-		
 		// Prepare evolution data
-		cudaInterop.prepareDataForRun(this);
+		cudaInterop.prepareDataForRun(this, activeJob);
 
 		/* the big loop */
 		int result = R_NOTDONE;

@@ -36,32 +36,32 @@ public class GPSystem extends Evolve implements Runnable {
 	 * Number of jobs that can be queued on this GPSystem without blocking the
 	 * calling thread
 	 */
-	private static final int JOB_CAPACITY = 1;
+	protected static final int JOB_CAPACITY = 1;
 	
 	/** The job queue for the GP system */
-	private UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
+	protected UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
 
 	/** A flag indicating that this GPSystem should no longer wait for jobs */
-	private volatile boolean threadAlive = false;
+	protected volatile boolean threadAlive = false;
 
 	/** The worker thread associated with this GPSystem */
-	private Thread runThread = null;
+	protected Thread runThread = null;
 
 	/**
 	 * The state object that is initialized using the parameters only once but
 	 * is used multiple times. Everytime GP has to evolve a classifier, this
 	 * instance of the state will be used.
 	 */
-	private CudaEvolutionState state = null;
+	protected CudaEvolutionState state = null;
 
 	/**
 	 * Defines the current run type of this GPSystem. (Fresh? Checkpoint?
 	 * Already started?)
 	 */
-	private int runType;
+	protected int runType;
 
 	/** ECJ's commandline arguments */
-	private String[] args;
+	protected String[] args;
 
 	/**
 	 * Initializes a new GPSystem using the given parameter file.
@@ -162,29 +162,24 @@ public class GPSystem extends Evolve implements Runnable {
 	 * Obviously, this call is synchronous.
 	 * @param job
 	 */
-	public void runJob(Job job) {
+	protected GPIndividual runJob(Job job) {
 		// Set the CUDA context to the calling thread
 		getCudaInterop().switchContext();
 		
-		Classifier passedClassifier = job.getClassifier();
-		state.setWorkingClassifier(passedClassifier); // set the working classifier of the EvolutionState object
-
-		// Here, I already have a job. Decide which training scheme to adopt:
-		switch (job.getJobType()) {
-
-		case Job.TYPE_POS_NEG:
-			passedClassifier.setIndividual(this.call(job.getClassifier().getPositiveExamples(), job.getClassifier().getNegativeExamples()));
-			break;
-
-		case Job.TYPE_GT:
-			passedClassifier.setIndividual(this.call(job.getClassifier().getTrainingImage(), job.getClassifier().getGtImage()));
-			break;
-			
-		default:
-			throw new RuntimeException("Wow! Unknown job type! Shutting down...");
-		}
+		state.setActiveJob(job);
 		
+		// Ask the State to be started
+		state.resumeStart();
 		
+		// Run the GP system
+		state.run(runType);
+
+		// Set the run type for the next time
+		this.runType = CudaEvolutionState.C_STARTED_AGAIN;
+
+		// Determine and return the best individual of the run
+		GPIndividual bestIndividual = (GPIndividual) ((CudaSimpleStatistics) state.statistics).best_of_run[0];
+		return bestIndividual;	
 	}
 
 	/**
@@ -192,71 +187,6 @@ public class GPSystem extends Evolve implements Runnable {
 	 */
 	public CudaInterop getCudaInterop() {
 		return this.state.getCudaInterop();
-	}
-
-	/**
-	 * Calls the GP system using the specified positive and negative examples,
-	 * waits for the GP system to finish and returns the single best individual
-	 * of the whole run.
-	 * 
-	 * 
-	 * @param args
-	 *            The command-line argument (usually should specify the location
-	 *            of the ECJ's parameter file)
-	 * @param positives
-	 *            A list of positive examples
-	 * @param negatives
-	 *            A list of negative examples
-	 * @return The best individual of the whole run
-	 */
-	private GPIndividual call(List<ByteImage> positives, List<ByteImage> negatives) {
-		// Switch context
-		getCudaInterop().switchContext();
-		state.setExamples(positives, negatives);asdasd
-
-		// Ask the State to be started
-		state.resumeStart();
-		
-		// Run the GP system
-		state.run(runType);
-
-		// Set the run type for the next time
-		this.runType = CudaEvolutionState.C_STARTED_AGAIN;
-
-		// Determine and return the best individual of the run
-		GPIndividual bestIndividual = (GPIndividual) ((CudaSimpleStatistics) state.statistics).best_of_run[0];
-		return bestIndividual;
-	}
-
-	/**
-	 * Calls the GP system using the specified training image and its
-	 * corresponding ground-truth and waits for the system to finish and returns
-	 * the single best individual of the whole run.
-	 * 
-	 * @param trainingImage
-	 *            The image to train on
-	 * @param gtImage
-	 *            The ground truth of the training image
-	 * @return The best individual of the whole run
-	 */
-	private GPIndividual call(ByteImage trainingImage, ByteImage gtImage) {
-		// Switch context
-		getCudaInterop().switchContext();
-
-		state.setTrainingImages(trainingImage, gtImage);asdasd
-
-		// Ask the State to be started
-		state.resumeStart();
-		
-		// Run the GP system
-		state.run(runType);
-
-		// Set the run type for the next time
-		this.runType = CudaEvolutionState.C_STARTED_AGAIN;
-
-		// Determine and return the best individual of the run
-		GPIndividual bestIndividual = (GPIndividual) ((CudaSimpleStatistics) state.statistics).best_of_run[0];
-		return bestIndividual;
 	}
 
 	@Override
@@ -280,26 +210,9 @@ public class GPSystem extends Evolve implements Runnable {
 				break;
 			}
 
-			getCudaInterop().switchContext(); // Safety measure
-			state.setActiveJob(newJob);
-
-			// Here, I already have a job. Decide which training scheme to adopt:
-			GPIndividual evolvedIndividual = null;
+			GPIndividual evolvedIndividual = runJob(newJob);
 			
-			switch (newJob.getJobType()) {
-
-			case Job.TYPE_POS_NEG:
-				evolvedIndividual = this.call(newJob.getClassifier().getPositiveExamples(), newJob.getClassifier().getNegativeExamples());
-				break;
-
-			case Job.TYPE_GT:
-				evolvedIndividual = this.call(newJob.getClassifier().getTrainingImage(), newJob.getClassifier().getGtImage());
-				break;
-			default:
-				throw new RuntimeException("Wow! Unknown job type! Shutting down...");
-			}
-			
-			passedClassifier.setIndividual(evolvedIndividual);
+			newJob.getClassifier().setIndividual(evolvedIndividual);
 			state.reportIndividual(evolvedIndividual);
 			jobs.poll(); // remove this job from the queue permenantly!
 			System.err.println("Finished processing " + newJob.getClassifier().toString());

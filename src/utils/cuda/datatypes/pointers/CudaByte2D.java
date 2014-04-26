@@ -1,31 +1,25 @@
 package utils.cuda.datatypes.pointers;
 
-import static jcuda.driver.JCudaDriver.cuCtxCreate;
-import static jcuda.driver.JCudaDriver.cuInit;
-import static jcuda.driver.JCudaDriver.setExceptionsEnabled;
 import jcuda.Pointer;
 import jcuda.Sizeof;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUdevice;
-import jcuda.runtime.JCuda;
 
 /**
- * Represents a primitive array of integers which is synchronized with an int pointer
+ * Represents a primitive array of bytes which is synchronized with a byte pointer
  * in CUDA.
  * 
  * @author Mehran Maghoumi
  *
  */
-public class CudaInteger2D extends CudaPrimitive2D {
-	
+public class CudaByte2D extends CudaPrimitive2D {
+
 	/** The CPU value of this GPU pointer. This is the cached value */
-	protected int[] array;
+	protected byte[] array;
 	
-	public CudaInteger2D (int width, int height) {
+	public CudaByte2D (int width, int height) {
 		this(width, height, 1);
 	}
 	
-	public CudaInteger2D (int width, int height, int numFields) {
+	public CudaByte2D (int width, int height, int numFields) {
 		this(width, height, numFields, null);
 	}
 	
@@ -40,12 +34,12 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	 * @param numFields
 	 * @param initialValues
 	 */
-	public CudaInteger2D (int width, int height, int numFields, int[] initialValues) {
+	public CudaByte2D (int width, int height, int numFields, byte[] initialValues) {
 		super(width, height, numFields);
 		
 		// Initialize the host array
 		if (initialValues == null)
-			this.array = new int[width * height * numFields];
+			this.array = new byte[width * height * numFields];
 		else {
 			if (initialValues.length != width * height * numFields)
 				throw new RuntimeException("Given array's length is different than specified specifications");
@@ -68,14 +62,14 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	 * @param y	The row index of the matrix
 	 * @return
 	 */
-	public int[] getValueAt (int x, int y) {
+	public byte[] getValueAt (int x, int y) {
 		if (x >= width)
 			throw new IndexOutOfBoundsException("Column index out of bounds");
 		
 		if (y >= height)
 			throw new IndexOutOfBoundsException("Row index out of bounds");
 		
-		int[] result = new int[numFields]; 
+		byte[] result = new byte[numFields]; 
 		// Determine the start index
 		int startIndex = y * width * numFields + x * numFields;
 		// Perform copy
@@ -85,24 +79,24 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	}
 	
 	/**
-	 * @return	A copy (i.e. a clone) of the underlying array of this Integer2D object
+	 * @return	A copy (i.e. a clone) of the underlying array of this Byte2D object
 	 */
-	public int[] getArray() {
+	public byte[] getArray() {
 		return this.array.clone();
 	}
 	
 	/**
-	 * @return	The underlying array of this Integer2D object
+	 * @return	The underlying array of this Byte2D object
 	 * 			WARNING: Do not modify this array directly! Use getArray()
 	 * 					 if you need to modify the returned array!
 	 * 
 	 */
-	public int[] getUnclonedArray() {
+	public byte[] getUnclonedArray() {
 		return this.array;
 	}
 	
 	/**
-	 * Sets the array of this Integer2D object to the specified array.
+	 * Sets the array of this Byte2D object to the specified array.
 	 * The new array must meet the original specifications (i.e. same width, height etc.)
 	 * After the array is set, the new values are automatically writted back to the GPU
 	 * memory.
@@ -112,7 +106,7 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	 * @param newArray
 	 * @return JCuda's error code
 	 */
-	public int setArray(int[] newArray) {
+	public int setArray(byte[] newArray) {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
@@ -125,7 +119,7 @@ public class CudaInteger2D extends CudaPrimitive2D {
 
 	@Override
 	public int getElementSizeInBytes() {
-		return Sizeof.INT;
+		return Sizeof.BYTE;
 	}
 
 	@Override
@@ -140,36 +134,7 @@ public class CudaInteger2D extends CudaPrimitive2D {
 
 	@Override
 	protected Object clone() {
-		return new CudaInteger2D(width, height, numFields, array);
-	}
-	
-	public static void main(String args[]) {
-		setExceptionsEnabled(true);
-		JCuda.setExceptionsEnabled(true);
-		cuInit(0);
-		CUdevice dev = new CUdevice();
-		CUcontext contex = new CUcontext();
-		cuCtxCreate(contex, 0, dev);
-		
-		int width = 5;
-		int height = 6;
-		int numFileds = 4;
-		
-		CudaInteger2D integer = new CudaInteger2D(5, 6, 4); 
-		
-//		System.out.println(integer.getPitchInElements()[0]);
-		
-//		integer.setValue(5);
-//		integer.setValue(10);
-//		integer.refresh();
-//		System.out.println(integer.getValue());
-//		
-//		integer.free();
-//		
-//		integer.reallocate();
-//		integer.refresh();
-//		System.out.println(integer.getValue());
-		
+		return new CudaByte2D(width, height, numFields, array);
 	}
 
 }

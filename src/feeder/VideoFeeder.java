@@ -16,12 +16,6 @@ import visualizer.GLVisualizer;
  */
 public interface VideoFeeder {
 	
-//	/**
-//	 * Set the owner of this VideoFeeder instance
-//	 * @param visualizer	The visualizer that owns this VideoFeeder instance
-//	 */
-//	public void setOwner(GLVisualizer visualizer);
-	
 	/**
 	 * @return	The width of each frame of the video
 	 */
@@ -48,14 +42,6 @@ public interface VideoFeeder {
 	 */
 	public SegmentedVideoFrame getNextSegmentedFrame();
 	
-//	/**
-//	 * Gets the next frame from the video source and passes the new frame
-//	 * and the discovered segments to the owning Visualizer instance. A call
-//	 * to this function should pause the worker thread and cause the execution
-//	 * to switch to step mode 
-//	 */
-//	public void getAndPassNextFrame();
-	
 	/**
 	 * @return	The length of the video in frames
 	 */
@@ -71,25 +57,6 @@ public interface VideoFeeder {
 	 * @param position	The new position to set
 	 */
 	public void setCurrentPosition(int position);	
-	
-//	/**
-//	 * The Runnable interface implementation. The thread which runs this function
-//	 * must be able to automatically parse the video frames, advance the video
-//	 * position and pass the parsed frame (along with other necessary information
-//	 * such as information about detected segments in the frame) to the owning
-//	 * Visualizer instance. 
-//	 */
-//	public void run();
-//	
-//	/**
-//	 * Starts the worker thread
-//	 */
-//	public void start();
-//	
-//	/**
-//	 * Stops the worker thread
-//	 */
-//	public void stop();
 	
 	/**
 	 * Restart the video

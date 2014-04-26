@@ -72,7 +72,8 @@ void thresholdDescribe(char* expressions, int pitchInElements, int expCount,
 		float* scratchPad,
 		DescribeData data,
 		const int segmentX, const int segmentY,
-		const int segmentWidth, const int segmentHeight
+		const int segmentWidth, const int segmentHeight,
+		const int segmentPitchInElements
 		)
 {
 	int bid = blockIdx.x;
@@ -117,7 +118,7 @@ __global__ void describe(const char shouldThreshold, char* expressions, int pitc
 		float4 *smallAvg, float4 *mediumAvg, float4 *largeAvg,
 		float4 *smallSd, float4 *mediumSd, float4 *largeSd,
 		const int segmentX, const int segmentY,
-		const int segmentWidth, const int segmentHeight,
+		const int segmentWidth, const int segmentHeight, const int segmentPitchInElements,
 		const int outputWidth, const int outputHeight
 		)
 {
@@ -129,7 +130,8 @@ __global__ void describe(const char shouldThreshold, char* expressions, int pitc
 				scratchPad,
 				data,
 				segmentX, segmentY,
-				segmentWidth, segmentHeight
+				segmentWidth, segmentHeight,
+				segmentPitchInElements
 				);
 	}
 	else {

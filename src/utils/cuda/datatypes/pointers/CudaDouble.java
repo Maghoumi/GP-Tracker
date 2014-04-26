@@ -76,4 +76,9 @@ public class CudaDouble extends CudaPrimitive {
 	protected Object clone() {
 		return new CudaDouble(doubleValue);
 	}
+
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new double[] {this.doubleValue});
+	}
 }

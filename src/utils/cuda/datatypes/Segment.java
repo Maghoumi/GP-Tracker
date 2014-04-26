@@ -1,9 +1,12 @@
 package utils.cuda.datatypes;
 
+import gp.datatypes.FilteredImage;
+
 import java.awt.Rectangle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import utils.ImageFilterProvider;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
 
@@ -17,11 +20,11 @@ import jcuda.driver.CUmodule;
  */
 public class Segment implements Cloneable {
 	
-	/** The CudaData instance that holds the GPU data of this segment */
-	private NewCudaData data;
-	
 	/** The image data of this segment */
-	private ByteImage image;
+	protected ByteImage image;
+	
+	/** The FilteredImage equivalent of this segment */
+	protected FilteredImage filteredImage;
 	
 	/** An arbitrary unique ID that is associated to this segment to distinguish it from other segments */
 	protected String id;
@@ -29,31 +32,37 @@ public class Segment implements Cloneable {
 	/** The boundaries of this segment */
 	protected Rectangle bounds;
 	
+	/**
+	 * Initializes a new segment object using the provided boundaries and ID
+	 * @param image
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param id
+	 */
 	public Segment(ByteImage image, int x, int y, int width, int height, String id) {
 		this(image, new Rectangle(x, y, width, height), id);
 	}
 	
+	/**
+	 * Initializes a new segment object using the provided boundaries and ID
+	 * 
+	 * @param image
+	 * @param bounds
+	 * @param id
+	 */
 	public Segment(ByteImage image, Rectangle bounds, String id) {
-		this.data = new NewCudaData(image);
 		this.image = image;
 		this.bounds = new Rectangle(bounds);
 		this.id = id;
 	}
 	
 	/**
-	 * Set the CUDA objects that are necessary for the CudaData that this segment has 
-	 * @param module	The cuda module
-	 * @param fncFilter The handle to the filter functions
+	 * @return The filtered images 
 	 */
-	public void setCudaObjects(CUmodule module, CUfunction fncFilter) {
-		this.data.setCudaObjects(module, fncFilter);
-	}
-	
-	/**
-	 * @return The underlying CudaData that this segment has 
-	 */
-	public NewCudaData getImageData() {
-		return this.data;
+	public FilteredImage getFilteredImage() {
+		return this.filteredImage;
 	}
 	
 	/**
@@ -68,6 +77,16 @@ public class Segment implements Cloneable {
 	 */
 	public Rectangle getBounds() {
 		return this.bounds;
+	}
+	
+	/**
+	 * Filters the image using the provided ImageFilterProvider.
+	 * Note that the filter is done on the calling thread thus the clients
+	 * must take care of any context switching that may be required
+	 * @param filterProvider
+	 */
+	public void filterImage(ImageFilterProvider filterProvider) {
+		this.filteredImage = new FilteredImage(image, filterProvider);
 	}
 	
 	@Override
@@ -92,7 +111,7 @@ public class Segment implements Cloneable {
 	}
 	
 	/**
-	 * Performs a shallow clone of this object. Note that the image data and CudaData
+	 * Performs a shallow clone of this object. Note that the image data and filtered images
 	 * of this object are not cloned!
 	 */
 	@Override

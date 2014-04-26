@@ -100,4 +100,9 @@ public class CudaInteger extends CudaPrimitive {
 		
 	}
 
+	@Override
+	public Pointer hostDataToPointer() {
+		return Pointer.to(new int[] {this.intValue});
+	}
+
 }

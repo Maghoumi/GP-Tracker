@@ -6,6 +6,15 @@ import jcuda.driver.CUDA_MEMCPY2D;
 import jcuda.driver.CUmemorytype;
 
 
+/**
+ * An extension of CudaPrimitive that represents a primitive array in CUDA with
+ * an equivalent array in Java. The values are synched between the GPU and the
+ * CPU. The array can be either 1D or 2D depending on the value of <i>height</i>.
+ * The allocation will be pitched if possible.
+ * 
+ * @author Mehran Maghoumi
+ *
+ */
 public abstract class CudaPrimitive2D extends CudaPrimitive {
 	
 	/** The pitch of the memory pointed by this pointer */
@@ -50,16 +59,35 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	}
 	
 	/**
+	 * Determines if this allocation is pitched (or can be potentially pitched)
+	 * @return
+	 */
+	public boolean isPitched() {
+		if (true)
+			return false;
+		//FIXME
+		//FIXME Should support pitched
+		//FIXME	Support was removed because of CUDA expression evaluator's 
+		// lack of support for pitched memory.
+		/*
+		 * In fact, exp evaluator does support pitched memory however, the number of 
+		 * threads and blocks must be modified in the host code so that there are enough threads
+		 * for the pitched memory
+		 */
+		//FIXME
+		int recordSizeInBytes = getElementSizeInBytes() * numFields;
+		return recordSizeInBytes == 4 || recordSizeInBytes == 8 || recordSizeInBytes == 16;
+	}
+	
+	/**
 	 * Allocates the GPU memory required for this Primitive2D object. This method
 	 * will decide if the allocation needs to be pitched or non-pitched
 	 * 
 	 * @return JCuda's error code
 	 */
 	protected int allocate() {
-		int recordSizeInBytes = getElementSizeInBytes() * numFields;
-		
 		// Check to see if we can allocate using pitched memory
-		if (recordSizeInBytes == 4 || recordSizeInBytes == 8 || recordSizeInBytes == 16)
+		if (isPitched())
 			return allocatePitched();
 		else
 			return allocateNonPitched();
@@ -91,10 +119,8 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 * @return JCuda's error code 
 	 */
 	protected int upload() {
-		int recordSizeInBytes = getElementSizeInBytes() * numFields;
-		
 		// Check to see if we can transfer using pitched memory
-		if (recordSizeInBytes == 4 || recordSizeInBytes == 8 || recordSizeInBytes == 16)
+		if (isPitched())
 			return uploadPitched();
 		else
 			return uploadNonPitched();
@@ -135,10 +161,8 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 * @return JCuda's error code 
 	 */
 	protected int download() {
-		int recordSizeInBytes = getElementSizeInBytes() * numFields;
-		
 		// Check to see if we can transfer using pitched memory
-		if (recordSizeInBytes == 4 || recordSizeInBytes == 8 || recordSizeInBytes == 16)
+		if (isPitched())
 			return downloadPitched();
 		else
 			return downloadNonPitched();
@@ -151,7 +175,7 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	protected int downloadPitched() {
 		CUDA_MEMCPY2D copyParam = new CUDA_MEMCPY2D();
 		copyParam.srcDevice = this;
-        copyParam.srcPitch = getPitch()[0];
+        copyParam.srcPitch = getDevPitch()[0];
         copyParam.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_DEVICE;
         
         copyParam.dstHost = hostDataToPointer();
@@ -196,8 +220,15 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	/**
 	 * @return	The pitch of the allocated memory as returned by cuMemAllocPitch()
 	 */
-	public long[] getPitch() {
+	public long[] getDevPitch() {
 		return this.pitch.clone();
+	}
+	
+	/**
+	 * @return	The pitch of the host memory. This method is here just for convenience.
+	 */
+	public long getSourcePitch() {
+		return this.width * this.numFields * getElementSizeInBytes();
 	}
 	
 	/**
@@ -206,6 +237,13 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 */
 	public int getWidth() {
 		return this.width;
+	}
+	
+	/**
+	 * @return	The number of elements per field allocation
+	 */
+	public int getNumFields() {
+		return this.numFields;
 	}
 	
 	/**
@@ -222,7 +260,7 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 * Without this pitch, you'd have to use the cumbersome pointer casting in the CUDA kernel
 	 * to access memory locations pointed by this pointer.
 	 */
-	public long[] getPitchInElements() {
+	public long[] getDevPitchInElements() {
 		return new long[] {this.pitch[0] / (numFields * getElementSizeInBytes())};
 	}
 	

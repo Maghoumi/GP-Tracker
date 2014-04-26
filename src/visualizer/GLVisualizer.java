@@ -42,6 +42,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
+import utils.ImageFilterProvider;
 import utils.cuda.datatypes.ByteImage;
 import utils.cuda.datatypes.Classifier;
 import utils.cuda.datatypes.ClassifierSet;
@@ -771,5 +772,10 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		this.imageHeight = height;
 		setPreferredSize(new Dimension(width, height));
 		pack();
+	}
+
+	@Override
+	public ImageFilterProvider getImageFilterProvider() {
+		return this.kernel;
 	}
 }
