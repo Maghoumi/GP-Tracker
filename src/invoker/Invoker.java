@@ -1,13 +1,13 @@
 package invoker;
 
 import feeder.VideoFeeder;
-import feeder.datatypes.SegmentedVideoFrame;
 import gp.GPSystem;
 import gp.datatypes.Job;
 import utils.Classifier;
 import utils.ColorUtils;
 import utils.EvolutionListener;
 import utils.Segment;
+import utils.SegmentedVideoFrame;
 import visualizer.Visualizer;
 
 /**

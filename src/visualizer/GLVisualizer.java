@@ -1,6 +1,5 @@
 package visualizer;
 
-import feeder.datatypes.SegmentedVideoFrame;
 import invoker.Invoker;
 
 import java.awt.BorderLayout;
@@ -47,6 +46,7 @@ import utils.Classifier;
 import utils.ClassifierSet;
 import utils.ImageFilterProvider;
 import utils.Segment;
+import utils.SegmentedVideoFrame;
 import utils.ClassifierSet.ClassifierAllocationResult;
 import utils.gui.CheckBoxList;
 import utils.gui.ClassifierCheckBox;

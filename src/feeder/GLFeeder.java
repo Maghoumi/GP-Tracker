@@ -15,10 +15,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import feeder.datatypes.SegmentedVideoFrame;
 import utils.ByteImage;
 import utils.ImageFilterProvider;
 import utils.Segment;
+import utils.SegmentedVideoFrame;
 import utils.opengl.OpenGLUtils;
 
 public class GLFeeder extends JFrame implements VideoFeeder {

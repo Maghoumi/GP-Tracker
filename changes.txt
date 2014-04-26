@@ -1,2 +1,0 @@
-Organized packages and classes
-Moved some classes to different packages (mainly in the utils package)

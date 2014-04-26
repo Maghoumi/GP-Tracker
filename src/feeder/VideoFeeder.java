@@ -1,7 +1,7 @@
 package feeder;
 
-import feeder.datatypes.SegmentedVideoFrame;
 import utils.ByteImage;
+import utils.SegmentedVideoFrame;
 import visualizer.GLVisualizer;
 
 /**
