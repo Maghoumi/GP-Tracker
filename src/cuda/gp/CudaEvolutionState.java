@@ -3,16 +3,15 @@ package cuda.gp;
 import java.util.HashSet;
 import java.util.Set;
 
-import cuda.CudaInterop;
+import utils.Classifier;
+import utils.EvolutionListener;
 import utils.PreciseTimer;
-import utils.cuda.datatypes.Classifier;
 import ec.EvolutionState;
 import ec.Individual;
 import ec.gp.GPIndividual;
 import ec.simple.SimpleEvolutionState;
 import ec.util.Checkpoint;
 import ec.util.Parameter;
-import gp.datatypes.EvolutionListener;
 import gp.datatypes.Job;
 
 /**

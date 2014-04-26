@@ -1,7 +1,7 @@
 package utils;
 
-import utils.cuda.datatypes.pointers.CudaByte2D;
-import utils.cuda.datatypes.pointers.CudaFloat2D;
+import utils.cuda.pointers.CudaByte2D;
+import utils.cuda.pointers.CudaFloat2D;
 
 /**
  * Represents classes that are able to filter images using CUDA. This

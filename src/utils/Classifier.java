@@ -1,4 +1,4 @@
-package utils.cuda.datatypes;
+package utils;
 
 import java.awt.Color;
 import java.util.ArrayList;

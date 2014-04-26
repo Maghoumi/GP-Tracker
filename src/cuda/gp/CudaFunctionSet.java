@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import cuda.CudaInterop;
 import ec.EvolutionState;
 import ec.gp.GPFunctionSet;
 import ec.gp.GPInitializer;

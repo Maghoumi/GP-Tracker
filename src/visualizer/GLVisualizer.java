@@ -42,16 +42,16 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
+import utils.ByteImage;
+import utils.Classifier;
+import utils.ClassifierSet;
 import utils.ImageFilterProvider;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.ClassifierSet;
-import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
-import utils.cuda.datatypes.Segment;
+import utils.Segment;
+import utils.ClassifierSet.ClassifierAllocationResult;
+import utils.gui.CheckBoxList;
+import utils.gui.ClassifierCheckBox;
+import utils.gui.Slider;
 import utils.opengl.OpenGLUtils;
-import visualizer.controls.CheckBoxList;
-import visualizer.controls.ClassifierCheckBox;
-import visualizer.controls.Slider;
 
 import com.jogamp.opengl.util.Animator;
 

@@ -2,16 +2,16 @@ package gp;
 
 import java.util.List;
 
+import utils.ByteImage;
+import utils.Classifier;
+import utils.EvolutionListener;
+import utils.Segment;
 import utils.UniqueBlockingQueue;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.Segment;
-import cuda.CudaInterop;
 import cuda.gp.CudaEvolutionState;
+import cuda.gp.CudaInterop;
 import cuda.gp.CudaSimpleStatistics;
 import ec.Evolve;
 import ec.gp.GPIndividual;
-import gp.datatypes.EvolutionListener;
 import gp.datatypes.Job;
 
 /**

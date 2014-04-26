@@ -1,6 +1,5 @@
-package gp.datatypes;
+package utils;
 
-import utils.cuda.datatypes.Classifier;
 import ec.gp.GPIndividual;
 
 /**

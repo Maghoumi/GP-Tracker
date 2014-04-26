@@ -1,4 +1,4 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
 import jcuda.Pointer;
 import jcuda.driver.CUdeviceptr;

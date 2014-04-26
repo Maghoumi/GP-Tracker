@@ -1,5 +1,7 @@
 package gp.datatypes;
 
+import utils.FilteredImage;
+
 /**
  * Represents a single training instance that is used to train the GP system.
  * Objects of this class represent the feature vectors of the GP system. Each

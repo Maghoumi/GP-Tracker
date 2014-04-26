@@ -1,9 +1,9 @@
-package visualizer.controls;
+package utils.gui;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
-import utils.cuda.datatypes.Classifier;
+import utils.Classifier;
 
 import java.awt.*;
 import java.awt.event.*;

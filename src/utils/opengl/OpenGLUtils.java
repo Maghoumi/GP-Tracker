@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
-import utils.cuda.datatypes.ByteImage;
+import utils.ByteImage;
 
 /**
  * Provides some utility functions for OpenGL in Java

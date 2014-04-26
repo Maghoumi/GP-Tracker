@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Segment;
+import utils.ByteImage;
+import utils.Segment;
 
 /**
  * Represents a video frame along with a set of segments that were

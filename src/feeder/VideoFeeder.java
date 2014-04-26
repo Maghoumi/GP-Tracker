@@ -1,7 +1,7 @@
 package feeder;
 
 import feeder.datatypes.SegmentedVideoFrame;
-import utils.cuda.datatypes.ByteImage;
+import utils.ByteImage;
 import visualizer.GLVisualizer;
 
 /**

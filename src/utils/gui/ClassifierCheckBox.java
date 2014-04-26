@@ -1,4 +1,4 @@
-package visualizer.controls;
+package utils.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,7 +7,7 @@ import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import utils.cuda.datatypes.Classifier;
+import utils.Classifier;
 
 /**
  * A JCheckBox that has bindings to a classifier. Checkboxes of this type

@@ -11,8 +11,8 @@ import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Segment;
+import utils.ByteImage;
+import utils.Segment;
 import visualizer.GLVisualizer;
 
 /**

@@ -1,4 +1,4 @@
-package utils.cuda.datatypes;
+package utils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -310,24 +310,6 @@ public class ByteImage implements Cloneable {
 		this.byteData[index + 1] = (byte) c.getBlue();
 		this.byteData[index + 2] = (byte) c.getGreen();
 		this.byteData[index + 3] = (byte) c.getRed();
-	}
-	
-	/**
-	 * Gets the color of the selected pixel at the specified linear location
-	 * 
-	 * @param position
-	 * 		Linear position of the pixel
-	 * @return
-	 * 		Color of the specified pixel
-	 */
-	public Float4 getFloat4(int position) {
-		int index = position * NUM_CHANNELS; // Because each pixel takes 4 banks in the byte array
-		int a = this.byteData[index] & 0xFF;
-		int b = this.byteData[index + 1] & 0xFF;
-		int g = this.byteData[index + 2] & 0xFF;
-		int r = this.byteData[index + 3] & 0xFF;
-		
-		return new Float4(r, g, b, a);
 	}
 	
 	/**

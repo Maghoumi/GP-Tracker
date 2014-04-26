@@ -3,7 +3,6 @@ package visualizer;
 import static jcuda.driver.CUaddress_mode.CU_TR_ADDRESS_MODE_CLAMP;
 import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
 import static jcuda.driver.JCudaDriver.*;
-import gp.datatypes.FilteredImage;
 import invoker.Invoker;
 
 import java.awt.Color;
@@ -16,13 +15,13 @@ import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
 
+import utils.Classifier;
+import utils.FilteredImage;
 import utils.ImageFilterProvider;
-import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.ClassifierSet;
-import utils.cuda.datatypes.ClassifierSet.ClassifierAllocationResult;
-import utils.cuda.datatypes.Segment;
-import utils.cuda.datatypes.pointers.CudaByte2D;
-import utils.cuda.datatypes.pointers.CudaFloat2D;
+import utils.Segment;
+import utils.ClassifierSet.ClassifierAllocationResult;
+import utils.cuda.pointers.CudaByte2D;
+import utils.cuda.pointers.CudaFloat2D;
 import utils.opengl.OpenGLUtils;
 import jcuda.Pointer;
 import jcuda.Sizeof;

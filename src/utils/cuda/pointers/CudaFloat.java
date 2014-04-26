@@ -1,27 +1,27 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import static jcuda.driver.JCudaDriver.*;
 
 /**
- * Represents a primitive byte that is synchronized with a char pointer
+ * Represents a primitive float that is synchronized with a float pointer
  * in CUDA.
  * 
  * @author Mehran Maghoumi
  *
  */
-public class CudaByte extends CudaPrimitive {
+public class CudaFloat extends CudaPrimitive {
 	
 	/** The CPU value of this GPU pointer. This is the cached value */
-	protected byte byteValue = 0;
+	protected float floatValue = 0;
 	
-	public CudaByte() {
-		this((byte) 0);
+	public CudaFloat() {
+		this(0f);
 	}
 	
-	public CudaByte (byte initialValue) {
-		this.byteValue = initialValue;
+	public CudaFloat (float initialValue) {
+		this.floatValue = initialValue;
 		cuMemAlloc(this, getSizeInBytes());
 	}
 	
@@ -29,8 +29,8 @@ public class CudaByte extends CudaPrimitive {
 	 * @return	The cached value of the variable pointed by this pointer.
 	 * 			Again, note that this is a cached value!
 	 */
-	public byte getValue() {
-		return this.byteValue;
+	public float getValue() {
+		return this.floatValue;
 	}
 	
 	/**
@@ -38,17 +38,17 @@ public class CudaByte extends CudaPrimitive {
 	 * @param newValue	The new value to be represented by the memory space of this pointer
 	 * @return	JCuda's error code
 	 */
-	public int setValue(byte newValue) {
+	public int setValue(float newValue) {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
-		this.byteValue = newValue;
-		return cuMemcpyHtoD(this, Pointer.to(new byte[] {byteValue}), getSizeInBytes());
+		this.floatValue = newValue;
+		return cuMemcpyHtoD(this, Pointer.to(new float[] {floatValue}), getSizeInBytes());
 	}
 
 	@Override
 	public int getSizeInBytes() {
-		return Sizeof.BYTE;
+		return Sizeof.FLOAT;
 	}
 
 	@Override
@@ -56,9 +56,9 @@ public class CudaByte extends CudaPrimitive {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
-		byte[] newValue = new byte[1];
+		float[] newValue = new float[1];
 		int errCode = cuMemcpyDtoH(Pointer.to(newValue), this, getSizeInBytes());  
-		this.byteValue = newValue[0];
+		this.floatValue = newValue[0];
 		return errCode;
 	}
 	
@@ -69,16 +69,16 @@ public class CudaByte extends CudaPrimitive {
 		
 		freed = false;		
 		cuMemAlloc(this, getSizeInBytes());
-		return setValue(this.byteValue);
+		return setValue(this.floatValue);
 	}
 
 	@Override
 	protected Object clone() {
-		return new CudaInteger(byteValue);
+		return new CudaFloat(floatValue);
 	}
 
 	@Override
 	public Pointer hostDataToPointer() {
-		return Pointer.to(new byte[] {this.byteValue});
+		return Pointer.to(new float[] {this.floatValue});
 	}
 }

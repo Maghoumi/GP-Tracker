@@ -1,7 +1,6 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
 import static jcuda.driver.JCudaDriver.*;
-import jcuda.Pointer;
 import jcuda.driver.CUDA_MEMCPY2D;
 import jcuda.driver.CUmemorytype;
 

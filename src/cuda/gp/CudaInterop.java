@@ -1,4 +1,4 @@
-package cuda;
+package cuda.gp;
 
 import static jcuda.driver.JCudaDriver.*;
 
@@ -11,20 +11,19 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import cuda.gp.CudaEvolutionState;
 import ec.EvolutionState;
 import ec.Singleton;
 import ec.util.Parameter;
 import gnu.trove.list.array.TByteArrayList;
 import gp.datatypes.CudaTrainingInstance;
-import gp.datatypes.FilteredImage;
 import gp.datatypes.Job;
 import gp.datatypes.ProblemData;
 import gp.datatypes.TrainingInstance;
+import utils.ByteImage;
+import utils.FilteredImage;
 import utils.ImageFilterProvider;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.pointers.CudaByte2D;
-import utils.cuda.datatypes.pointers.CudaFloat2D;
+import utils.cuda.pointers.CudaByte2D;
+import utils.cuda.pointers.CudaFloat2D;
 import jcuda.*;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;

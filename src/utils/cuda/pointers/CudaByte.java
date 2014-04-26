@@ -1,27 +1,27 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import static jcuda.driver.JCudaDriver.*;
 
 /**
- * Represents a primitive long that is synchronized with a long pointer
+ * Represents a primitive byte that is synchronized with a char pointer
  * in CUDA.
  * 
  * @author Mehran Maghoumi
  *
  */
-public class CudaLong extends CudaPrimitive {
+public class CudaByte extends CudaPrimitive {
 	
 	/** The CPU value of this GPU pointer. This is the cached value */
-	protected long longValue = 0;
+	protected byte byteValue = 0;
 	
-	public CudaLong() {
-		this(0);
+	public CudaByte() {
+		this((byte) 0);
 	}
 	
-	public CudaLong (long initialValue) {
-		this.longValue = initialValue;
+	public CudaByte (byte initialValue) {
+		this.byteValue = initialValue;
 		cuMemAlloc(this, getSizeInBytes());
 	}
 	
@@ -29,8 +29,8 @@ public class CudaLong extends CudaPrimitive {
 	 * @return	The cached value of the variable pointed by this pointer.
 	 * 			Again, note that this is a cached value!
 	 */
-	public long getValue() {
-		return this.longValue;
+	public byte getValue() {
+		return this.byteValue;
 	}
 	
 	/**
@@ -38,17 +38,17 @@ public class CudaLong extends CudaPrimitive {
 	 * @param newValue	The new value to be represented by the memory space of this pointer
 	 * @return	JCuda's error code
 	 */
-	public int setValue(long newValue) {
+	public int setValue(byte newValue) {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
-		this.longValue = newValue;
-		return cuMemcpyHtoD(this, Pointer.to(new long[] {longValue}), getSizeInBytes());
+		this.byteValue = newValue;
+		return cuMemcpyHtoD(this, Pointer.to(new byte[] {byteValue}), getSizeInBytes());
 	}
 
 	@Override
 	public int getSizeInBytes() {
-		return Sizeof.LONG;
+		return Sizeof.BYTE;
 	}
 
 	@Override
@@ -56,9 +56,9 @@ public class CudaLong extends CudaPrimitive {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
-		long[] newValue = new long[1];
+		byte[] newValue = new byte[1];
 		int errCode = cuMemcpyDtoH(Pointer.to(newValue), this, getSizeInBytes());  
-		this.longValue = newValue[0];
+		this.byteValue = newValue[0];
 		return errCode;
 	}
 	
@@ -69,16 +69,16 @@ public class CudaLong extends CudaPrimitive {
 		
 		freed = false;		
 		cuMemAlloc(this, getSizeInBytes());
-		return setValue(this.longValue);
+		return setValue(this.byteValue);
 	}
 
 	@Override
 	protected Object clone() {
-		return new CudaLong(longValue);
+		return new CudaInteger(byteValue);
 	}
 
 	@Override
 	public Pointer hostDataToPointer() {
-		return Pointer.to(new long[] {this.longValue});
+		return Pointer.to(new byte[] {this.byteValue});
 	}
 }

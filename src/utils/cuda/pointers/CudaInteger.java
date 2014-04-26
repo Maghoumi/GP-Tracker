@@ -1,9 +1,7 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
 import jcuda.Pointer;
 import jcuda.Sizeof;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUdevice;
 import static jcuda.driver.JCudaDriver.*;
 
 /**
@@ -79,27 +77,6 @@ public class CudaInteger extends CudaPrimitive {
 		return new CudaInteger(intValue);
 	}
 	
-	public static void main(String args[]) {
-		setExceptionsEnabled(true);
-		cuInit(0);
-		CUdevice dev = new CUdevice();
-		CUcontext contex = new CUcontext();
-		cuCtxCreate(contex, 0, dev);
-		
-		CudaInteger integer = new CudaInteger();
-		integer.setValue(5);
-		integer.setValue(10);
-		integer.refresh();
-		System.out.println(integer.getValue());
-		
-		integer.free();
-		
-		integer.reallocate();
-		integer.refresh();
-		System.out.println(integer.getValue());
-		
-	}
-
 	@Override
 	public Pointer hostDataToPointer() {
 		return Pointer.to(new int[] {this.intValue});

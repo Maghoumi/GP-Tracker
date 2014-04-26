@@ -1,11 +1,11 @@
-package utils.cuda.datatypes;
+package utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import utils.cuda.datatypes.pointers.CudaByte2D;
+import utils.cuda.pointers.CudaByte2D;
 
 /**
  * A TreeSet of classifiers but with utility methods for transferring all

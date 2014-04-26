@@ -25,13 +25,12 @@ import jcuda.driver.CUfunction;
 
 import org.apache.commons.io.IOUtils;
 
-import cuda.CudaInterop;
 import cuda.gp.CudaEvolutionState;
+import cuda.gp.CudaInterop;
 import cuda.gp.CudaNode;
+import utils.ByteImage;
 import utils.PreciseTimer;
 import utils.cuda.ImageFilters;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Float4;
 import ec.EvolutionState;
 import ec.Evolve;
 import ec.Individual;

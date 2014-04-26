@@ -1,12 +1,9 @@
-package utils.cuda.datatypes;
-
-import gp.datatypes.FilteredImage;
+package utils;
 
 import java.awt.Rectangle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import utils.ImageFilterProvider;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
 

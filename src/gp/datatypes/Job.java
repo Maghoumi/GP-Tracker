@@ -3,8 +3,9 @@ package gp.datatypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Classifier;
+import utils.ByteImage;
+import utils.Classifier;
+import utils.FilteredImage;
 
 /**
  * Represents a GP classifier evolution job. A job is just a wrapper around the

@@ -1,13 +1,7 @@
-package utils.cuda.datatypes.pointers;
+package utils.cuda.pointers;
 
-import static jcuda.driver.JCudaDriver.cuCtxCreate;
-import static jcuda.driver.JCudaDriver.cuInit;
-import static jcuda.driver.JCudaDriver.setExceptionsEnabled;
 import jcuda.Pointer;
 import jcuda.Sizeof;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUdevice;
-import jcuda.runtime.JCuda;
 
 /**
  * Represents a primitive array of integers which is synchronized with an int pointer
@@ -142,34 +136,4 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	protected Object clone() {
 		return new CudaInteger2D(width, height, numFields, array);
 	}
-	
-	public static void main(String args[]) {
-		setExceptionsEnabled(true);
-		JCuda.setExceptionsEnabled(true);
-		cuInit(0);
-		CUdevice dev = new CUdevice();
-		CUcontext contex = new CUcontext();
-		cuCtxCreate(contex, 0, dev);
-		
-		int width = 5;
-		int height = 6;
-		int numFileds = 4;
-		
-		CudaInteger2D integer = new CudaInteger2D(5, 6, 4); 
-		
-//		System.out.println(integer.getPitchInElements()[0]);
-		
-//		integer.setValue(5);
-//		integer.setValue(10);
-//		integer.refresh();
-//		System.out.println(integer.getValue());
-//		
-//		integer.free();
-//		
-//		integer.reallocate();
-//		integer.refresh();
-//		System.out.println(integer.getValue());
-		
-	}
-
 }

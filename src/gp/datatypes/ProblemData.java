@@ -1,11 +1,7 @@
 package gp.datatypes;
 
-import java.awt.Color;
 
-import cuda.CudaInterop;
 import ec.gp.GPData;
-import ec.util.MersenneTwisterFast;
-import utils.cuda.datatypes.*;
 
 public class ProblemData extends GPData
 {

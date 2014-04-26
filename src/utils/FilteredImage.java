@@ -1,8 +1,6 @@
-package gp.datatypes;
+package utils;
 
-import utils.ImageFilterProvider;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.pointers.*;
+import utils.cuda.pointers.*;
 
 /**
  * Represents a ByteImage that has been prepared and has been filtered

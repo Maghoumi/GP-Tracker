@@ -16,9 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import feeder.datatypes.SegmentedVideoFrame;
+import utils.ByteImage;
 import utils.ImageFilterProvider;
-import utils.cuda.datatypes.ByteImage;
-import utils.cuda.datatypes.Segment;
+import utils.Segment;
 import utils.opengl.OpenGLUtils;
 
 public class GLFeeder extends JFrame implements VideoFeeder {

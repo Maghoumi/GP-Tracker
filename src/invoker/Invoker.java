@@ -3,11 +3,11 @@ package invoker;
 import feeder.VideoFeeder;
 import feeder.datatypes.SegmentedVideoFrame;
 import gp.GPSystem;
-import gp.datatypes.EvolutionListener;
 import gp.datatypes.Job;
-import utils.cuda.datatypes.Classifier;
-import utils.cuda.datatypes.ColorUtils;
-import utils.cuda.datatypes.Segment;
+import utils.Classifier;
+import utils.ColorUtils;
+import utils.EvolutionListener;
+import utils.Segment;
 import visualizer.Visualizer;
 
 /**
