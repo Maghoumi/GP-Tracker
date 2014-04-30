@@ -91,7 +91,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	 * starting the evolutionary loop. Essentially after calling this method, the 
 	 * training data is transferred to the GPU and the training samples are selected. 
 	 * 
-	 * @param job	The job object that is queued on the GPSystem
+	 * @param job	The job object that is queued on the GPEngine
 	 * 
 	 */
 	public void prepareDataForRun(CudaEvolutionState state, Job job) {

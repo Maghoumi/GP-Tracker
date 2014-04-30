@@ -1,7 +1,7 @@
 package invoker;
 
 import feeder.VideoFeeder;
-import gp.GPSystem;
+import gp.GPEngine;
 import gp.datatypes.Job;
 import utils.Classifier;
 import utils.ColorUtils;
@@ -11,10 +11,10 @@ import utils.SegmentedVideoFrame;
 import visualizer.Visualizer;
 
 /**
- * An Invoker is the missing link between the VideoFeeder, the Visualizer and the GPSystem.
+ * An Invoker is the missing link between the VideoFeeder, the Visualizer and the GPEngine.
  * Basically, the VideoFeeder has to pass its video frames to the Invoker object. The Invoker
- * object will then decide if the GPSystem needs to be called. If necessary, Invoker will
- * "invoke" the GPSystem and mediate the communications with it. The Invoker object should
+ * object will then decide if the GPEngine needs to be called. If necessary, Invoker will
+ * "invoke" the GPEngine and mediate the communications with it. The Invoker object should
  * also mediate the communications with the Visualizer. The Invoker is the one who supplies
  * the Visualizer with necessary visualization data.
  * Note that the Invoker will also have its own thread. This means that The VideoFeeder object
@@ -26,14 +26,14 @@ import visualizer.Visualizer;
  */
 public abstract class Invoker implements EvolutionListener, Runnable {
 	
-	/** How often should the GPSystem report back? */
+	/** How often should the GPEngine report back? */
 	public static final int REPORT_FREQUENCY = 1;
 	
 	/** The VideoFeeder object that passes this class its video frames */
 	protected VideoFeeder feeder;
 	
-	/** The GPSystem instance that this Invoker uses to evolve classifiers */
-	protected GPSystem gpSystem;
+	/** The GPEngine instance that this Invoker uses to evolve classifiers */
+	protected GPEngine gpSystem;
 	
 	/** The Visualizer that this instance uses to visualize the evolution results */
 	protected Visualizer visualizer;
@@ -48,14 +48,14 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	protected volatile boolean threadAlive = false;
 	
 	/**
-	 * Instantiates an Invoker object and also initializes the GPSystem object
-	 * that this instance requires and registers itself with the GPSystem as an
+	 * Instantiates an Invoker object and also initializes the GPEngine object
+	 * that this instance requires and registers itself with the GPEngine as an
 	 * evolution listener.
 	 * 
 	 * @param gpArgs	ECJ's command-line parameters
 	 */
 	public Invoker(String[] gpArgs) {
-		this.gpSystem = new GPSystem(gpArgs, false);
+		this.gpSystem = new GPEngine(gpArgs, false);
 		gpSystem.addEvolutionListener(this);
 		this.workerThread = new Thread(this);
 	}
@@ -169,8 +169,8 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	}
 	
 	/**
-	 * Enables or disables the underlying GPSystem object of this Invoker.
-	 * If the GPSystem is disabled, the jobs on the queue are not processed.
+	 * Enables or disables the underlying GPEngine object of this Invoker.
+	 * If the GPEngine is disabled, the jobs on the queue are not processed.
 	 * @param status
 	 */
 	public void setGPStatus(boolean status) {

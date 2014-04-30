@@ -10,21 +10,24 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckBoxList extends JList {
+public class CheckBoxList extends JScrollPane {
 	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	
+	protected JList<ClassifierCheckBox> list = new JList<>();
 	
 	/** The list of the items of this list */
 	private List<ClassifierCheckBox> items = new ArrayList<ClassifierCheckBox>();
 
 	public CheckBoxList() {
-		setCellRenderer(new CellRenderer());
+		setViewportView(list);
+		list.setCellRenderer(new CellRenderer());
 
-		addMouseListener(new MouseAdapter() {
+		list.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				int index = locationToIndex(e.getPoint());
+				int index = list.locationToIndex(e.getPoint());
 
 				if (index != -1) {
-					JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
+					JCheckBox checkbox = (JCheckBox) list.getModel().getElementAt(index);
 					if (e.getX() >= 0 && e.getX() <= 15)	// If the X of the clicked spot is in the boundaries of the checkbox mark ==> we should flip state :D
 						checkbox.setSelected(!checkbox.isSelected());	// smart condition, eh? :D
 					repaint();
@@ -32,8 +35,8 @@ public class CheckBoxList extends JList {
 			}
 		});
 
-		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public void addItem(ClassifierCheckBox item) {
@@ -74,15 +77,21 @@ public class CheckBoxList extends JList {
 	}
 	
 	protected void refreshListData() {
-		setListData(this.items.toArray());
+		ClassifierCheckBox[] arrayed = new ClassifierCheckBox[items.size()];
+		this.items.toArray(arrayed);
+		list.setListData(arrayed);
 		repaint();
+	}
+	
+	public Object getSelectedValue() {
+		return list.getSelectedValue();
 	}
 
 	protected class CellRenderer implements ListCellRenderer {
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			JCheckBox checkbox = (JCheckBox) value;
-			checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
-			checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());
+			checkbox.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+			checkbox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
 			checkbox.setEnabled(isEnabled());
 			checkbox.setFont(getFont());
 			checkbox.setFocusPainted(false);
@@ -90,5 +99,21 @@ public class CheckBoxList extends JList {
 			checkbox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
 			return checkbox;
 		}
+	}
+
+	public void selectAll() {
+		modifyAll(true);
+	}
+	
+	public void selectNone() {
+		modifyAll(false);
+	}
+	
+	protected void modifyAll(boolean selected) {
+		for (ClassifierCheckBox item : this.items) {
+			item.setSelected(selected);
+		}
+		
+		repaint();
 	}
 }

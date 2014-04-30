@@ -32,14 +32,14 @@ problem.largeWindowSize = 19
 eval.problem.blockWindowSize = 32
 
 # sounds good for textures! mutation rate is 20%
-problem.positiveExamples = 256
-problem.negativeExamples = 768
+problem.positiveExamples = 512
+problem.negativeExamples = 1024
 
 #############################
 #	THREADING AND RUNTIME   #
 #############################
 generations = 100
-pop.subpop.0.size = 512
+pop.subpop.0.size = 1024
 
 #jobs = 10
 eval.evaluationMethod = gpu
@@ -48,40 +48,7 @@ eval.visualize = false
 evalthreads = 				auto
 breedthreads = 				auto
 
-#478152468 478152469 478152470 478152471 
-#Seed:     ==> mild boats 
-
-#seed.0 =time
-#seed.1 =time  
-#seed.2 =time  
-#seed.3 =time
-  
-
-#good set for boats
-#seed.0 = -1965145378
-#seed.1 = -1965145377
-#seed.2 = -1965145376
-#seed.3 = -1965145375
-
-# Best seed for wierd anim [Seed: -1470112666 -1470112665 -1470112664 -1470112663]
-#seed.0 =-1470112666
-#seed.1 =-1470112665
-#seed.2 =-1470112664
-#seed.3 =-1470112663
-
-#good blue seed Seed: -772115029 -772115028 -772115027 -772115026
-#seed.0 =-772115029
-#seed.1 =-772115028
-#seed.2 =-772115027
-#seed.3 =-772115026
-
-# very interesting seed
-#seed.0=-85672469
-#seed.1=-85672468
-#seed.2=-85672467
-#seed.3=-85672466
-
-#seed.0=1643136021
-#seed.1=1643136022
-#seed.2=1643136023
-#seed.3=1643136024
+seed.0 =time
+seed.1 =time  
+seed.2 =time  
+seed.3 =time

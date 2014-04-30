@@ -1,11 +1,6 @@
 package gp;
 
-import java.util.List;
-
-import utils.ByteImage;
-import utils.Classifier;
 import utils.EvolutionListener;
-import utils.Segment;
 import utils.UniqueBlockingQueue;
 import cuda.gp.CudaEvolutionState;
 import cuda.gp.CudaInterop;
@@ -13,6 +8,7 @@ import cuda.gp.CudaSimpleStatistics;
 import ec.Evolve;
 import ec.gp.GPIndividual;
 import gp.datatypes.Job;
+import gp.datatypes.TrackerStatistics;
 
 /**
  * And finally... My complete GP system! Using an object of this class, you can
@@ -30,10 +26,10 @@ import gp.datatypes.Job;
  * @author Mehran Maghoumi
  * 
  */
-public class GPSystem extends Evolve implements Runnable {
+public class GPEngine extends Evolve implements Runnable {
 
 	/**
-	 * Number of jobs that can be queued on this GPSystem without blocking the
+	 * Number of jobs that can be queued on this GPEngine without blocking the
 	 * calling thread
 	 */
 	protected static final int JOB_CAPACITY = 1;
@@ -41,10 +37,10 @@ public class GPSystem extends Evolve implements Runnable {
 	/** The job queue for the GP system */
 	protected UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
 
-	/** A flag indicating that this GPSystem should no longer wait for jobs */
+	/** A flag indicating that this GPEngine should no longer wait for jobs */
 	protected volatile boolean threadAlive = false;
 
-	/** The worker thread associated with this GPSystem */
+	/** The worker thread associated with this GPEngine */
 	protected Thread runThread = null;
 
 	/**
@@ -55,23 +51,26 @@ public class GPSystem extends Evolve implements Runnable {
 	protected CudaEvolutionState state = null;
 
 	/**
-	 * Defines the current run type of this GPSystem. (Fresh? Checkpoint?
+	 * Defines the current run type of this GPEngine. (Fresh? Checkpoint?
 	 * Already started?)
 	 */
 	protected int runType;
 
 	/** ECJ's commandline arguments */
 	protected String[] args;
+	
+	/** Tracker stat dumper */
+	protected TrackerStatistics stats = new TrackerStatistics("stat-dump/retrains.stat");
 
 	/**
-	 * Initializes a new GPSystem using the given parameter file.
+	 * Initializes a new GPEngine using the given parameter file.
 	 * If <b>startThread</b> is true, the worker thread will start
 	 * working immediately.
 	 * 
 	 * @param args
 	 * @param startThread
 	 */
-	public GPSystem(String[] args, boolean startThread) {
+	public GPEngine(String[] args, boolean startThread) {
 		this.args = args; 
 
 		state = (CudaEvolutionState) possiblyRestoreFromCheckpoint(this.args);
@@ -86,7 +85,7 @@ public class GPSystem extends Evolve implements Runnable {
 			state.startFresh();
 		}
 
-		// Create the worker thread associated with this GPSystem
+		// Create the worker thread associated with this GPEngine
 		if (startThread) {
 			this.runThread = new Thread(this);
 			this.runThread.start();
@@ -122,7 +121,7 @@ public class GPSystem extends Evolve implements Runnable {
 	}
 
 	/**
-	 * A call to this function will kill the GPSystem's thread and will prepare
+	 * A call to this function will kill the GPEngine's thread and will prepare
 	 * the system for a shutdown.
 	 */
 	public void stopWorkerThread() {
@@ -132,8 +131,8 @@ public class GPSystem extends Evolve implements Runnable {
 	}
 
 	/**
-	 * Queues a job for the GPSystem. This method will block the calling thread
-	 * if the GPSystem's queue is already full.
+	 * Queues a job for the GPEngine. This method will block the calling thread
+	 * if the GPEngine's queue is already full.
 	 * 
 	 * @param job
 	 *            The job to be queued
@@ -210,11 +209,12 @@ public class GPSystem extends Evolve implements Runnable {
 				break;
 			}
 
+			stats.addToStat(newJob);
 			GPIndividual evolvedIndividual = runJob(newJob);
 			
 			newJob.getClassifier().setIndividual(evolvedIndividual);
 			state.reportIndividual(evolvedIndividual);
-			jobs.poll(); // remove this job from the queue permenantly!
+			jobs.poll(); // remove this job from the queue permanently!
 			System.err.println("Finished processing " + newJob.getClassifier().toString());
 		} // end-while
 	}

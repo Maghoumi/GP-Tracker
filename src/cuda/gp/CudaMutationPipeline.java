@@ -1,6 +1,5 @@
 package cuda.gp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ec.BreedingPipeline;
@@ -14,7 +13,6 @@ import ec.gp.GPNodeBuilder;
 import ec.gp.GPNodeSelector;
 import ec.gp.GPTree;
 import ec.gp.koza.GPKozaDefaults;
-import ec.gp.koza.MutationPipeline;
 import ec.util.Parameter;
 
 /**

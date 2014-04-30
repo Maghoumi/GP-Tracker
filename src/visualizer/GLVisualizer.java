@@ -57,6 +57,7 @@ import com.jogamp.opengl.util.Animator;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * And finally... The JCuda/OpenGL visualizer. This class is basically a JFrame designed with WindowBuilder that has an OpenGL Canvas on it. This
@@ -145,6 +146,9 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private JLabel lblOpacity;
 	private JSpinner spnOpacity;
 	private JToggleButton tglbtnGpSystem;
+	private JButton btnSelectAll;
+	private JButton btnSelectNone;
+	private JButton btnDel;
 
 	/**
 	 * Initializes the visualizer with the given image width and height. Use this constructor if you want to dynamically pass data to the visualizer.
@@ -202,9 +206,11 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP,
 				null, null));
 		pnlContent.add(pnlRight, BorderLayout.EAST);
-		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][center][][][][][][][][][]"));
+		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][][center][][][][][][][][][]"));
 
 		checkBoxList = new CheckBoxList();
+		checkBoxList.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		checkBoxList.setPreferredSize(new Dimension(130, 130));
 		pnlRight.add(checkBoxList, "cell 0 0,grow");
 
 		btnSeedRetrain = new JButton("Seed Retrain");
@@ -218,16 +224,24 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				invoker.retrain(classifier, true);
 			}
 		});
+		
+		btnSelectAll = new JButton("All");
+		btnSelectAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				checkBoxList.selectAll();
+			}
+		});
+		pnlRight.add(btnSelectAll, "flowx,cell 0 1,growx");
 
 		chckbxShowConflicts = new JCheckBox("Show conflicts");
-		pnlRight.add(chckbxShowConflicts, "cell 0 1,growx");
+		pnlRight.add(chckbxShowConflicts, "cell 0 2,growx");
 
 		chckbxThreshold = new JCheckBox("Do thresholding");
 		chckbxThreshold.setSelected(true);
-		pnlRight.add(chckbxThreshold, "cell 0 2,growx");
+		pnlRight.add(chckbxThreshold, "cell 0 3,growx");
 
 		panel_3 = new JPanel();
-		pnlRight.add(panel_3, "cell 0 3,growx");
+		pnlRight.add(panel_3, "cell 0 4,growx");
 		panel_3.setLayout(new BorderLayout(0, 0));
 
 		lblNewLabel_1 = new JLabel(" Threshold:");
@@ -239,7 +253,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		spnThreshold.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 
 		this.panel_4 = new JPanel();
-		this.pnlRight.add(this.panel_4, "cell 0 4,growx");
+		this.pnlRight.add(this.panel_4, "cell 0 5,growx");
 		this.panel_4.setLayout(new BorderLayout(0, 0));
 
 		this.lblOpacity = new JLabel(" Opacity:");
@@ -249,7 +263,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		this.spnOpacity.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 		this.spnOpacity.setPreferredSize(new Dimension(35, 20));
 		this.panel_4.add(this.spnOpacity, BorderLayout.EAST);
-		pnlRight.add(btnSeedRetrain, "cell 0 6,growx");
+		pnlRight.add(btnSeedRetrain, "cell 0 7,growx");
 
 		btnRetrain = new JButton("Retrain");
 		btnRetrain.addActionListener(new ActionListener() {
@@ -262,10 +276,10 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				invoker.retrain(classifier, false);
 			}
 		});
-		pnlRight.add(btnRetrain, "cell 0 7,growx");
+		pnlRight.add(btnRetrain, "cell 0 8,growx");
 
 		btnResetSize = new JButton("Reset Canvas");
-		this.pnlRight.add(this.btnResetSize, "cell 0 8,growx");
+		this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
 
 		tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
 		tglbtnGpSystem.addActionListener(new ActionListener() {
@@ -278,7 +292,30 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				invoker.setGPStatus(tglbtnGpSystem.isSelected());
 			}
 		});
-		pnlRight.add(tglbtnGpSystem, "cell 0 10,growx");
+		pnlRight.add(tglbtnGpSystem, "cell 0 11,growx");
+		
+		btnSelectNone = new JButton("None");
+		btnSelectNone.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkBoxList.selectNone();
+			}
+		});
+		btnSelectNone.setMinimumSize(new Dimension(0, 0));
+		pnlRight.add(btnSelectNone, "cell 0 1,growx,aligny center");
+		
+		btnDel = new JButton("Del");
+		btnDel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object selected = checkBoxList.getSelectedValue();
+				if (selected == null)
+					return;
+
+				Classifier classifier = ((ClassifierCheckBox) selected).getBoundedClassifier();
+				removeClassifier(classifier);
+			}
+		});
+		btnDel.setPreferredSize(new Dimension(40, 23));
+		pnlRight.add(btnDel, "cell 0 1");
 		btnResetSize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
@@ -304,10 +341,14 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	public void removeClassifier(Collection<Classifier> classifiers) {
 		synchronized (this.classifiers) {
 			for (Classifier c : classifiers) {
-				this.checkBoxList.removeItem(c);
-				this.classifiers.remove(c);
+				removeClassifier(c);
 			}
 		}
+	}
+	
+	protected void removeClassifier(Classifier classifier) {
+		this.checkBoxList.removeItem(classifier);
+		this.classifiers.remove(classifier);
 	}
 
 	/**

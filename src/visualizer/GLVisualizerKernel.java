@@ -126,7 +126,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	 * Calls the visualization CUDA kernel and displays the results using OpenGL. Also
 	 * returns the number of classifiers that have claimed the current segment
 	 * 
-	 * @param gp	The GPSystem object that is used for retraining classifiers
+	 * @param gp	The GPEngine object that is used for retraining classifiers
 	 * @param drawable	The OpenGL drawable
 	 * @param classifiers	A set of classifiers to visualize
 	 * @param segment	The image segment to display the data for

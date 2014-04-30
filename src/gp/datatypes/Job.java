@@ -9,7 +9,7 @@ import utils.FilteredImage;
 
 /**
  * Represents a GP classifier evolution job. A job is just a wrapper around the
- * classifier that needs to be evolved. Jobs will be queued in GPSystem's job
+ * classifier that needs to be evolved. Jobs will be queued in GPEngine's job
  * queue and will be used during the evolutionary run. Also, Job objects have
  * the required data that are needed to evaluate an individual
  * 
