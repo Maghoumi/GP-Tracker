@@ -40,6 +40,8 @@ import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
  *
  */
 public class CudaInterop implements Singleton, ImageFilterProvider {
+	
+	private static final boolean RECOMPILE = false;
 
 	private KernelLauncher kernel = null;
 	private String kernelCode;
@@ -79,7 +81,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 		this.largeFilterSize = state.parameters.getInt(new Parameter("problem.largeWindowSize"), null);
 
 		try {
-			prepareKernel(true);
+			prepareKernel(RECOMPILE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);

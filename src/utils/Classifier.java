@@ -131,8 +131,17 @@ public class Classifier implements Comparable<Classifier>{
 	 */
 	private Classifier() {
 		// Select a random color for the classifier
-		this.color = ColorSelector.getNextColor();
+		this.color = colorList.seizeColor();
 		this.colorName = colorList.getColorNameFromColor(this.color);
+	}
+	
+	/**
+	 * Must be called before this classifier is completely removed form the system.
+	 * This will release the color of this classifier and makes it available to other
+	 * classifiers.
+	 */
+	public void destroy() {
+		colorList.releaseColor(color);
 	}
 	
 	/**
@@ -342,48 +351,29 @@ public class Classifier implements Comparable<Classifier>{
 		return this.color.hashCode();
 	}
 	
-	/**
-	 * A utility class for assigning a random color to the classifier. 
-	 */
-	static class ColorSelector {
-		/** Index of the current predifined color that has not been used yet */
-		private static int index = 0;
-		
-		/**
-		 * Returns the next available predefined color in the list.
-		 * This method will throw an exception if no available
-		 * color exists.
-		 */
-		public static Color getNextColor() {
-			if (index >= colorList.getColorList().size())
-				throw new RuntimeException("Out of colors for the classifiers");
-			
-			return colorList.getColorList().get(index++).getColor();
-		}
-		
-		public static int compareTo(Color c1, Color c2) {
-			//FIXME SERIOUS PERFORMANCE ISSUE!
-			int i = 0, j = 0;
-			for (; i < colorList.getColorList().size() ; i++)
-				if (c1.equals(colorList.getColorList().get(i).getColor()))
-					break;
-			
-			for (; j < colorList.getColorList().size() ; j++)
-				if (c2.equals(colorList.getColorList().get(j).getColor()))
-					break;
-			if (i < j)
-				return -1;
-			else if (i > j)
-				return 1;
-			
-			return 0;
-			
-		}
-	}
+//	/**
+//	 * A utility class for assigning a random color to the classifier. 
+//	 */
+//	static class ColorSelector {
+//		/** Index of the current predifined color that has not been used yet */
+//		private static int index = 0;
+//		
+//		/**
+//		 * Returns the next available predefined color in the list.
+//		 * This method will throw an exception if no available
+//		 * color exists.
+//		 */
+//		public static Color getNextColor() {
+//			if (index >= colorList.getColorList().size())
+//				throw new RuntimeException("Out of colors for the classifiers");
+//			
+//			return colorList.getColorList().get(index++).getColor();
+//		}
+//	}
 
 	@Override
 	public int compareTo(Classifier o) {
-		return ColorSelector.compareTo(this.color, o.color);
+		return colorList.compare(this.color, o.color);
 	}
 	
 	@Override

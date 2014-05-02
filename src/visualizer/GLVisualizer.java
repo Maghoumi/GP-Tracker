@@ -338,6 +338,10 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		}
 	}
 
+	/**
+	 * Removes the classifiers from the list of the evolved classifiers
+	 * @param classifiers
+	 */
 	public void removeClassifier(Collection<Classifier> classifiers) {
 		synchronized (this.classifiers) {
 			for (Classifier c : classifiers) {
@@ -346,9 +350,15 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		}
 	}
 	
+	/**
+	 * Removes the passed classifier from the list of evolved classifiers
+	 * and destroys it by means of releasing its color
+	 * @param classifier
+	 */
 	protected void removeClassifier(Classifier classifier) {
 		this.checkBoxList.removeItem(classifier);
 		this.classifiers.remove(classifier);
+		classifier.destroy();	// release the color
 	}
 
 	/**
@@ -658,12 +668,20 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 			if (pointerToAll != null)
 				pointerToAll.freeAll();
 			
-			if (!invoker.isQueueEmpty())
+			Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
+			
+			// Remove garbage classifiers
+			for (Classifier c : classifiers) {
+				if (c.getClaimsCount() == 0 && chckbxThreshold.isSelected() && invoker.isQueueEmpty())	// If this classifier has not claimed anything, it's garbage and must be deleted! :-)
+					toBeDestroyed.add(c);
+			}
+			
+			if (!invoker.isQueueEmpty()) {
+				removeClassifier(toBeDestroyed);
 				return;
+			}
 
 			// Resolve retraining issues:
-			Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
-
 			inspect: for (Classifier c : classifiers) {
 				if (c.getClaimsCount() == 1)
 					continue;

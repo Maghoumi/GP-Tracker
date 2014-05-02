@@ -2,7 +2,9 @@ package utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Stack;
  
 /**
  * Java Code to get a color name from rgb/hex value/awt color
@@ -13,13 +15,14 @@ import java.util.List;
  * @author Xiaoxiao Li
  * 
  */
-public class ColorUtils {
+public class ColorUtils implements Comparator<Color>{
 	
 	public ColorUtils() {
 		initColorList();
 	}
 	
-	private List<ColorName> colorList = new ArrayList<ColorName>();
+	private List<ColorName> colorList = new ArrayList<>();
+	private Stack<Color> availableColors = new Stack<>();
  
 	/**
 	 * Initialize the color list that we have.
@@ -138,7 +141,7 @@ public class ColorUtils {
 		colorList.add(new ColorName("Plum", 0xDD, 0xA0, 0xDD));
 		colorList.add(new ColorName("PowderBlue", 0xB0, 0xE0, 0xE6));
 		colorList.add(new ColorName("Purple", 0x80, 0x00, 0x80));
-		colorList.add(new ColorName("Red", 0xFF, 0x00, 0x00));
+//		colorList.add(new ColorName("Red", 0xFF, 0x00, 0x00));
 		colorList.add(new ColorName("RosyBrown", 0xBC, 0x8F, 0x8F));
 		colorList.add(new ColorName("RoyalBlue", 0x41, 0x69, 0xE1));
 		colorList.add(new ColorName("SaddleBrown", 0x8B, 0x45, 0x13));
@@ -155,16 +158,32 @@ public class ColorUtils {
 		colorList.add(new ColorName("SpringGreen", 0x00, 0xFF, 0x7F));
 		colorList.add(new ColorName("SteelBlue", 0x46, 0x82, 0xB4));
 		colorList.add(new ColorName("Tan", 0xD2, 0xB4, 0x8C));
-		colorList.add(new ColorName("Teal", 0x00, 0x80, 0x80));
+//		colorList.add(new ColorName("Teal", 0x00, 0x80, 0x80));
 		colorList.add(new ColorName("Thistle", 0xD8, 0xBF, 0xD8));
-		colorList.add(new ColorName("Tomato", 0xFF, 0x63, 0x47));
+//		colorList.add(new ColorName("Tomato", 0xFF, 0x63, 0x47));
 		colorList.add(new ColorName("Turquoise", 0x40, 0xE0, 0xD0));
 		colorList.add(new ColorName("Violet", 0xEE, 0x82, 0xEE));
-		colorList.add(new ColorName("Wheat", 0xF5, 0xDE, 0xB3));
-		colorList.add(new ColorName("White", 0xFF, 0xFF, 0xFF));
-		colorList.add(new ColorName("WhiteSmoke", 0xF5, 0xF5, 0xF5));
-		colorList.add(new ColorName("Yellow", 0xFF, 0xFF, 0x00));
+//		colorList.add(new ColorName("Wheat", 0xF5, 0xDE, 0xB3));
+//		colorList.add(new ColorName("White", 0xFF, 0xFF, 0xFF));
+//		colorList.add(new ColorName("WhiteSmoke", 0xF5, 0xF5, 0xF5));
+//		colorList.add(new ColorName("Yellow", 0xFF, 0xFF, 0x00));
 		colorList.add(new ColorName("YellowGreen", 0x9A, 0xCD, 0x32));
+		
+		for (ColorName cn : colorList) {
+			availableColors.push(cn.getColor());
+		}
+	}
+	
+	public Color seizeColor() {
+		synchronized (availableColors) {
+			return availableColors.pop();
+		}
+	}
+	
+	public void releaseColor(Color c) {
+		synchronized (availableColors) {
+			availableColors.push(c);
+		}
 	}
  
 	/**
@@ -262,5 +281,21 @@ public class ColorUtils {
 		public String getName() {
 			return name;
 		}
+	}
+
+	@Override
+	public int compare(Color o1, Color o2) {
+		// first less than second ==> -1
+		// equal ==> 0
+		// first greater than second ==> +1
+		double first = Math.sqrt(o1.getRed() * o1.getRed() + o1.getBlue() * o1.getBlue() + o1.getGreen() * o1.getGreen());
+		double second = Math.sqrt(o2.getRed() * o2.getRed() + o2.getBlue() * o2.getBlue() + o2.getGreen() * o2.getGreen());
+		
+		if (first < second)
+			return -1;
+		else if (first == second)
+			return 0;
+		else
+			return 1;
 	}
 }

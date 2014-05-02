@@ -1,3 +1,3 @@
-CheckBoxList is now wrapped in a JScrollPane => supports scrolling
-Added All/None/Delete buttons in the visualizer for deleting or activating/deactivating specific classifiers
-Renamed GPSystem to GPEngine
+GLVisualizer will automatically discard garbage classifiers
+When classifiers are created, they obtain their color from a ColorUtils object
+When classifiers are deleted, after calling their destroy method, their color will be released to be used by other classifiers

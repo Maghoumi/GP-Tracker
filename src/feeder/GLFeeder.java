@@ -26,9 +26,9 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 	protected final static int NUM_CHANNELS = 4;
 	protected final static int LENGTH_IN_FRAMES = 170;
 	protected final static int FRAME_WIDTH = 854;
-	protected final static int FRAME_HEIGHT = 640;
-	protected final static int VERTICAL_MARGIN = 10;
-	protected final static int OBJECT_HEIGHT = 64;
+	protected final static int FRAME_HEIGHT = 960;
+	protected final static int VERTICAL_MARGIN = 5;
+	protected final static int OBJECT_HEIGHT = 96;
 	
 	protected byte[] buffer = new byte[FRAME_WIDTH * FRAME_HEIGHT * NUM_CHANNELS];
 	

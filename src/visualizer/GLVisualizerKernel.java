@@ -41,7 +41,7 @@ import jcuda.runtime.JCuda;
 public class GLVisualizerKernel implements ImageFilterProvider {
 	
 	/** Recompile flag ** FOR DEBUGGING PURPOSES** */
-	public static final boolean RECOMPILE = true;
+	public static final boolean RECOMPILE = false;
 	/** Generate debug info ** FOR DEBUGGING PURPOSES** */
 	public static final boolean GEN_DEBUG = false;
 	
