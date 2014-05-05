@@ -68,6 +68,12 @@ public class Classifier implements Comparable<Classifier>{
 	/** The training type for this classifier: pos/neg or image/gt? @see Job.java */
 	private int trainingType;
 	
+	/** A flag indicating that this classifier is being processed in the GPEngine */
+	private volatile boolean beingProcessed = false;
+	
+	/** For synchronizing the individual updates and obtaination of the expressio */
+	private Object mutex = new Object();
+	
 	
 	/**
 	 * Initializes a classifier object with a random color and the specified positive and negative
@@ -223,19 +229,24 @@ public class Classifier implements Comparable<Classifier>{
 	/**
 	 * Set the GP individual of this individual. This method was declared synchronized as there
 	 * was the possibility of the best individual being set by multiple classifiers.
+	 * The individual is cloned (TODO necessary??)
 	 * @param individual
 	 */
 	public synchronized void setIndividual(GPIndividual individual) {
-		this.individual = individual;
-		// Update the expression tree
-		this.expression = ((CudaNode)individual.trees[0].child).makePostfixExpression();
+		synchronized (mutex) {
+			this.individual = (GPIndividual) individual.clone();
+			// Update the expression tree
+			this.expression = ((CudaNode)this.individual.trees[0].child).makePostfixExpression();			
+		}
 	}
 	
 	/** 
 	 * @return	Returns the GP Individual of this classifier
 	 */
 	public GPIndividual getIndividual() {
-		return this.individual;
+		synchronized (mutex) {
+			return this.individual;			
+		}
 	}
 	
 	/**
@@ -243,7 +254,19 @@ public class Classifier implements Comparable<Classifier>{
 	 * @return
 	 */
 	public byte[] getExpression() {
-		return this.expression;
+		synchronized (mutex) {
+			return this.expression;			
+		}
+	}
+	
+	/**
+	 * Clones the GP-expression of this individual and returns it
+	 * @return	The cloned expression of this individual
+	 */
+	public byte[] getClonedExpression() {
+		synchronized (mutex) {
+			return this.expression.clone();			
+		}
 	}
 	
 	/**
@@ -327,6 +350,21 @@ public class Classifier implements Comparable<Classifier>{
 	}
 	
 	/**
+	 * Set this classifier as being processed
+	 * @param beingProcessed
+	 */
+	public void setBeingProcessed(boolean beingProcessed) {
+		this.beingProcessed = beingProcessed;
+	}
+	
+	/**
+	 * @return	True if this classifier is being processed, False otherwise
+	 */
+	public boolean isBeingProcessed() {
+		return this.beingProcessed;
+	}
+	
+	/**
 	 * Determines if this classifier has claimed the specified segment 
 	 * @param segment
 	 * @return
@@ -351,26 +389,6 @@ public class Classifier implements Comparable<Classifier>{
 		return this.color.hashCode();
 	}
 	
-//	/**
-//	 * A utility class for assigning a random color to the classifier. 
-//	 */
-//	static class ColorSelector {
-//		/** Index of the current predifined color that has not been used yet */
-//		private static int index = 0;
-//		
-//		/**
-//		 * Returns the next available predefined color in the list.
-//		 * This method will throw an exception if no available
-//		 * color exists.
-//		 */
-//		public static Color getNextColor() {
-//			if (index >= colorList.getColorList().size())
-//				throw new RuntimeException("Out of colors for the classifiers");
-//			
-//			return colorList.getColorList().get(index++).getColor();
-//		}
-//	}
-
 	@Override
 	public int compareTo(Classifier o) {
 		return colorList.compare(this.color, o.color);

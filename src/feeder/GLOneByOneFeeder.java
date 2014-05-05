@@ -7,21 +7,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import utils.ByteImage;
-import utils.ImageFilterProvider;
 import utils.Segment;
 import utils.SegmentedVideoFrame;
 import utils.opengl.OpenGLUtils;
 
-public class GLFeeder extends JFrame implements VideoFeeder {
+public class GLOneByOneFeeder extends JFrame implements VideoFeeder {
 	//TODO document me
 	protected final static int NUM_CHANNELS = 4;
 	protected final static int LENGTH_IN_FRAMES = 170;
@@ -41,13 +41,16 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 	/** The background segment (used for negative example when there are no other segments in the image) */
 	protected Segment background = null;
 	
-	protected JFileChooser dlgOpen = new JFileChooser("textures/gecco-textures/easy");	
+	protected JFileChooser dlgOpen = new JFileChooser("textures/part-small");	
 	
 	
 	protected final JPanel panel = new JPanel();
 	protected final JButton btnBrowse = new JButton("Browse and add image...");
 	
-	public GLFeeder() {
+	/** The set of all randomly selected textures */
+	private Stack<File> selected = new Stack<>();
+	
+	public GLOneByOneFeeder(int initialNumTextures, int numTextures, String path) {
 		setupUI();
 				
 		try {
@@ -59,7 +62,39 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 			System.exit(1);
 		}
 		
-		setVisible(true);
+		// Randomly select images from the specified path
+		File f = new File(path);
+		
+		File[] textures = f.listFiles();
+		Set<File> selected = new HashSet<>();
+		int selectedCount = 0;
+		Random rand = new Random();
+		while (selectedCount < numTextures) {
+			// Pick a random number
+			int rnd = rand.nextInt(textures.length);
+			File selectedFile = textures[rnd];
+			
+			if (!selected.contains(selectedFile)) {
+				selected.add(selectedFile);
+				selectedCount ++;
+			}
+		}
+		
+		for (File fl : selected) {
+			this.selected.push(fl);
+		}
+		
+		// Put the initial textures on canvas
+		for (int i = 0 ; i < initialNumTextures ; i++) {
+			try {
+				File fl = this.selected.pop();
+				ByteImage img = ByteImage.loadFromFile(fl);
+				objects.add(new Segment(img, 0, getNextYPosition(), img.getWidth(), img.getHeight(), fl.getName()));
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 	
 	protected void setupUI() {
@@ -75,7 +110,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 			public void actionPerformed(ActionEvent e) {
 				dlgOpen.setMultiSelectionEnabled(true);
 				
-				if (dlgOpen.showDialog(GLFeeder.this, "Open") != JFileChooser.APPROVE_OPTION)
+				if (dlgOpen.showDialog(GLOneByOneFeeder.this, "Open") != JFileChooser.APPROVE_OPTION)
 					return;
 				
 				try {
@@ -83,7 +118,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 					for (File f : dlgOpen.getSelectedFiles()) {
 						ByteImage image = ByteImage.loadFromFile(f);
 						// Add this image as a segment to the list of objects
-						GLFeeder.this.objects.add(new Segment(image, 0, getNextYPosition(), image.getWidth(), image.getHeight(), f.getName()));
+						GLOneByOneFeeder.this.objects.add(new Segment(image, 0, getNextYPosition(), image.getWidth(), image.getHeight(), f.getName()));
 					}
 					
 				} catch (IOException e1) {
@@ -113,6 +148,28 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 			if (!this.paused)
 				object.getBounds().x += 3;
 		}
+	}
+	
+	/**
+	 * Adds the next texture on the stack to the canvas and will
+	 * return its success.  
+	 * @return	True if there exists a texture and the texture was
+	 * 		added successfully. False if there was no texture to add
+	 */
+	public boolean addNextTexture() {
+		if (this.selected.isEmpty())
+			return false;
+		
+		try {
+			File fl = this.selected.pop();
+			ByteImage img = ByteImage.loadFromFile(fl);
+			objects.add(new Segment(img, 0, getNextYPosition(), img.getWidth(), img.getHeight(), fl.getName()));
+		}
+		catch(Throwable t) {
+			t.printStackTrace();
+		}
+		
+		return true;
 	}
 	
 	@Override

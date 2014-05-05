@@ -56,6 +56,13 @@ public class CheckBoxList extends JScrollPane {
 	}
 	
 	public void addItem(Classifier classifier) {
+		for (ClassifierCheckBox item : this.items) {
+			if (item.getBoundedClassifier().equals(classifier)) {
+				item.setBoundedClassifier(classifier);
+				return;
+			}
+		}
+		
 		ClassifierCheckBox checkbox = new ClassifierCheckBox(classifier);
 		this.addItem(checkbox);
 	}

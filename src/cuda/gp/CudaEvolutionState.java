@@ -44,6 +44,9 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	
 	/** The job that the GP system is currently processing */ 
 	private Job activeJob;
+	
+	/** The prefix of the current session */
+	private String sessionPrefix;
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -107,6 +110,21 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	 */
 	public Job getActiveJob() {
 		return this.activeJob;
+	}
+	
+	/**
+	 * Set the prefix string for this GP session
+	 * @param sessionPrefix
+	 */
+	public void setSessionPrefix(String sessionPrefix) {
+		this.sessionPrefix = sessionPrefix;
+	}
+	
+	/**
+	 * @return	The prefix string of the current session
+	 */
+	public String getSessionPrefix() {
+		return this.sessionPrefix;
 	}
 	
 	/** 

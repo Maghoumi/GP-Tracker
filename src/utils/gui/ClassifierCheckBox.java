@@ -31,6 +31,12 @@ public class ClassifierCheckBox extends JCheckBox implements ChangeListener {
 		addChangeListener(this);
 	}
 	
+	@Override
+	public void setSelected(boolean b) {
+		super.setSelected(b);
+		boundedClassifier.setEnabled(b);
+	}
+	
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
@@ -42,6 +48,14 @@ public class ClassifierCheckBox extends JCheckBox implements ChangeListener {
 	 */
 	public Classifier getBoundedClassifier() {
 		return this.boundedClassifier;
+	}
+
+	/**
+	 * Set the classifier that this checkbox is bound to
+	 * @param classifier
+	 */
+	public void setBoundedClassifier(Classifier classifier) {
+		this.boundedClassifier = classifier;
 	}
 	
 	

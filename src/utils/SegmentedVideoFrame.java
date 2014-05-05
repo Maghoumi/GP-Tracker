@@ -1,8 +1,7 @@
 package utils;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+
 
 /**
  * Represents a video frame along with a set of segments that were
@@ -18,7 +17,7 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	private ByteImage frame;
 	
 	/** The set of segments that were found in the frame */
-	private Set<Segment> segments = new HashSet<Segment>();
+	private List<Segment> segments = new ArrayList<Segment>();
 	
 	/** The background segment of this SegmentedVideoFrame */ 
 	private Segment background;
@@ -73,5 +72,14 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	 */
 	public Segment getBackground() {
 		return this.background;
+	}
+	
+	/**
+	 * Shuffles the segments in this frame so that the order is random
+	 * This would be useful for training the GP system. The GP system will
+	 * not get stuck on a single segment
+	 */
+	public void shuffle() {
+		Collections.shuffle(segments);
 	}
 }

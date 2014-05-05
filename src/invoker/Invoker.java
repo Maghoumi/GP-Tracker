@@ -53,9 +53,10 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 * evolution listener.
 	 * 
 	 * @param gpArgs	ECJ's command-line parameters
+	 * @param sessionPrefix	The prefix of the dump files of the session
 	 */
-	public Invoker(String[] gpArgs) {
-		this.gpSystem = new GPEngine(gpArgs, false);
+	public Invoker(String[] gpArgs, String sessionPrefix) {
+		this.gpSystem = new GPEngine(gpArgs, false, sessionPrefix);
 		gpSystem.addEvolutionListener(this);
 		this.workerThread = new Thread(this);
 	}
@@ -79,7 +80,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 */
 	public void stop() {
 		this.threadAlive = false;
-	}
+	} 
 	
 	@Override
 	public void run() {
@@ -120,6 +121,7 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 		}
 		
 		Job j = new Job(classifier, target.toString());
+		j.setTag(this.visualizer);
 		gpSystem.queueJob(j);
 		ColorUtils ut = new ColorUtils();
 	}

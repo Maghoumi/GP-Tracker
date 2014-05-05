@@ -288,6 +288,7 @@ public class ColorUtils implements Comparator<Color>{
 		// first less than second ==> -1
 		// equal ==> 0
 		// first greater than second ==> +1
+		
 		double first = Math.sqrt(o1.getRed() * o1.getRed() + o1.getBlue() * o1.getBlue() + o1.getGreen() * o1.getGreen());
 		double second = Math.sqrt(o2.getRed() * o2.getRed() + o2.getBlue() * o2.getBlue() + o2.getGreen() * o2.getGreen());
 		

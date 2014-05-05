@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 
+import visualizer.Visualizer;
+
 /**
  * A utility class that keeps track of various object tracking statistics
  * in the system.
@@ -18,11 +20,18 @@ public class TrackerStatistics {
 	/** Keeps track of how many times a segment has been queued for retraining */
 	protected HashMap<String, Integer> trainingRequests = new HashMap<>();
 	
-	/** The file to dump the statistics to */
-	protected File dumpFile;
+	/** The file to dump the GP call statistics to */
+	protected File callDumpPath;
 	
-	public TrackerStatistics(String dumpPath) {
-		this.dumpFile = new File(dumpPath);
+	/** The file to dump the framerate statistics to */
+	protected File fpsDumpPath;
+	
+	public TrackerStatistics(String callDumpPath, String fpsDumpPath) {
+		this.callDumpPath = new File(callDumpPath);
+		this.fpsDumpPath = new File(fpsDumpPath);
+		
+		if (this.fpsDumpPath.exists())
+			this.fpsDumpPath.delete();
 	}
 	
 	/**
@@ -52,7 +61,16 @@ public class TrackerStatistics {
 		result.replace(result.length() - 2, result.length(), "");
 		
 		try {
-			FileUtils.writeStringToFile(dumpFile, result.toString());
+			FileUtils.writeStringToFile(callDumpPath, result.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addFrameStat(Job newJob) {
+		String result = newJob.getId() + "\t" + ((Visualizer)newJob.getTag()).getFramerate() + System.lineSeparator();
+		try {
+			FileUtils.writeStringToFile(fpsDumpPath, result, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

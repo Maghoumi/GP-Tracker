@@ -2,6 +2,7 @@ package utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -15,7 +16,7 @@ import utils.cuda.pointers.CudaByte2D;
  * @author Mehran Maghoumi
  *
  */
-public class ClassifierSet extends TreeSet<Classifier> {
+public class ClassifierSet implements Iterable<Classifier> {
 	
 	/**
 	 * For synchronization purposes: when the classifiers are being converted for CUDA,
@@ -24,10 +25,11 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	 */
 	private Object mutex = new Object();
 	
-	@Override
+	private TreeSet<Classifier> set = new TreeSet<>();
+	
 	public boolean add(Classifier e) {
 		synchronized (mutex) {
-			return super.add(e);
+			return set.add(e);
 		}
 	}
 	
@@ -43,11 +45,14 @@ public class ClassifierSet extends TreeSet<Classifier> {
 		}
 	}
 	
-	@Override
 	public boolean remove(Object o) {
 		synchronized (mutex) {
-			return super.remove(o);
+			return set.remove(o);
 		}
+	}
+	
+	public boolean isEmpty() {
+		return set.isEmpty();
 	}
 	
 	/**
@@ -63,29 +68,29 @@ public class ClassifierSet extends TreeSet<Classifier> {
 		// mutex will ensure that no other classifiers will be added, removed or updated while
 		// we are converting the existing ones to pointers!
 		synchronized (mutex) { 
-			if (this.size() <= 0)	// Nothing to do if we don't have anything
+			if (isEmpty())	// Nothing to do if we don't have anything
 				return null;
 			
-			int maxExpLength = getMaxExpLength();
+			int maxExpLength = 0;
+			List<Classifier> activeClassifiers = new ArrayList<Classifier>();	// The classifiers that are enabled and active
 			
-			byte[] expressions = new byte[this.size() * maxExpLength];	// Holder for 2D host expression array
-			byte[] overlayColors = new byte[this.size() * 4]; // Holder for the overlay colors
-			byte[] enabilityMap = new byte[this.size()]; // Holder for the overlay colors
-			
-			int expOffsetIdx = 0 ; // The offset index for the expression array
-			int overlayOffsetIdx = 0; // The offset index for the overlay colors 
+			byte[][] clasfExps = new byte[set.size()][];
+			int idxMaintain = 0;
+			int overlayOffsetIdx = 0; // The offset index for the overlay colors
 			int enMapIndex = 0;	// The offset index for the enability map
-			List<Classifier> activeClassifiers = new ArrayList<Classifier>();	// The classifiers that are enabled and active 
+			byte[] overlayColors = new byte[set.size() * 4]; // Holder for the overlay colors
+			byte[] enabilityMap = new byte[set.size()]; // Holder for the overlay colors
 			
-			for (Classifier classifier : this) {
+			// We will maintain another set of Classifier expressions.
+			// Although we are locking the set, the Classifiers in the set
+			// could still be changed by the GPEngine causing an
+			// ArrayIndexOutOfBoundsException in System.arraycopy
+			
+			// Stored the cloned expressions and do some other stuff (determine maxLength, enability, etc.)
+			for (Classifier classifier : this.set) {
 				classifier.resetClaims();	// reset this guy's claims
 				// Add this classifier to the list of active classifiers
 				activeClassifiers.add(classifier);
-				
-				byte[] exp = classifier.getExpression();
-				System.arraycopy(exp, 0, expressions, expOffsetIdx * maxExpLength, exp.length);	// Copy the expression into the correct offset
-
-				expOffsetIdx++;
 				
 				Color c = classifier.getColor();
 				overlayColors[overlayOffsetIdx++] = (byte) c.getAlpha();
@@ -94,16 +99,39 @@ public class ClassifierSet extends TreeSet<Classifier> {
 				overlayColors[overlayOffsetIdx++] = (byte) c.getRed();
 				
 				enabilityMap[enMapIndex++] = (byte) (classifier.isEnabled() ? 1 : 0);
+				
+				clasfExps[idxMaintain] = classifier.getClonedExpression();
+				
+				if (clasfExps[idxMaintain].length > maxExpLength)
+					maxExpLength = clasfExps[idxMaintain].length;
+				
+				idxMaintain++;
 			}
 			
-			CudaByte2D expResult = new CudaByte2D(maxExpLength, this.size(), 1, expressions);
-			CudaByte2D overlayResult = new CudaByte2D(this.size(), 1, 4, overlayColors);
-			CudaByte2D enabilityResult = new CudaByte2D(this.size(), 1, 1, enabilityMap);
+			byte[] expressions = new byte[set.size() * maxExpLength];	// Holder for 2D host expression array
+			int expOffsetIdx = 0 ; // The offset index for the expression array
 			
-//			CUdeviceptr2D expResult = new CUdeviceptr2D(maxExpLength, this.size(), 1, Sizeof.BYTE);	// Device 2D array
-//			expResult.allocTransByte(expressions);
-//			CUdeviceptr overlayResult = CudaInterop.allocTransByte(overlayColors);
-//			CUdeviceptr enabilityResult = CudaInterop.allocTransByte(enabilityMap);
+			for (byte[] expression : clasfExps) {
+				
+				try {
+					System.arraycopy(expression, 0, expressions, expOffsetIdx * maxExpLength, expression.length);	// Copy the expression into the correct offset
+				}
+				catch(Throwable t) {
+					String debug = "exppression.length=" + expression.length + " " +
+									"expressions.length=" + expressions.length + " " +
+									"expOffsetIdx * maxExpLength=" + expOffsetIdx * maxExpLength + " " +
+									"set.size()=" + set.size();
+					System.err.println(debug);
+					throw new RuntimeException(t);
+				}
+
+				expOffsetIdx++;
+				
+			}
+			
+			CudaByte2D expResult = new CudaByte2D(maxExpLength, set.size(), 1, expressions);
+			CudaByte2D overlayResult = new CudaByte2D(set.size(), 1, 4, overlayColors);
+			CudaByte2D enabilityResult = new CudaByte2D(set.size(), 1, 1, enabilityMap);
 			
 			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult, enabilityResult);
 		}
@@ -114,9 +142,9 @@ public class ClassifierSet extends TreeSet<Classifier> {
 	 * 			exists in this set.
 	 */
 	private int getMaxExpLength() {
-		int result = Integer.MIN_VALUE;
+		int result = 0;
 		
-		for (Classifier c : this) {
+		for (Classifier c : this.set) {
 			if (c.getExpression().length > result)
 				result = c.getExpression().length;
 		}
@@ -151,6 +179,13 @@ public class ClassifierSet extends TreeSet<Classifier> {
 			expressions.free();
 			overlayColors.free();
 			enabilityMap.free();
+		}
+	}
+
+	@Override
+	public Iterator<Classifier> iterator() {
+		synchronized (mutex) {
+			return this.set.iterator();
 		}
 	}
 	

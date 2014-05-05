@@ -1,3 +1,31 @@
-GLVisualizer will automatically discard garbage classifiers
-When classifiers are created, they obtain their color from a ColorUtils object
-When classifiers are deleted, after calling their destroy method, their color will be released to be used by other classifiers
+Added the experiment runners
+There are lots of useless classes now that are only useful for running automated experiments
+
+Added the session prefix to CudaEvolutionState, GPEngine, Invoker, CudaSimpleStatistics and
+	CudaSimpleShortStatistics. With the prefix, many runs of the system are possible and the
+	statistics file of each run will have its own unique name.
+
+Added the interfaces SuccessListener and SuccessProvider to facilitate the task of notifying
+	an interested party of the conclusion of a successful session.
+	
+Classifier now clones the passed individual (? necessary??). However, all operations that work
+	on the underlying expression of the classifier are now synchronized (this was causing the
+	ArrayIndexOutOfBoundsException in ClassifierSet)
+
+ClassifierSet:
+	This class is now a wrapper for TreeSet and is no longer a TreeSet itself. This was done
+	because other TreeSet methods need to be synchronized manually and may pose problems if
+	the unsynchronized methods are called accidentally.
+	This class will also maintain a separate list of the expressions of all individuals when
+	getPointerToAll is called ==> this probably fixes the random ArrayIndexOutOfBoundsException
+	in getPointerToAll 
+
+SegmentedVideoFrame:
+	Now wraps a List instead of a Set. This way the collection can be shuffled before training.
+	This prevents the GP system getting stuck with one texture all the time
+	
+GLVisualizer:
+	The orphan textures now have priority.
+	The Garbage textures are now correctly disposed of
+	In passNewClassifier the ClassifierCheckBox is now updated properly (before, the list was
+	sometimes out of synch with classifiers ==> enability change would not affect anything!)

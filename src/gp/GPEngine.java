@@ -1,7 +1,10 @@
 package gp;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import utils.EvolutionListener;
 import utils.UniqueBlockingQueue;
+import visualizer.Visualizer;
 import cuda.gp.CudaEvolutionState;
 import cuda.gp.CudaInterop;
 import cuda.gp.CudaSimpleStatistics;
@@ -34,6 +37,9 @@ public class GPEngine extends Evolve implements Runnable {
 	 */
 	protected static final int JOB_CAPACITY = 1;
 	
+	/** The prefix of the dumped files */
+	protected String sessionPrefix;
+	
 	/** The job queue for the GP system */
 	protected UniqueBlockingQueue<Job> jobs = new UniqueBlockingQueue<Job>(JOB_CAPACITY);
 
@@ -60,7 +66,7 @@ public class GPEngine extends Evolve implements Runnable {
 	protected String[] args;
 	
 	/** Tracker stat dumper */
-	protected TrackerStatistics stats = new TrackerStatistics("stat-dump/retrains.stat");
+	protected TrackerStatistics stats;
 
 	/**
 	 * Initializes a new GPEngine using the given parameter file.
@@ -69,16 +75,22 @@ public class GPEngine extends Evolve implements Runnable {
 	 * 
 	 * @param args
 	 * @param startThread
+	 * @param sessionPrefix	The prefix of the dump files of the session
 	 */
-	public GPEngine(String[] args, boolean startThread) {
+	public GPEngine(String[] args, boolean startThread, String sessionPrefix) {
 		this.args = args; 
+		
+		this.sessionPrefix = sessionPrefix == null ? "" : sessionPrefix + ".";		
+		this.stats = new TrackerStatistics("stat-dump/" + this.sessionPrefix + "retrains.stat", "stat-dump/" + this.sessionPrefix + "framerate.stat");
 
 		state = (CudaEvolutionState) possiblyRestoreFromCheckpoint(this.args);
+		
 		if (state != null) { // loaded from checkpoint 
 			runType = CudaEvolutionState.C_STARTED_FROM_CHECKPOINT;
 			state.startFromCheckpoint();
 		} else {
 			state = (CudaEvolutionState) initialize(loadParameterDatabase(this.args), 0);
+			state.setSessionPrefix(this.sessionPrefix);
 			state.job = new Object[1];
 			state.job[0] = new Integer(0);
 			runType = CudaEvolutionState.C_STARTED_FRESH;
@@ -88,6 +100,14 @@ public class GPEngine extends Evolve implements Runnable {
 		// Create the worker thread associated with this GPEngine
 		if (startThread) {
 			this.runThread = new Thread(this);
+			this.runThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				
+				@Override
+				public void uncaughtException(Thread t, Throwable e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			});
 			this.runThread.start();
 		}
 	}
@@ -117,6 +137,14 @@ public class GPEngine extends Evolve implements Runnable {
 		
 		this.threadAlive = true;
 		this.runThread = new Thread(this);
+		this.runThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		});
 		this.runThread.start();
 	}
 
@@ -126,8 +154,8 @@ public class GPEngine extends Evolve implements Runnable {
 	 */
 	public void stopWorkerThread() {
 		this.threadAlive = false;
-		if (this.runThread != null)
-			runThread.interrupt();
+//		if (this.runThread != null)
+//			runThread.interrupt();
 	}
 
 	/**
@@ -204,18 +232,22 @@ public class GPEngine extends Evolve implements Runnable {
 				// and duplicated jobs never get a chance of being queued.
 				newJob = jobs.blockPeek();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
 				// If this thread is interrupted, then we should probably go for a shutdown
 				// Therefore, we will check the threadAlive flag
 				break;
 			}
 
+			newJob.getClassifier().setBeingProcessed(true);
 			stats.addToStat(newJob);
 			GPIndividual evolvedIndividual = runJob(newJob);
+			stats.addFrameStat(newJob);
 			
 			newJob.getClassifier().setIndividual(evolvedIndividual);
 			state.reportIndividual(evolvedIndividual);
 			jobs.poll(); // remove this job from the queue permanently!
-			System.err.println("Finished processing " + newJob.getClassifier().toString());
+			newJob.getClassifier().setBeingProcessed(false);
+			System.out.println("Finished processing " + newJob.getClassifier().toString());
 		} // end-while
 	}
 }

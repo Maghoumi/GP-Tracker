@@ -211,7 +211,7 @@ public class CudaEvaluator extends SimpleEvaluator {
 		for (int i = from[threadnum] ; i <= to[threadnum] ; i++) {
 			GPIndividual currentInd = myUnevals.get(indIndex++);
 			
-			((SimpleFitness) currentInd.fitness).setFitness(state, fitnesses[i] , fitnesses[i] >= 0.985);
+			((SimpleFitness) currentInd.fitness).setFitness(state, fitnesses[i] , fitnesses[i] >= 0.99);
 			
 			/** DEBUG */
 //			float testFitness = ProblemData.cudaCaller.cpuEvaluate(state, currentInd, ((M2XFilter)p_problem.clone()).trainingInstances);if (Math.abs(testFitness -fitnesses[i]) > 0.1) {

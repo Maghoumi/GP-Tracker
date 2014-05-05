@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -15,13 +16,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import ec.select.SelectDefaults;
 import utils.ByteImage;
 import utils.ImageFilterProvider;
 import utils.Segment;
 import utils.SegmentedVideoFrame;
 import utils.opengl.OpenGLUtils;
 
-public class GLFeeder extends JFrame implements VideoFeeder {
+public class GLAllFeeder extends JFrame implements VideoFeeder {
 	//TODO document me
 	protected final static int NUM_CHANNELS = 4;
 	protected final static int LENGTH_IN_FRAMES = 170;
@@ -41,13 +43,13 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 	/** The background segment (used for negative example when there are no other segments in the image) */
 	protected Segment background = null;
 	
-	protected JFileChooser dlgOpen = new JFileChooser("textures/gecco-textures/easy");	
+	protected JFileChooser dlgOpen = new JFileChooser("textures/part-small");	
 	
 	
 	protected final JPanel panel = new JPanel();
 	protected final JButton btnBrowse = new JButton("Browse and add image...");
 	
-	public GLFeeder() {
+	public GLAllFeeder(int numTextures, String path) {
 		setupUI();
 				
 		try {
@@ -59,7 +61,34 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 			System.exit(1);
 		}
 		
-		setVisible(true);
+		// Randomly select images from the specified path
+		File f = new File(path);
+		
+		File[] textures = f.listFiles();
+		Set<File> selected = new HashSet<>();
+		
+		int selectedCount = 0;
+		Random rand = new Random();
+		while (selectedCount < numTextures) {
+			// Pick a random number
+			int rnd = rand.nextInt(textures.length);
+			File selectedFile = textures[rnd];
+			
+			if (!selected.contains(selectedFile)) {
+				selected.add(selectedFile);
+				selectedCount ++;
+			}
+		}
+		
+		for (File fl : selected) {
+			try {
+				ByteImage img = ByteImage.loadFromFile(fl);
+				objects.add(new Segment(img, 0, getNextYPosition(), img.getWidth(), img.getHeight(), fl.getName()));
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 	
 	protected void setupUI() {
@@ -75,7 +104,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 			public void actionPerformed(ActionEvent e) {
 				dlgOpen.setMultiSelectionEnabled(true);
 				
-				if (dlgOpen.showDialog(GLFeeder.this, "Open") != JFileChooser.APPROVE_OPTION)
+				if (dlgOpen.showDialog(GLAllFeeder.this, "Open") != JFileChooser.APPROVE_OPTION)
 					return;
 				
 				try {
@@ -83,7 +112,7 @@ public class GLFeeder extends JFrame implements VideoFeeder {
 					for (File f : dlgOpen.getSelectedFiles()) {
 						ByteImage image = ByteImage.loadFromFile(f);
 						// Add this image as a segment to the list of objects
-						GLFeeder.this.objects.add(new Segment(image, 0, getNextYPosition(), image.getWidth(), image.getHeight(), f.getName()));
+						GLAllFeeder.this.objects.add(new Segment(image, 0, getNextYPosition(), image.getWidth(), image.getHeight(), f.getName()));
 					}
 					
 				} catch (IOException e1) {

@@ -4,6 +4,7 @@ import invoker.Invoker;
 import utils.Classifier;
 import utils.ImageFilterProvider;
 import utils.SegmentedVideoFrame;
+import utils.SuccessProvider;
 
 /**
  * Defines the interface that is required for any object that wants to act as a 
@@ -15,7 +16,7 @@ import utils.SegmentedVideoFrame;
  * @author Mehran Maghoumi
  *
  */
-public interface Visualizer {
+public interface Visualizer extends SuccessProvider {
 	
 	/**
 	 * Set the dimensions for the video data that this visualizer must visualize.
@@ -60,4 +61,9 @@ public interface Visualizer {
 	 * 			images and display them
 	 */
 	public ImageFilterProvider getImageFilterProvider();
+	
+	/**
+	 * @return	The current visualization framerate
+	 */
+	public double getFramerate();
 }

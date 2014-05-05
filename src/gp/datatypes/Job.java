@@ -47,6 +47,9 @@ public class Job {
 	/** The training instances of this job */
 	protected CudaTrainingInstance trainingInstances;
 	
+	/** Tag object to set to arbitrary data for the job */
+	protected Object tag;
+	
 	public Job(Classifier classifier, String id) {
 		this.jobType = classifier.getTrainingType();
 		this.classifier = classifier;
@@ -172,6 +175,21 @@ public class Job {
 	
 	public void setCudaTrainingInstances(CudaTrainingInstance trainingInstances) {
 		this.trainingInstances = trainingInstances;
+	}
+	
+	/**
+	 * Set the tag object to arbitrary data
+	 * @param tag
+	 */
+	public void setTag(Object tag) {
+		this.tag = tag;
+	}
+	
+	/**
+	 * @return	The arbitrary data that was attached to this job
+	 */
+	public Object getTag() {
+		return this.tag;
 	}
 
 	/**

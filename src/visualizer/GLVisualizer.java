@@ -16,8 +16,10 @@ import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -48,6 +50,7 @@ import utils.ImageFilterProvider;
 import utils.Segment;
 import utils.SegmentedVideoFrame;
 import utils.ClassifierSet.ClassifierAllocationResult;
+import utils.SuccessListener;
 import utils.gui.CheckBoxList;
 import utils.gui.ClassifierCheckBox;
 import utils.gui.Slider;
@@ -115,11 +118,16 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 	/** A flag indicating whether filtering is enabled or not */
 	private boolean filterEnabled = true;
+	
+	/** The set of all SuccessListeners */
+	private HashSet<SuccessListener> successListeners = new HashSet<>();
 
 	/** FPS helper variable */
 	private long prevTime = -1;
 	/** FPS helper variable */
 	private int step = 0;
+	/** The last calculated framerate */
+	private double framerate = 0;
 
 	private JPanel contentPane;
 	private JPanel pnlContent;
@@ -333,8 +341,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	 */
 	public void passNewClassifier(Classifier classifier) {
 		synchronized (this.classifiers) {
-			if (this.classifiers.update(classifier))
-				this.checkBoxList.addItem(classifier);
+			this.classifiers.update(classifier);
+			this.checkBoxList.addItem(classifier);
 		}
 	}
 
@@ -615,14 +623,16 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	 *            OpenGL drawable
 	 */
 	public void runCuda(GLAutoDrawable drawable) {
-
+		
 		/**
 		 * When CUDA is to be called, the classifiers must be locked so that
 		 * CUDA can finish processing and then GP can interfere
 		 * Otherwise, in the middle of processing, a classifier may be updated
 		 * or added to the system and we may not be able to see that it has actually
 		 * changed
-		 */		
+		 */
+		boolean cycleSuccessful = true;	// Flag indicating the success of this session
+		
 		synchronized (this.classifiers) {
 
 			// This fncDescribe only needs to invoke CUDA kernel if:
@@ -644,7 +654,9 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 			// We obtain the pointer to all, if there are no classifiers, we have null here
 			ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
+			List<Segment> orphans = new ArrayList<>();
 
+			frame.shuffle();
 			for (Segment s : frame) {
 				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
 				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
@@ -653,38 +665,58 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 				int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
 						chckbxThreshold.isSelected(), threshold, opacity,
 						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+				
+				if (claimers == 0)
+					orphans.add(s);
 
 				// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
-				if (claimers == 0 && invoker.isQueueEmpty()) {
+				/*if (claimers == 0 && invoker.isQueueEmpty()) {
 					invoker.evolveClassifier(frame, s);
 
 					if (pointerToAll != null)
 						pointerToAll.freeAll();
 					
 					return;	// No need to do the rest!
-				}
+				}*/
 			}
 
 			if (pointerToAll != null)
 				pointerToAll.freeAll();
 			
+			if (!invoker.isQueueEmpty())
+				return;
+			
 			Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
 			
 			// Remove garbage classifiers
 			for (Classifier c : classifiers) {
-				if (c.getClaimsCount() == 0 && chckbxThreshold.isSelected() && invoker.isQueueEmpty())	// If this classifier has not claimed anything, it's garbage and must be deleted! :-)
+				if (c.getClaimsCount() == 0 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
 					toBeDestroyed.add(c);
+					cycleSuccessful = false;
+				}				
+				if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+					toBeDestroyed.add(c);
+					cycleSuccessful = false;
+				}
 			}
 			
-			if (!invoker.isQueueEmpty()) {
-				removeClassifier(toBeDestroyed);
-				return;
+			removeClassifier(toBeDestroyed);
+			
+			/*if (!orphans.isEmpty() && invoker.isQueueEmpty()) {
+				invoker.evolveClassifier(frame, orphans.get(0));
 			}
+			
+			
+			if (!invoker.isQueueEmpty())
+				return;
+				*/
 
 			// Resolve retraining issues:
 			inspect: for (Classifier c : classifiers) {
-				if (c.getClaimsCount() == 1)
+				if (c.getClaimsCount() == 1 || c.isBeingProcessed() || !invoker.isQueueEmpty())
 					continue;
+				
+				cycleSuccessful = false;
 
 				boolean somethingHappened = false;
 
@@ -715,9 +747,25 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 					toBeDestroyed.add(c);
 				}
 			} // end-for (inspect)
-
+			
 			// Get rid of problematic classifiers
 			removeClassifier(toBeDestroyed);
+			
+			if (!orphans.isEmpty() && invoker.isQueueEmpty()) {
+				invoker.evolveClassifier(frame, orphans.get(0));
+			}
+			
+			if (!invoker.isQueueEmpty())
+				return;
+			
+			if (this.classifiers.isEmpty() || !frame.hasSegments())
+				cycleSuccessful = false;
+			
+			if (!invoker.isQueueEmpty())
+				cycleSuccessful = false;
+				
+			if (cycleSuccessful)
+				notifySuccess();
 
 		}// end-synchronized
 
@@ -758,6 +806,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 			prevTime = currentTime;
 			step = 0;
+			this.framerate = fps;
 		}
 	}
 
@@ -836,5 +885,26 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	@Override
 	public ImageFilterProvider getImageFilterProvider() {
 		return this.kernel;
+	}
+
+	@Override
+	public double getFramerate() {
+		return this.framerate;
+	}
+
+	@Override
+	public void addSuccessListener(SuccessListener listener) {
+		this.successListeners.add(listener);
+	}
+
+	@Override
+	public void removeSuccessListener(SuccessListener listener) {
+		this.successListeners.remove(listener);
+	}
+
+	@Override
+	public void notifySuccess() {
+		for (SuccessListener listener : this.successListeners)
+			listener.notifySuccess(this);
 	}
 }
