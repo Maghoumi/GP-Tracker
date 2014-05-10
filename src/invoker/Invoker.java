@@ -8,6 +8,7 @@ import utils.ColorUtils;
 import utils.EvolutionListener;
 import utils.Segment;
 import utils.SegmentedVideoFrame;
+import utils.SuccessListener;
 import visualizer.Visualizer;
 
 /**
@@ -24,7 +25,7 @@ import visualizer.Visualizer;
  * @author Mehran Maghoumi
  *
  */
-public abstract class Invoker implements EvolutionListener, Runnable {
+public abstract class Invoker implements EvolutionListener, Runnable, SuccessListener {
 	
 	/** How often should the GPEngine report back? */
 	public static final int REPORT_FREQUENCY = 1;
@@ -47,6 +48,9 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	/** Run flag of the worker thread */
 	protected volatile boolean threadAlive = false;
 	
+	/** The prefix of this run session. Used for logging purposes only */
+	protected String sessionPrefix;
+	
 	/**
 	 * Instantiates an Invoker object and also initializes the GPEngine object
 	 * that this instance requires and registers itself with the GPEngine as an
@@ -57,7 +61,9 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	 */
 	public Invoker(String[] gpArgs, String sessionPrefix) {
 		this.gpSystem = new GPEngine(gpArgs, false, sessionPrefix);
+		this.sessionPrefix = sessionPrefix;
 		gpSystem.addEvolutionListener(this);
+		gpSystem.addSuccessListener(this);
 		this.workerThread = new Thread(this);
 	}
 	
@@ -97,6 +103,17 @@ public abstract class Invoker implements EvolutionListener, Runnable {
 	
 	public boolean isQueueEmpty() {
 		return gpSystem.isQueueEmpty();
+	}
+	
+	/**
+	 * Determines if the GP system has choked for this segment (could not
+	 * find a classifier even though maximum number of GP calls reached)
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public boolean hasChoked(Segment s) {
+		return this.gpSystem.hasReachedLimit(s.toString());
 	}
 	
 	/**

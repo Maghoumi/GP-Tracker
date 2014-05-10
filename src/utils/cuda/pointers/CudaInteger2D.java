@@ -98,7 +98,7 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	/**
 	 * Sets the array of this Integer2D object to the specified array.
 	 * The new array must meet the original specifications (i.e. same width, height etc.)
-	 * After the array is set, the new values are automatically writted back to the GPU
+	 * After the array is set, the new values are automatically written back to the GPU
 	 * memory.
 	 * Note that the passed array is cloned and a separate copy of the passed array is
 	 * maintained for internal use.

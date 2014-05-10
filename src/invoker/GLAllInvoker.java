@@ -13,8 +13,8 @@ import utils.SuccessListener;
 import visualizer.GLVisualizer;
 import visualizer.Visualizer;
 
-public class GLAllInvoker extends Invoker implements SuccessListener {
-
+public class GLAllInvoker extends Invoker {
+	
 	public GLAllInvoker(String sessionPrefix, int numTextures, String path) {
 		super(new String[] { "-file", "bin/gp/object-tracker.params" }, sessionPrefix);
 		this.feeder = new GLAllFeeder(numTextures, path);
@@ -39,7 +39,7 @@ public class GLAllInvoker extends Invoker implements SuccessListener {
 		else
 			prefix = args[0];
 		
-		int numTextures = 8;
+		int numTextures = 3;
 		
 		if (args.length != 0)
 			numTextures = Integer.parseInt(args[1]);
@@ -78,18 +78,48 @@ public class GLAllInvoker extends Invoker implements SuccessListener {
 			System.out.println("===================================");
 			System.out.println(visualizer.getFramerate());
 			
-			File success = new File("stat-dump/success.log");
-			long timeStamp = System.currentTimeMillis();
-			
 			try {
-				FileUtils.writeStringToFile(success, timeStamp + "\t" + visualizer.getFramerate() + System.lineSeparator(), true);
+				File success = new File("stat-dump/success.log");
+				long timeStamp = System.currentTimeMillis();
+				GLVisualizer glvis = (GLVisualizer) visualizer;
+				int numPermanentOrphans = glvis.getPermanentOrphans().size();
+				String output = String.format("%d\t%.2f\t%d" + System.lineSeparator(), timeStamp, visualizer.getFramerate(), numPermanentOrphans);
+				FileUtils.writeStringToFile(success, output, true);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
+			try {
+				File orphans = new File("stat-dump/" + (sessionPrefix == null ? "" : sessionPrefix + ".") +"orphans.log");
+				GLVisualizer glvis = (GLVisualizer) visualizer;
+				StringBuilder output = new StringBuilder();
+				
+				for (String s : glvis.getPermanentOrphans())
+					output.append(s + System.lineSeparator());
+				
+				FileUtils.writeStringToFile(orphans, output.toString(), false);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
 			System.exit(10);			
+		}		
+	}
+	
+	@Override
+	public void notifyFailure(String reason) {
+		File failure = new File("stat-dump/success.log");
+		long timeStamp = System.currentTimeMillis();
+		
+		try {
+			FileUtils.writeStringToFile(failure, timeStamp + "\t" + reason + System.lineSeparator(), true);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
+		System.exit(10);		
 	}
-
+	
+	
 }

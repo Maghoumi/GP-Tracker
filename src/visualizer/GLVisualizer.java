@@ -5,20 +5,14 @@ import invoker.Invoker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -48,6 +42,8 @@ import utils.Classifier;
 import utils.ClassifierSet;
 import utils.ImageFilterProvider;
 import utils.Segment;
+import utils.SegmentEventListener;
+import utils.SegmentEventProvider;
 import utils.SegmentedVideoFrame;
 import utils.ClassifierSet.ClassifierAllocationResult;
 import utils.SuccessListener;
@@ -70,7 +66,7 @@ import javax.swing.ScrollPaneConstants;
  * @author Mehran Maghoumi
  * 
  */
-public class GLVisualizer extends JFrame implements GLEventListener, Visualizer {
+public class GLVisualizer extends JFrame implements GLEventListener, Visualizer, SegmentEventProvider {
 
 	public static final URL ICON_PLAY = GLVisualizer.class.getResource("/icons/play-icon.png");
 	public static final URL ICON_PAUSE = GLVisualizer.class.getResource("/icons/pause-icon.png");
@@ -120,7 +116,19 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	private boolean filterEnabled = true;
 	
 	/** The set of all SuccessListeners */
-	private HashSet<SuccessListener> successListeners = new HashSet<>();
+	private Set<SuccessListener> successListeners = new HashSet<>();
+	
+	/** The set of all SegmentEventListeners */
+	private Set<SegmentEventListener> segmentListeners = new HashSet<>();
+	
+	/** A set of all permanent orphans */
+	private Set<String> permanentOrphans = new HashSet<>();
+	
+	/** Keeps track of the number of segments in the current video frame */
+	private volatile int currentSegmentCount = 2;//FIXME constant!
+	
+	/** Keeps track of the number of segments in the previous video frame */
+	private volatile int previousSegmentCount = 2;//FIXME constant!
 
 	/** FPS helper variable */
 	private long prevTime = -1;
@@ -635,7 +643,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 		
 		synchronized (this.classifiers) {
 
-			// This fncDescribe only needs to invoke CUDA kernel if:
+			// This describe kernel only needs to be invoked if:
 			// 		1) There is a new frame in the frame queue 
 			//		2) There is a new individual in the individual queue **AND** we
 			//		   have had at least one frame in our frame queue
@@ -651,108 +659,47 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 
 			if (frame == null)
 				return;
-
-			// We obtain the pointer to all, if there are no classifiers, we have null here
-			ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
-			List<Segment> orphans = new ArrayList<>();
-
-			frame.shuffle();
-			for (Segment s : frame) {
-				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
-				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
-
-				// If there are no classifiers, then there are no claimers for this texture!
-				int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
-						chckbxThreshold.isSelected(), threshold, opacity,
-						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
-				
-				if (claimers == 0)
-					orphans.add(s);
-
-				// If no classifier has claimed this texture, we should ask the Invoker to train a classifier for this dude
-				/*if (claimers == 0 && invoker.isQueueEmpty()) {
-					invoker.evolveClassifier(frame, s);
-
-					if (pointerToAll != null)
-						pointerToAll.freeAll();
-					
-					return;	// No need to do the rest!
-				}*/
-			}
-
-			if (pointerToAll != null)
-				pointerToAll.freeAll();
+			
+			// Invoke kernel and determine orphans
+			List<Segment> orphans = invokeKernel(drawable, frame);
 			
 			if (!invoker.isQueueEmpty())
 				return;
 			
-			Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
+			// Determine permanent orphans
+			determinePermanentOrphans(frame, orphans);
 			
-			// Remove garbage classifiers
-			for (Classifier c : classifiers) {
-				if (c.getClaimsCount() == 0 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
-					toBeDestroyed.add(c);
-					cycleSuccessful = false;
-				}				
-				if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
-					toBeDestroyed.add(c);
-					cycleSuccessful = false;
-				}
-			}
+			// Resolve training issues and remove garbage/wrong classifiers
+			cycleSuccessful = !resolveIssues();
 			
-			removeClassifier(toBeDestroyed);
-			
-			/*if (!orphans.isEmpty() && invoker.isQueueEmpty()) {
-				invoker.evolveClassifier(frame, orphans.get(0));
-			}
-			
-			
-			if (!invoker.isQueueEmpty())
-				return;
-				*/
-
-			// Resolve retraining issues:
-			inspect: for (Classifier c : classifiers) {
-				if (c.getClaimsCount() == 1 || c.isBeingProcessed() || !invoker.isQueueEmpty())
-					continue;
+			currentSegmentCount = frame.size();
+			if (previousSegmentCount < currentSegmentCount) {
+				// Means a new segment has been added to the system
+				/*
+				 * Now we need to invoke CUDA, resolve training issues and
+				 * again invoke CUDA to determine how many orphans we will
+				 * be left with now that a new segment has been added
+				 */
+				orphans = invokeKernel(drawable, frame);
+				cycleSuccessful = !resolveIssues();
+				determinePermanentOrphans(frame, orphans);
+				orphans = invokeKernel(drawable, frame);
 				
-				cycleSuccessful = false;
-
-				boolean somethingHappened = false;
-
-				for (Segment claimed : c.getClaims()) {
-
-					for (Classifier other : classifiers) {
-						if (other == c)
-							continue;
-
-						if (other.hasClaimed(claimed) && other.getClaimsCount() == 1 && invoker.isQueueEmpty()) { // claimed by another one as well, the other is very certain about his claim
-							toBeDestroyed.add(c);
-							somethingHappened = true;
-							break inspect;
-						}
-						else if (other.hasClaimed(claimed)) { // claimed by both!
-							toBeDestroyed.add(other);
-							toBeDestroyed.add(c);
-							somethingHappened = true;
-							break inspect;
-						}
-					}
-
-				}
-
-				if (!somethingHappened && c.getClaimsCount() > 1) {
-					// If here ==> this classifier has claimed multiple textures!!
-					// Destroy the sucker
-					toBeDestroyed.add(c);
-				}
-			} // end-for (inspect)
+				notifySegmentAdded(frame.size(), orphans.size(), permanentOrphans.size());
+			}
 			
-			// Get rid of problematic classifiers
-			removeClassifier(toBeDestroyed);
+			previousSegmentCount = currentSegmentCount;
 			
 			if (!orphans.isEmpty() && invoker.isQueueEmpty()) {
-				invoker.evolveClassifier(frame, orphans.get(0));
+				Segment toBeTrained = null;
+				for (Segment s : orphans) {
+					if (!s.isPermanentOrphan()) {
+						toBeTrained = s;
+						break;
+					}
+				}
+				
+				invoker.evolveClassifier(frame, toBeTrained);
 			}
 			
 			if (!invoker.isQueueEmpty())
@@ -767,8 +714,133 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 			if (cycleSuccessful)
 				notifySuccess();
 
-		}// end-synchronized
+		}/* end-synchronized*/
 
+	}
+	
+	/**
+	 * Invokes the CUDA kernel on the passed frame, draws the overlays and returns the
+	 * list of orphan textures in this frame.
+	 * 
+	 * @param drawable	JOGL drawable
+	 * @param frame	The frame to run CUDA for
+	 * @return	a list of all orphan textures in this frame
+	 */
+	private List<Segment> invokeKernel(GLAutoDrawable drawable, SegmentedVideoFrame frame) {
+		// We obtain the pointer to all, if there are no classifiers, we have null here
+		ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
+		List<Segment> orphans = new ArrayList<>();
+
+		frame.shuffle();
+		for (Segment s : frame) {
+			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
+			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
+
+			// If there are no classifiers, then there are no claimers for this texture!
+			int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
+					chckbxThreshold.isSelected(), threshold, opacity,
+					chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+			
+			if (claimers == 0) {
+				s.setOrphan(true);
+				orphans.add(s);
+			}
+		}
+
+		if (pointerToAll != null)
+			pointerToAll.freeAll();
+		
+		return orphans;
+	}
+	
+	/**
+	 * Removes the unnecessary classifiers from the system and detects
+	 * and resolves the training issues.
+	 * @return	True if an issue was detected, false otherwise
+	 */
+	private boolean resolveIssues() {
+		boolean issueDetected = false;
+		Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
+		// Remove garbage classifiers
+		for (Classifier c : classifiers) {
+			if (c.getClaimsCount() == 0 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+				toBeDestroyed.add(c);
+				issueDetected = true;
+			}				
+			if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+				toBeDestroyed.add(c);
+				issueDetected = true;
+			}
+		}
+		
+		// Resolve retraining issues:
+		inspect: for (Classifier c : classifiers) {
+			if (c.getClaimsCount() == 1 || c.isBeingProcessed() || !invoker.isQueueEmpty())
+				continue;
+			
+			issueDetected = true;
+
+			boolean somethingHappened = false;
+
+			for (Segment claimed : c.getClaims()) {
+
+				for (Classifier other : classifiers) {
+					if (other == c)
+						continue;
+
+					if (other.hasClaimed(claimed) && other.getClaimsCount() == 1 && invoker.isQueueEmpty()) { // claimed by another one as well, the other is very certain about his claim
+						toBeDestroyed.add(c);
+						somethingHappened = true;
+						break inspect;
+					}
+					else if (other.hasClaimed(claimed)) { // claimed by both!
+						toBeDestroyed.add(other);
+						toBeDestroyed.add(c);
+						somethingHappened = true;
+						break inspect;
+					}
+				}
+
+			}
+
+			if (!somethingHappened && c.getClaimsCount() > 1) {
+				// If here ==> this classifier has claimed multiple textures!!
+				// Destroy the sucker
+				toBeDestroyed.add(c);
+			}
+		} // end-for (inspect)
+		
+		// Get rid of problematic classifiers
+		removeClassifier(toBeDestroyed);
+		return issueDetected;
+	}
+	
+	/**
+	 * Determines the permanent orphan textures and removes them from the list of orphans
+	 * 
+	 * @param frame
+	 * @param orphans
+	 */
+	private void determinePermanentOrphans(SegmentedVideoFrame frame, List<Segment> orphans) {
+		synchronized (this.permanentOrphans) {
+			for (Segment s : frame)
+				if (invoker.hasChoked(s)) {
+					s.setPermanentOrphan(true);
+					permanentOrphans.add(s.toString());
+				}
+			
+			Iterator<Segment> iter = orphans.iterator();
+			while (iter.hasNext()) {
+				Segment item = iter.next();
+				if (item.isPermanentOrphan())
+					iter.remove();
+//				for (String string : permanentOrphans)
+//					if (item.toString().equals(string)) {
+//						iter.remove();
+//						break;
+//					}
+			}
+		}
 	}
 
 	/**
@@ -906,5 +978,41 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer 
 	public void notifySuccess() {
 		for (SuccessListener listener : this.successListeners)
 			listener.notifySuccess(this);
+	}
+
+	@Override
+	public void notifyFailure(String reason) {
+		// Do nothing
+	}
+	
+	/**
+	 * @return	The set of all the IDs of permanent orphan textures 
+	 */
+	public Set<String> getPermanentOrphans() {
+		Set<String> result = new HashSet<>();
+		
+		synchronized (this.permanentOrphans) {
+			for (String s : permanentOrphans)
+				result.add("" + s);
+		}		
+		
+		return result;
+	}
+
+	@Override
+	public void addSegmentEventListener(SegmentEventListener listener) {
+		this.segmentListeners.add(listener);
+	}
+
+	@Override
+	public void removeSegmentEventListener(SegmentEventListener listener) {
+		this.segmentListeners.remove(listener);
+	}
+
+	@Override
+	public void notifySegmentAdded(int segmentCount, int orphansCount, int permanentOrphansCount) {
+		for (SegmentEventListener listener : this.segmentListeners) {
+			listener.segmentAdded(segmentCount, orphansCount, permanentOrphansCount);
+		}
 	}
 }

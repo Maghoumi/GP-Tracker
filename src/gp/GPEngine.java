@@ -1,10 +1,12 @@
 package gp;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.*;
 
 import utils.EvolutionListener;
+import utils.SuccessListener;
+import utils.SuccessProvider;
 import utils.UniqueBlockingQueue;
-import visualizer.Visualizer;
 import cuda.gp.CudaEvolutionState;
 import cuda.gp.CudaInterop;
 import cuda.gp.CudaSimpleStatistics;
@@ -29,7 +31,7 @@ import gp.datatypes.TrackerStatistics;
  * @author Mehran Maghoumi
  * 
  */
-public class GPEngine extends Evolve implements Runnable {
+public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 
 	/**
 	 * Number of jobs that can be queued on this GPEngine without blocking the
@@ -67,6 +69,9 @@ public class GPEngine extends Evolve implements Runnable {
 	
 	/** Tracker stat dumper */
 	protected TrackerStatistics stats;
+	
+	/** The list of SuccessListeners that are tied to the this GPEngine */
+	protected Set<SuccessListener> listeners = new HashSet<>();
 
 	/**
 	 * Initializes a new GPEngine using the given parameter file.
@@ -178,6 +183,18 @@ public class GPEngine extends Evolve implements Runnable {
 	}
 	
 	/**
+	 * Determines if a specific segment has reached the maximum number of allowed
+	 * training requests.
+	 * 
+	 * @param segmentId
+	 * @return	True if this segment has reached the maximum number of allowed requests
+	 * 			False otherwise
+	 */
+	public boolean hasReachedLimit(String segmentId) {
+		return this.stats.hasReachedLimit(segmentId);		
+	}
+	
+	/**
 	 * @return	True if the job queue is empty, False otherwise.
 	 */
 	public boolean isQueueEmpty() {
@@ -239,7 +256,11 @@ public class GPEngine extends Evolve implements Runnable {
 			}
 
 			newJob.getClassifier().setBeingProcessed(true);
-			stats.addToStat(newJob);
+			
+			if (!stats.addToStat(newJob))
+				toString();
+//				notifyFailure("Maximum GP runs for this job exceeded for " + newJob.getId());
+			
 			GPIndividual evolvedIndividual = runJob(newJob);
 			stats.addFrameStat(newJob);
 			
@@ -249,5 +270,27 @@ public class GPEngine extends Evolve implements Runnable {
 			newJob.getClassifier().setBeingProcessed(false);
 			System.out.println("Finished processing " + newJob.getClassifier().toString());
 		} // end-while
+	}
+
+	@Override
+	public void addSuccessListener(SuccessListener listener) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeSuccessListener(SuccessListener listener) {
+		this.listeners.remove(listener);
+	}
+
+	@Override
+	public void notifySuccess() {
+		// Do nothing!
+	}
+
+	@Override
+	public void notifyFailure(String reason) {
+		for (SuccessListener listener : this.listeners) {
+			listener.notifyFailure(reason);
+		}
 	}
 }

@@ -17,6 +17,9 @@ import visualizer.Visualizer;
  *
  */
 public class TrackerStatistics {
+	/** Maximum number of trainings allowed for each segment */
+	public static final int MAX_RETRAININGS_ALLOWED = 26;	// ==> because the first one is a training the subsequent ones are retrainings
+	
 	/** Keeps track of how many times a segment has been queued for retraining */
 	protected HashMap<String, Integer> trainingRequests = new HashMap<>();
 	
@@ -36,19 +39,46 @@ public class TrackerStatistics {
 	
 	/**
 	 * Adds the provided Job to the statistics log
-	 * @param j
+	 * @param j	The job to log
+	 * @return True if this job does not exceed the specified maximum number of
+	 * 			retrainings per job, False if the maximum number of GP calls for
+	 * 			this run has exceeded
 	 */
-	public void addToStat(Job j) {
-		String id = j.getId();
-		int newValue = 1;
-		
-		if (this.trainingRequests.containsKey(id)) {
-			newValue = this.trainingRequests.get(id);
-			newValue++;
+	public boolean addToStat(Job j) {
+		synchronized(trainingRequests) {
+			String id = j.getId();
+			int newValue = 1;
+			
+			if (this.trainingRequests.containsKey(id)) {
+				newValue = this.trainingRequests.get(id);
+				newValue++;
+			}
+			
+			if (newValue > MAX_RETRAININGS_ALLOWED)
+				return false;
+			
+			this.trainingRequests.put(id, newValue);
+			dumpToFile();
+			return true;
 		}
-		
-		this.trainingRequests.put(id, newValue);
-		dumpToFile();
+	}
+	
+	/**
+	 * Determines if a specific segment has reached the maximum number of allowed
+	 * training requests.
+	 * 
+	 * @param segmentId
+	 * @return	True if this segment has reached the maximum number of allowed requests
+	 * 			False otherwise
+	 */
+	public boolean hasReachedLimit(String segmentId) {
+		synchronized(trainingRequests) {
+			if (trainingRequests.containsKey(segmentId)) {
+				return (trainingRequests.get(segmentId).intValue() + 1) > MAX_RETRAININGS_ALLOWED;
+			}
+			
+			return false;
+		}
 	}
 	
 	protected void dumpToFile() {

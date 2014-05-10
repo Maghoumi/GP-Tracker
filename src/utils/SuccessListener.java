@@ -16,4 +16,10 @@ public interface SuccessListener {
 	 * @param visualizer	The Visualizer object that was successful
 	 */
 	public void notifySuccess(Visualizer visualizer);
+	
+	/**
+	 * Notify the listener of the failure of the current session
+	 * @param reason	The reason of failure
+	 */
+	public void notifyFailure(String reason);
 }

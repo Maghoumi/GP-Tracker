@@ -1,31 +1,18 @@
-Added the experiment runners
-There are lots of useless classes now that are only useful for running automated experiments
+Mostly changed so that the required experiments could run automatically
+Some code clean-up
 
-Added the session prefix to CudaEvolutionState, GPEngine, Invoker, CudaSimpleStatistics and
-	CudaSimpleShortStatistics. With the prefix, many runs of the system are possible and the
-	statistics file of each run will have its own unique name.
-
-Added the interfaces SuccessListener and SuccessProvider to facilitate the task of notifying
-	an interested party of the conclusion of a successful session.
+util.cuda.pointer package:
+	Fixed some spelling errors
+	Added the implementation for Double2D, Long2D and Short2D
+	Fixed the Sizeof value of CudaFloat2D
 	
-Classifier now clones the passed individual (? necessary??). However, all operations that work
-	on the underlying expression of the classifier are now synchronized (this was causing the
-	ArrayIndexOutOfBoundsException in ClassifierSet)
-
-ClassifierSet:
-	This class is now a wrapper for TreeSet and is no longer a TreeSet itself. This was done
-	because other TreeSet methods need to be synchronized manually and may pose problems if
-	the unsynchronized methods are called accidentally.
-	This class will also maintain a separate list of the expressions of all individuals when
-	getPointerToAll is called ==> this probably fixes the random ArrayIndexOutOfBoundsException
-	in getPointerToAll 
-
-SegmentedVideoFrame:
-	Now wraps a List instead of a Set. This way the collection can be shuffled before training.
-	This prevents the GP system getting stuck with one texture all the time
+GLVisualizer
+	runCuda has been broken into a few functions
+	Now has the ability to detect permanent orphans and ignore them and work
+	on the rest of the textures
+	Can now tell when the cycle has been successful
+	Can now give information about the number of orphans and permanent orphans
+	at the end of the run 
 	
-GLVisualizer:
-	The orphan textures now have priority.
-	The Garbage textures are now correctly disposed of
-	In passNewClassifier the ClassifierCheckBox is now updated properly (before, the list was
-	sometimes out of synch with classifiers ==> enability change would not affect anything!)
+NOTE: Most changes are minor and have been done to ease the experiment
+		runs

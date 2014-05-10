@@ -4,22 +4,22 @@ import jcuda.Pointer;
 import jcuda.Sizeof;
 
 /**
- * Represents a primitive array of floats which is synchronized with a float pointer
+ * Represents a primitive array of shorts which is synchronized with a short pointer
  * in CUDA.
  * 
  * @author Mehran Maghoumi
  *
  */
-public class CudaFloat2D extends CudaPrimitive2D {
+public class CudaShort2D extends CudaPrimitive2D {
 	
 	/** The CPU value of this GPU pointer. This is the cached value */
-	protected float[] array;
+	protected short[] array;
 	
-	public CudaFloat2D (int width, int height) {
+	public CudaShort2D (int width, int height) {
 		this(width, height, 1);
 	}
 	
-	public CudaFloat2D (int width, int height, int numFields) {
+	public CudaShort2D (int width, int height, int numFields) {
 		this(width, height, numFields, null);
 	}
 	
@@ -34,12 +34,12 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	 * @param numFields
 	 * @param initialValues
 	 */
-	public CudaFloat2D (int width, int height, int numFields, float[] initialValues) {
+	public CudaShort2D (int width, int height, int numFields, short[] initialValues) {
 		super(width, height, numFields);
 		
 		// Initialize the host array
 		if (initialValues == null)
-			this.array = new float[width * height * numFields];
+			this.array = new short[width * height * numFields];
 		else {
 			if (initialValues.length != width * height * numFields)
 				throw new RuntimeException("Given array's length is different than specified specifications");
@@ -62,14 +62,14 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	 * @param y	The row index of the matrix
 	 * @return
 	 */
-	public float[] getValueAt (int x, int y) {
+	public short[] getValueAt (int x, int y) {
 		if (x >= width)
 			throw new IndexOutOfBoundsException("Column index out of bounds");
 		
 		if (y >= height)
 			throw new IndexOutOfBoundsException("Row index out of bounds");
 		
-		float[] result = new float[numFields]; 
+		short[] result = new short[numFields]; 
 		// Determine the start index
 		int startIndex = y * width * numFields + x * numFields;
 		// Perform copy
@@ -79,24 +79,24 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	}
 	
 	/**
-	 * @return	A copy (i.e. a clone) of the underlying array of this Float2D object
+	 * @return	A copy (i.e. a clone) of the underlying array of this Short2D object
 	 */
-	public float[] getArray() {
+	public short[] getArray() {
 		return this.array.clone();
 	}
 	
 	/**
-	 * @return	The underlying array of this Float2D object
+	 * @return	The underlying array of this Short2D object
 	 * 			WARNING: Do not modify this array directly! Use getArray()
 	 * 					 if you need to modify the returned array!
 	 * 
 	 */
-	public float[] getUnclonedArray() {
-		return this.array.clone();
+	public short[] getUnclonedArray() {
+		return this.array;
 	}
 	
 	/**
-	 * Sets the array of this Float2D object to the specified array.
+	 * Sets the array of this Short2D object to the specified array.
 	 * The new array must meet the original specifications (i.e. same width, height etc.)
 	 * After the array is set, the new values are automatically written back to the GPU
 	 * memory.
@@ -106,7 +106,7 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	 * @param newArray
 	 * @return JCuda's error code
 	 */
-	public int setArray(float[] newArray) {
+	public int setArray(short[] newArray) {
 		if (freed)
 			throw new RuntimeException("The pointer has already been freed");
 		
@@ -119,7 +119,7 @@ public class CudaFloat2D extends CudaPrimitive2D {
 
 	@Override
 	public int getElementSizeInBytes() {
-		return Sizeof.FLOAT;
+		return Sizeof.SHORT;
 	}
 
 	@Override
@@ -134,6 +134,6 @@ public class CudaFloat2D extends CudaPrimitive2D {
 
 	@Override
 	protected Object clone() {
-		return new CudaFloat2D(width, height, numFields, array);
+		return new CudaShort2D(width, height, numFields, array);
 	}
 }

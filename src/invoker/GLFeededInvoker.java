@@ -9,7 +9,7 @@ import utils.SuccessListener;
 import visualizer.GLVisualizer;
 import visualizer.Visualizer;
 
-public class GLFeededInvoker extends Invoker implements SuccessListener {
+public class GLFeededInvoker extends Invoker{
 
 	public GLFeededInvoker(String sessionPrefix) {
 		super(new String[] { "-file", "bin/gp/object-tracker.params" }, sessionPrefix);
@@ -40,6 +40,11 @@ public class GLFeededInvoker extends Invoker implements SuccessListener {
 
 	@Override
 	public void notifySuccess(Visualizer visualizer) {
+		
+	}
+
+	@Override
+	public void notifyFailure(String reason) {
 		
 	}
 

@@ -9,17 +9,20 @@ import javax.swing.UIManager;
 import org.apache.commons.io.FileUtils;
 
 import feeder.GLOneByOneFeeder;
+import utils.SegmentEventListener;
 import utils.SuccessListener;
 import visualizer.GLVisualizer;
 import visualizer.Visualizer;
 
-public class GLOneByOneInvoker extends Invoker implements SuccessListener {
+public class GLOneByOneInvoker extends Invoker implements SegmentEventListener {
 
 	public GLOneByOneInvoker(String sessionPrefix, int initialNumTextures, int numTextures, String path) {
 		super(new String[] { "-file", "bin/gp/object-tracker.params" }, sessionPrefix);
 		this.feeder = new GLOneByOneFeeder(initialNumTextures, numTextures, path);
-		this.visualizer = new GLVisualizer(this);
+		GLVisualizer visualizer = new GLVisualizer(this); 
+		this.visualizer = visualizer;
 		visualizer.addSuccessListener(this);
+		visualizer.addSegmentEventListener(this);
 	}
 	
 	public static void main(String[] args) throws Throwable {
@@ -39,16 +42,16 @@ public class GLOneByOneInvoker extends Invoker implements SuccessListener {
 		else
 			prefix = args[0];
 		
-		int initialNumTextures = 4;
+		int initialNumTextures = 2;
 		if (args.length != 0)
 			initialNumTextures = Integer.parseInt(args[1]);
 		
-		int numTextures = 5;
+		int numTextures = 16;
 		
 		if (args.length != 0)
 			numTextures = Integer.parseInt(args[2]);
 		
-		String path = "textures/gecco-textures/easy";
+		String path = "textures/gecco-textures/hard";
 		if (args.length != 0)
 			path = args[3];
 		
@@ -108,18 +111,63 @@ public class GLOneByOneInvoker extends Invoker implements SuccessListener {
 			System.out.println("===================================");
 			System.out.println(visualizer.getFramerate());
 			
-			File success = new File("stat-dump/success.log");
-			long timeStamp = System.currentTimeMillis();
-			
 			try {
-				FileUtils.writeStringToFile(success, timeStamp + "\t" + visualizer.getFramerate() + System.lineSeparator(), true);
+				File success = new File("stat-dump/success.log");
+				long timeStamp = System.currentTimeMillis();
+				GLVisualizer glvis = (GLVisualizer) visualizer;
+				int numPermanentOrphans = glvis.getPermanentOrphans().size();
+				String output = String.format("%d\t%.2f\t%d" + System.lineSeparator(), timeStamp, visualizer.getFramerate(), numPermanentOrphans);
+				FileUtils.writeStringToFile(success, output, true);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			System.exit(0);			
+			try {
+				File orphans = new File("stat-dump/" + (sessionPrefix == null ? "" : sessionPrefix + ".") +"orphans.log");
+				GLVisualizer glvis = (GLVisualizer) visualizer;
+				StringBuilder output = new StringBuilder();
+				
+				for (String s : glvis.getPermanentOrphans())
+					output.append(s + System.lineSeparator());
+				
+				FileUtils.writeStringToFile(orphans, output.toString(), false);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			System.exit(10);
 		}
 		
+		
+		
 	}
+	
+	@Override
+	public void notifyFailure(String reason) {
+		File failure = new File("stat-dump/success.log");
+		long timeStamp = System.currentTimeMillis();
+		
+		try {
+			FileUtils.writeStringToFile(failure, timeStamp + "\t" + reason + System.lineSeparator(), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.exit(10);		
+	}
+
+	@Override
+	public void segmentAdded(int segmentCount, int orphansCount, int permanentOrphansCount) {
+		File segmentInfo = new File("stat-dump/" + (sessionPrefix == null ? "" : sessionPrefix + ".") + "segment-info.stat");
+		
+		try {
+			String log = String.format("%d\t%d\t%d" + System.lineSeparator(), segmentCount, orphansCount, permanentOrphansCount);
+			FileUtils.writeStringToFile(segmentInfo, log, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 }

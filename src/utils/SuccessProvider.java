@@ -24,4 +24,11 @@ public interface SuccessProvider {
 	 * Notify the listeners of the success of the GP session
 	 */
 	public void notifySuccess();
+	
+	/**
+	 * Notify the listeners of the failure of the GP session. Could
+	 * be because the maximum number of GP calls have reached or something
+	 * else
+	 */
+	public void notifyFailure(String reason);
 }

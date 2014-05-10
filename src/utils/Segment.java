@@ -29,6 +29,16 @@ public class Segment implements Cloneable {
 	/** The boundaries of this segment */
 	protected Rectangle bounds;
 	
+	/** Flag indicating that this segment is orphan */
+	protected boolean orphan = false;
+	
+	/**
+	 * Flag indicating whether this segment is permanent orphan.
+	 * If a segment is permanent orphan, it means that it has exceeded the
+	 * maximum number of GP retrain requests
+	 */
+	protected boolean permanentOrphan = false;
+	
 	/**
 	 * Initializes a new segment object using the provided boundaries and ID
 	 * @param image
@@ -76,6 +86,34 @@ public class Segment implements Cloneable {
 		return this.bounds;
 	}
 	
+	/**
+	 * @return orphan status of this segment
+	 */
+	public boolean isOrphan() {
+		return orphan;
+	}
+
+	/**
+	 * @param orphan the orphan to set
+	 */
+	public void setOrphan(boolean orphan) {
+		this.orphan = orphan;
+	}
+	
+	/**
+	 * @return the permanentOrphan
+	 */
+	public boolean isPermanentOrphan() {
+		return permanentOrphan;
+	}
+
+	/**
+	 * @param permanentOrphan the permanentOrphan to set
+	 */
+	public void setPermanentOrphan(boolean permanentOrphan) {
+		this.permanentOrphan = permanentOrphan;
+	}
+
 	/**
 	 * Filters the image using the provided ImageFilterProvider.
 	 * Note that the filter is done on the calling thread thus the clients
