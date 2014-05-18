@@ -82,18 +82,20 @@ public class TrackerStatistics {
 	}
 	
 	protected void dumpToFile() {
-		StringBuilder result = new StringBuilder();
-		
-		for (Entry<String, Integer> entry : this.trainingRequests.entrySet()) {
-			result.append(entry.getKey() + "\t" + entry.getValue() + System.lineSeparator());			
-		}
-		
-		result.replace(result.length() - 2, result.length(), "");
-		
-		try {
-			FileUtils.writeStringToFile(callDumpPath, result.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
+		synchronized(this.trainingRequests) {
+			StringBuilder result = new StringBuilder();
+			
+			for (Entry<String, Integer> entry : this.trainingRequests.entrySet()) {
+				result.append(entry.getKey() + "\t" + entry.getValue() + System.lineSeparator());			
+			}
+			
+			result.replace(result.length() - 2, result.length(), "");
+			
+			try {
+				FileUtils.writeStringToFile(callDumpPath, result.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

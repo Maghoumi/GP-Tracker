@@ -1,18 +1,2 @@
-Mostly changed so that the required experiments could run automatically
-Some code clean-up
-
-util.cuda.pointer package:
-	Fixed some spelling errors
-	Added the implementation for Double2D, Long2D and Short2D
-	Fixed the Sizeof value of CudaFloat2D
-	
-GLVisualizer
-	runCuda has been broken into a few functions
-	Now has the ability to detect permanent orphans and ignore them and work
-	on the rest of the textures
-	Can now tell when the cycle has been successful
-	Can now give information about the number of orphans and permanent orphans
-	at the end of the run 
-	
-NOTE: Most changes are minor and have been done to ease the experiment
-		runs
+TrackerStatistics:
+	Added more statistics features for running thesis experiments
