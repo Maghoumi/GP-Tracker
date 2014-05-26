@@ -774,7 +774,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		}
 		
 		// Resolve retraining issues:
-		inspect: for (Classifier c : classifiers) {
+		/*inspect: for (Classifier c : classifiers) {
 			if (c.getClaimsCount() == 1 || c.isBeingProcessed() || !invoker.isQueueEmpty())
 				continue;
 			
@@ -808,7 +808,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				// Destroy the sucker
 				toBeDestroyed.add(c);
 			}
-		} // end-for (inspect)
+		} // end-for (inspect)*/
 		
 		// Get rid of problematic classifiers
 		removeClassifier(toBeDestroyed);
