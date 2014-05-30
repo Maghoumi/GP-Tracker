@@ -6,18 +6,22 @@ import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import cuda.multigpu.KernelAddJob;
+import cuda.multigpu.KernelInvoke;
+import cuda.multigpu.TransScale;
+import cuda.multigpu.Trigger;
 import ec.EvolutionState;
 import ec.Singleton;
 import ec.util.Parameter;
 import gnu.trove.list.array.TByteArrayList;
 import gp.datatypes.CudaTrainingInstance;
 import gp.datatypes.Job;
-import gp.datatypes.ProblemData;
 import gp.datatypes.TrainingInstance;
 import utils.ByteImage;
 import utils.FilteredImage;
@@ -42,6 +46,9 @@ import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
 public class CudaInterop implements Singleton, ImageFilterProvider {
 	
 	private static final boolean RECOMPILE = false;
+	
+	private static final String KERNEL_EVALUATE = "evaluate";
+	private static final String KERNEL_FILTER = "avgSdFilter";
 
 	private KernelLauncher kernel = null;
 	private String kernelCode;
@@ -61,11 +68,10 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	private int mediumFilterSize; // The size of the medium filter
 	private int largeFilterSize; // The size of the large filter
 
-	private CUcontext context = null;
-	private CUmodule codeModule = null; // Stores the module of the compiled code.
-	private CUfunction fncEvaluate = null; // Function handle for the "Evaluate" function
-	private CUfunction fncDescribe = null; // Function handle for the "Describe" function
-	private CUfunction fncFilter = null; // Function handle for the image filter function
+//	private CUcontext context = null;
+//	private CUmodule codeModule = null; // Stores the module of the compiled code.
+//	private CUfunction fncEvaluate = null; // Function handle for the "Evaluate" function
+//	private CUfunction fncFilter = null; // Function handle for the image filter function
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -320,9 +326,8 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 		JCudaDriver.setExceptionsEnabled(true);
 
 		String kernelTemplate = "";
-		fncEvaluate = new CUfunction();
-		fncDescribe = new CUfunction();
-		fncFilter = new CUfunction();
+//		fncEvaluate = new CUfunction();
+//		fncFilter = new CUfunction();
 
 		File kernelCodeFile = new File("bin/cuda/kernels/gp/cuda-kernels.cu");
 
@@ -341,20 +346,31 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			FileUtils.write(kernelCodeFile, kernelTemplate);
 		}
 
+		KernelAddJob kernelAdd = new KernelAddJob();
+		kernelAdd.ptxFile = new File("bin/cuda/kernels/gp/cuda-kernels.ptx");
+		kernelAdd.functionMapping = new HashMap<>();
+		kernelAdd.functionMapping.put(KERNEL_EVALUATE, KERNEL_EVALUATE);
+		kernelAdd.functionMapping.put(KERNEL_FILTER, KERNEL_FILTER);
+		
+		TransScale.getInstance().addKernel(kernelAdd);
+		if (true)
+		return;
+		
+		
+		
 		// Compile or load the kernel
 		kernel = KernelLauncher.create("bin/cuda/kernels/gp/cuda-kernels.cu", "evaluate", recompile, "-arch=compute_20 -code=sm_30 -use_fast_math");
 
 		System.out.println(recompile ? "Kernel COMPILED" : "Kernel loaded");
 
 		// Save the current context. I want to use this context later for multithreaded operations
-		this.context = new CUcontext();
-		cuCtxGetCurrent(context);
+//		this.context = new CUcontext();
+//		cuCtxGetCurrent(context);
 
 		// Get the module so that I can get handles to kernel functions
-		this.codeModule = kernel.getModule();
-		cuModuleGetFunction(fncEvaluate, codeModule, "evaluate");
-		cuModuleGetFunction(fncDescribe, codeModule, "describe");
-		cuModuleGetFunction(fncFilter, codeModule, "avgSdFilter");
+//		this.codeModule = kernel.getModule();
+//		cuModuleGetFunction(fncEvaluate, codeModule, "evaluate");
+//		cuModuleGetFunction(fncFilter, codeModule, "avgSdFilter");
 	}
 
 	/**
@@ -362,7 +378,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	 * thread can access the CUDA functionality offered by this class.
 	 */
 	public synchronized void switchContext() {
-		cuCtxSetCurrent(context);
+//		cuCtxSetCurrent(context); DO NOTHING!
 	}
 
 	/**
@@ -374,60 +390,94 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	 * @param sdResult Placeholder to store the result of the standard deviation filter
 	 * @param maskSize	the mask size to use for the filter
 	 */
-	private void performFilter(CudaByte2D byteInput, CudaFloat2D averageResult, CudaFloat2D sdResult, int maskSize) {
-		int imageWidth = byteInput.getWidth();
-		int imageHeight = byteInput.getHeight();
-		int numChannels = byteInput.getNumFields();
+	private void performFilter(final CudaByte2D byteInput, final CudaFloat2D averageResult, final CudaFloat2D sdResult, int maskSize) {
+		final int imageWidth = byteInput.getWidth();
+		final int imageHeight = byteInput.getHeight();
+		final int numChannels = byteInput.getNumFields();
 		
-		// Allocate device array
-		CUarray devTexture = new CUarray();
-		CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
-		desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
-		desc.NumChannels = numChannels;
-		desc.Width = imageWidth;
-		desc.Height = imageHeight;
-		JCudaDriver.cuArrayCreate(devTexture, desc);
+		final CUarray devTexture = new CUarray();
+		Trigger pre = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				// Allocate device array
+				CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
+				desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
+				desc.NumChannels = numChannels;
+				desc.Width = imageWidth;
+				desc.Height = imageHeight;
+				JCudaDriver.cuArrayCreate(devTexture, desc);
+				
+				// Copy the host input to the array
+				CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
+				copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
+				copyHD.srcHost = byteInput.hostDataToPointer();
+				copyHD.srcPitch = byteInput.getSourcePitch();
+				copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
+				copyHD.dstArray = devTexture;
+				copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
+				copyHD.Height = imageHeight;
+
+				cuMemcpy2D(copyHD);
+
+				// Set texture reference properties
+				CUtexref inputTexRef = new CUtexref();
+				cuModuleGetTexRef(inputTexRef, module, "inputTexture");
+				cuTexRefSetFilterMode(inputTexRef, CU_TR_FILTER_MODE_POINT);
+				cuTexRefSetAddressMode(inputTexRef, 0, CU_TR_ADDRESS_MODE_CLAMP);
+				cuTexRefSetAddressMode(inputTexRef, 1, CU_TR_ADDRESS_MODE_CLAMP);
+				cuTexRefSetFlags(inputTexRef, CU_TRSF_READ_AS_INTEGER);
+				cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, 4);
+				cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
+				
+				averageResult.reallocate();
+				sdResult.reallocate();
+			}
+		};
 		
-		// Copy the host input to the array
-		CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
-		copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
-		copyHD.srcHost = byteInput.hostDataToPointer();
-		copyHD.srcPitch = byteInput.getSourcePitch();
-		copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
-		copyHD.dstArray = devTexture;
-		copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
-		copyHD.Height = imageHeight;
-
-		cuMemcpy2D(copyHD);
-
-		// Set texture reference properties
-		CUtexref inputTexRef = new CUtexref();
-		cuModuleGetTexRef(inputTexRef, codeModule, "inputTexture");
-		cuTexRefSetFilterMode(inputTexRef, CU_TR_FILTER_MODE_POINT);
-		cuTexRefSetAddressMode(inputTexRef, 0, CU_TR_ADDRESS_MODE_CLAMP);
-		cuTexRefSetAddressMode(inputTexRef, 1, CU_TR_ADDRESS_MODE_CLAMP);
-		cuTexRefSetFlags(inputTexRef, CU_TRSF_READ_AS_INTEGER);
-		cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, 4);
-		cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
+		
 
 		Pointer kernelParams = Pointer.to(averageResult.toPointer(), sdResult.toPointer(),
 				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) averageResult.getDevPitchInElements()[0] }),
 				Pointer.to(new int[] { maskSize }));
 
-		// Call kernel
-		cuLaunchKernel(fncFilter,
-				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
-				16, 16, 1,
-				0, null,
-				kernelParams, null);
-		cuCtxSynchronize();
+//		// Call kernel
+//		cuLaunchKernel(fncFilter,
+//				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
+//				16, 16, 1,
+//				0, null,
+//				kernelParams, null);
+//		cuCtxSynchronize();
 
-		// Retrieve results
-		averageResult.refresh();
-		sdResult.refresh();
+		Trigger post = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				// Retrieve results
+				averageResult.refresh();
+				sdResult.refresh();
 
-		// A little housekeeping
-		cuArrayDestroy(devTexture);
+				// A little housekeeping
+				cuArrayDestroy(devTexture);				
+			}
+		};
+		
+		KernelInvoke kernelJob = new KernelInvoke();
+		kernelJob.functionId = KERNEL_FILTER;
+		kernelJob.preTrigger = pre;
+		kernelJob.postTrigger = post;
+		
+		kernelJob.gridDimX = (imageWidth + FILTER_BLOCK_SIZE - 1);
+		kernelJob.gridDimY = (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE;
+		
+		kernelJob.blockDimX = 16;
+		kernelJob.blockDimY = 16;
+		kernelJob.blockDimZ = 1;
+		
+		kernelJob.pointerToArguments = kernelParams;
+		
+		TransScale.getInstance().queueJob(kernelJob);
+		kernelJob.waitFor();
 	}
 	
 	@Override
@@ -485,22 +535,69 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			}
 		}
 
-		CudaTrainingInstance ti = job.getTrainingInstances();		
+		final CudaTrainingInstance ti = job.getTrainingInstances();		
 		// Allocate expressions memory
-		CudaByte2D devExpressions = new CudaByte2D(population.length, 1, 1, population);
+		final CudaByte2D devExpressions = new CudaByte2D(population.length, 1, 1, population, true);
+		/**/Trigger pre = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				ti.allocateAndTransfer();
+				devExpressions.reallocate();
+			}
+		};
 		
-		kernel.setGridSize(indCount, 1);
-		kernel.setBlockSize(EVAL_BLOCK_SIZE, 1, 1);
-		kernel.call(devExpressions, indCount, maxExpLength,
-				ti.getInputs(),
-				ti.getSmallAvgs(), ti.getMediumAvgs(), ti.getLargeAvgs(),
-				ti.getSmallSds(), ti.getMediumSds(), ti.getLargeSds(),
-				ti.getLabels(), ti.getOutputs());
-
+		/**/Trigger post = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				// Refresh fitnesses (aka outputs)
+				ti.getOutputs().refresh();
+				devExpressions.free();
+			}
+		};
+		
+		KernelInvoke kernelJob = new KernelInvoke();
+		kernelJob.functionId = KERNEL_EVALUATE;
+		kernelJob.preTrigger = pre;
+		kernelJob.postTrigger = post;
+		
+		kernelJob.gridDimX = indCount;
+		kernelJob.gridDimY = 1;
+		
+		kernelJob.blockDimX = EVAL_BLOCK_SIZE;
+		kernelJob.blockDimY = 1;
+		kernelJob.blockDimZ = 1;
+		
+		kernelJob.pointerToArguments =
+				Pointer.to(
+					devExpressions.toPointer(), Pointer.to(new int[] {indCount}), Pointer.to(new int[] {maxExpLength}),
+					ti.getInputs().toPointer(),
+					ti.getSmallAvgs().toPointer(), ti.getMediumAvgs().toPointer(), ti.getLargeAvgs().toPointer(),
+					ti.getSmallSds().toPointer(), ti.getMediumSds().toPointer(), ti.getLargeSds().toPointer(),
+					ti.getLabels().toPointer(), ti.getOutputs().toPointer()
+				);
+		
+		TransScale.getInstance().queueJob(kernelJob);
+		kernelJob.waitFor();
+		
+		
+		
+//		kernel.setGridSize(indCount, 1);
+//		kernel.setBlockSize(EVAL_BLOCK_SIZE, 1, 1);
+//		kernel.call(devExpressions, indCount, maxExpLength,
+//				ti.getInputs(),
+//				ti.getSmallAvgs(), ti.getMediumAvgs(), ti.getLargeAvgs(),
+//				ti.getSmallSds(), ti.getMediumSds(), ti.getLargeSds(),
+//				ti.getLabels(), ti.getOutputs());
+//		
+//
+//
 		
 		// Refresh fitnesses (aka outputs)
-		ti.getOutputs().refresh();
-		devExpressions.free();
+		
+//		ti.getOutputs().refresh();
+//		devExpressions.free();
 
 		return ti.getOutputs().getUnclonedArray();
 	}

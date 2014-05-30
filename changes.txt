@@ -1,2 +1,3 @@
-TrackerStatistics:
-	Added more statistics features for running thesis experiments
+Renamed LoadBalancer to TransScale (Transparet Scalability)
+TransScale works perfectly for 2 cards (Yaaaaaaaaay!)
+Visualizer is broken and currently the visualization ability is broken :(

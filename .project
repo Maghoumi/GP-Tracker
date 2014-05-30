@@ -16,9 +16,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>ecj</name>
+			<name>ecj-src</name>
 			<type>2</type>
-			<locationURI>copy_PROJECT_LOC/lib/ecj</locationURI>
+			<location>C:/Dropbox/University Stuff/Thesis/workspace/GP-Tracker/lib/ecj</location>
 		</link>
 	</linkedResources>
 	<variableList>

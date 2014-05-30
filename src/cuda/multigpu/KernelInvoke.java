@@ -11,6 +11,7 @@ import jcuda.Pointer;
  *
  */
 public class KernelInvoke {
+	
 	/** The ID of the kernel to call */
 	public String functionId;
 	
@@ -43,4 +44,38 @@ public class KernelInvoke {
 	
 	/** The size of the shared memory to pass to the kernel function */
 	public int sharedMemorySize = 0;
+	
+	/** For waiting for this job to complete */
+	protected Object waitMutex = new Object();
+	
+	private volatile boolean jobComplete = false;
+	
+	/**
+	 * Wait for this job to complete. Blocks the calling thread until
+	 * this job has been completed on the graphics card.
+	 */
+	public void waitFor() {
+		while (!jobComplete) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}
+//		synchronized (waitMutex) {
+//			try {
+//				waitMutex.wait();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+	}
+	
+	public void notifyComplete() {
+		jobComplete = true;
+//		synchronized (waitMutex) {
+//			waitMutex.notify();
+//		}
+	}
 }

@@ -42,8 +42,15 @@ public class CudaTrainingInstance {
 	/** Float2D object to hold the output of each instance */
 	protected CudaFloat2D outputs;
 	
+	/** The width of the CudaPrimitive2D objects to allocate */
+	protected int width;
+	
+	/** The number of channels per pixel */
+	protected int numChannels;
+	
 	public CudaTrainingInstance(List<TrainingInstance> instances, int numChannels) {
-		int width = instances.size();
+		this.width = instances.size();
+		this.numChannels = numChannels; 
 		int byteCount = width * numChannels;
 		
 		// Create destination host arrays
@@ -72,18 +79,36 @@ public class CudaTrainingInstance {
 		}
 		
 		// Allocate and transfer CUDA data
-		this.inputs = new CudaFloat2D(width, 1, numChannels, inputs);
+		this.inputs = new CudaFloat2D(width, 1, numChannels, inputs, true);
 		
-		this.smallAvgs = new CudaFloat2D(width, 1, numChannels, smallAvgs);
-		this.mediumAvgs = new CudaFloat2D(width, 1, numChannels, mediumAvgs);
-		this.largeAvgs = new CudaFloat2D(width, 1, numChannels, largeAvgs);
+		this.smallAvgs = new CudaFloat2D(width, 1, numChannels, smallAvgs, true);
+		this.mediumAvgs = new CudaFloat2D(width, 1, numChannels, mediumAvgs, true);
+		this.largeAvgs = new CudaFloat2D(width, 1, numChannels, largeAvgs, true);
 		
-		this.smallSds = new CudaFloat2D(width, 1, numChannels, smallSds);
-		this.mediumSds = new CudaFloat2D(width, 1, numChannels, mediumSds);
-		this.largeSds = new CudaFloat2D(width, 1, numChannels, largeSds);
+		this.smallSds = new CudaFloat2D(width, 1, numChannels, smallSds, true);
+		this.mediumSds = new CudaFloat2D(width, 1, numChannels, mediumSds, true);
+		this.largeSds = new CudaFloat2D(width, 1, numChannels, largeSds, true);
 		
-		this.labels = new CudaInteger2D(width, 1, 1, labels);
-		this.outputs = new CudaFloat2D(width, 1, 1);
+		this.labels = new CudaInteger2D(width, 1, 1, labels, true);
+		this.outputs = new CudaFloat2D(width, 1, 1, true);
+	}
+	
+	/**
+	 * Allocates and transfers the fields to GPU memory using the calling thread's CUDA context
+	 */
+	public void allocateAndTransfer() {
+		this.inputs.reallocate();
+		
+		this.smallAvgs.reallocate();
+		this.mediumAvgs.reallocate();
+		this.largeAvgs.reallocate();
+		
+		this.smallSds.reallocate();
+		this.mediumSds.reallocate();
+		this.largeSds.reallocate();
+		
+		this.labels.reallocate();
+		this.outputs.reallocate();
 	}
 
 	/**

@@ -16,11 +16,23 @@ public class CudaByte2D extends CudaPrimitive2D {
 	protected byte[] array;
 	
 	public CudaByte2D (int width, int height) {
-		this(width, height, 1);
+		this(width, height, false);
+	}
+	
+	public CudaByte2D (int width, int height, boolean lazyTransfer) {
+		this(width, height, 1, null, lazyTransfer);
 	}
 	
 	public CudaByte2D (int width, int height, int numFields) {
 		this(width, height, numFields, null);
+	}
+	
+	public CudaByte2D (int width, int height, int numFields, boolean lazyTransfer) {
+		this(width, height, numFields, null, lazyTransfer);
+	}
+	
+	public CudaByte2D (int width, int height, int numFields, byte[] initialValues) {
+		this(width, height, numFields, initialValues, false);
 	}
 	
 	/**
@@ -28,13 +40,17 @@ public class CudaByte2D extends CudaPrimitive2D {
 	 * and the passed initialValues. If initialValues is null, an array will be created.
 	 * Note that the passed initialValues is cloned and a separate copy is held for internal
 	 * use of this object.
+	 * If lazyTransfer is true, then the actual CUDA pointer will not be allocated until reallocate
+	 * is called. This is useful for data use in multiple contexts.
+	 * 
 	 * 
 	 * @param width
 	 * @param height
 	 * @param numFields
 	 * @param initialValues
+	 * @param lazyTransfer
 	 */
-	public CudaByte2D (int width, int height, int numFields, byte[] initialValues) {
+	public CudaByte2D (int width, int height, int numFields, byte[] initialValues, boolean lazyTransfer) {
 		super(width, height, numFields);
 		
 		// Initialize the host array
@@ -47,8 +63,10 @@ public class CudaByte2D extends CudaPrimitive2D {
 			this.array = initialValues.clone();
 		}
 		
-		allocate();
-		upload();
+		if (!lazyTransfer) {
+			allocate();
+			upload();
+		}
 	}
 	
 	/**

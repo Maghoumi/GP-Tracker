@@ -320,6 +320,15 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 
 	@Override
 	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {
+		byteInput.reallocate();
+		smallAvg.reallocate();
+		mediumAvg.reallocate();
+		largeAvg.reallocate();
+		
+		smallSd.reallocate();
+		mediumSd.reallocate();
+		largeSd.reallocate();
+		
 		int imageWidth = byteInput.getWidth();
 		int imageHeight = byteInput.getHeight();
 		int numChannels = byteInput.getNumFields();

@@ -59,18 +59,33 @@ public class FilteredImage {
 		this.imageHeight = image.getHeight();
 		this.numChannels = image.getNumChannels();
 		
-		this.byteInput = new CudaByte2D(imageWidth, imageHeight, numChannels, image.getByteData());
-		this.input = new CudaFloat2D(imageWidth, imageHeight, numChannels, image.getFloatData());
+		this.byteInput = new CudaByte2D(imageWidth, imageHeight, numChannels, image.getByteData(), true);
+		this.input = new CudaFloat2D(imageWidth, imageHeight, numChannels, image.getFloatData(), true);
 		
-		this.smallAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels);
-		this.mediumAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels);
-		this.largeAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels);
+		this.smallAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
+		this.mediumAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
+		this.largeAvg = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
 		
-		this.smallSd = new CudaFloat2D(imageWidth, imageHeight, numChannels);
-		this.mediumSd = new CudaFloat2D(imageWidth, imageHeight, numChannels);
-		this.largeSd = new CudaFloat2D(imageWidth, imageHeight, numChannels);
+		this.smallSd = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
+		this.mediumSd = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
+		this.largeSd = new CudaFloat2D(imageWidth, imageHeight, numChannels, true);
 		
 		filterProvider.performFilters(byteInput, smallAvg, mediumAvg, largeAvg, smallSd, mediumSd, largeSd);
+	}
+	
+	/**
+	 * Allocates and transfers the fields to GPU memory using the calling thread's CUDA context
+	 */
+	public void allocateAndTransfer() {
+		this.input.reallocate();
+		
+		this.smallAvg.reallocate();
+		this.mediumAvg.reallocate();
+		this.largeAvg.reallocate();
+		
+		this.smallSd.reallocate();
+		this.mediumSd.reallocate();
+		this.largeSd.reallocate();
 	}
 
 		/**

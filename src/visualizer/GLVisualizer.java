@@ -642,7 +642,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		boolean cycleSuccessful = true;	// Flag indicating the success of this session
 		
 		synchronized (this.classifiers) {
-
 			// This describe kernel only needs to be invoked if:
 			// 		1) There is a new frame in the frame queue 
 			//		2) There is a new individual in the individual queue **AND** we
@@ -661,6 +660,9 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				return;
 			
 			// Invoke kernel and determine orphans
+			if (!this.classifiers.isEmpty()) {
+				return;
+			}
 			List<Segment> orphans = invokeKernel(drawable, frame);
 			
 			if (!invoker.isQueueEmpty())

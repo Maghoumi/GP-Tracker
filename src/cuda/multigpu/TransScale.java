@@ -4,8 +4,12 @@ import static jcuda.driver.JCudaDriver.*;
 
 import java.util.concurrent.*;
 
+import jcuda.driver.JCudaDriver;
+import jcuda.runtime.JCuda;
+
 /**
- * Manages the CUDA interop for multiple GPUs. For each available device, a 
+ * This class provides transparent scalability for using JCuda with multiple GPUs. 
+ * It manages the CUDA interop for multiple GPUs. For each available device, a 
  * CPU thread is created. Each thread will monitor a job queue (a job consists of 
  * a video frame and a set of classifiers). When a new job becomes available, one of
  * the threads will dequeue that job and starts processing it on its own GPU. At some
@@ -22,7 +26,7 @@ import java.util.concurrent.*;
  * @author Mehran Maghoumi
  *
  */
-public class LoadBalancer implements DeviceProvider {
+public class TransScale implements DeviceProvider {
 	
 	/** The number of CUDA devices that are available */
 	protected int numDevices = 0;
@@ -31,7 +35,7 @@ public class LoadBalancer implements DeviceProvider {
 	protected DeviceThread[] daemonThreads = null;	
 	
 	/** The singleton instance */
-	protected static LoadBalancer instance = null;
+	protected static TransScale instance = null;
 	
 	/** A queue of the devices that are not busy and are available */
 	protected BlockingQueue<DeviceThread> availableDevs = null;
@@ -42,14 +46,16 @@ public class LoadBalancer implements DeviceProvider {
 	 * @return	The singleton instance (if exists), otherwise instantiates a
 	 * 			new instance and returns it.
 	 */
-	public static LoadBalancer getInstance() {
+	public static synchronized TransScale getInstance() {
 		if (instance == null)
-			instance = new LoadBalancer();
+			instance = new TransScale();
 		
 		return instance;
 	}
 	
-	private LoadBalancer() {
+	private TransScale() {
+		JCudaDriver.setExceptionsEnabled(true);
+		JCuda.setExceptionsEnabled(true);
 		cuInit(0);
 		// Get the number of devices 
 		int[] numDevicesArray = { 0 };
@@ -88,6 +94,10 @@ public class LoadBalancer implements DeviceProvider {
 		}
 	}
 	
+	/**
+	 * Queue a job and give it to the next available device
+	 * @param job
+	 */
 	public synchronized void queueJob(KernelInvoke job) {
 		synchronized (jobMutex) {
 			//Select an available device
@@ -106,7 +116,7 @@ public class LoadBalancer implements DeviceProvider {
 	 * Notify this balancer of the availability of the specified device
 	 * @param dev
 	 */
-	public synchronized void notifyAvailable(DeviceThread dev) {
+	public void notifyAvailable(DeviceThread dev) {
 		synchronized (this.availableDevs) {
 			try {
 				this.availableDevs.put(dev);
@@ -120,7 +130,7 @@ public class LoadBalancer implements DeviceProvider {
 	 * Notify this balancer that the specified device is busy
 	 * @param dev
 	 */
-	public synchronized void notifyBusy(DeviceThread dev) {
+	public void notifyBusy(DeviceThread dev) {
 		synchronized (this.availableDevs) {
 			availableDevs.remove(dev);
 		}
@@ -132,9 +142,9 @@ public class LoadBalancer implements DeviceProvider {
 		return numDevices;
 	}
 	
-	public static void main(String[] args) {
-		LoadBalancer.getInstance();
-	}
+//	public static void main(String[] args) {
+//		TransScale.getInstance();
+//	}
 	
 	
 	

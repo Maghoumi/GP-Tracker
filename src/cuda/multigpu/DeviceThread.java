@@ -22,7 +22,7 @@ public class DeviceThread extends Thread {
 	public static final int JOB_CAPACITY = 1;
 	
 	/** The LoadBalancer instance that has instantiated this object */
-	protected LoadBalancer parent = null;
+	protected TransScale parent = null;
 	
 	/** The device that this thread interops with */
 	protected CUdevice device = null;
@@ -34,7 +34,7 @@ public class DeviceThread extends Thread {
 	protected Map<String, Invokable> invokables = new HashMap<>();
 	
 	/** The queue that manages the module load requests */
-	protected BlockingQueue<KernelAddJob> kernelJobsQueue = new SynchronousQueue<>();
+	protected BlockingQueue<KernelAddJob> kernelJobsQueue = new ArrayBlockingQueue<>(JOB_CAPACITY);
 	
 	/** Queue for all the kernel calls that this thread should make on the CUDA device */
 	protected BlockingQueue<KernelInvoke> invocationJobs = new ArrayBlockingQueue<>(JOB_CAPACITY);
@@ -48,7 +48,7 @@ public class DeviceThread extends Thread {
 	 * Initializes a thread that interops with the specified device
 	 * @param deviceNumber	The ordinal of the device that this thread should interop with
 	 */
-	public DeviceThread(LoadBalancer parent, int deviceNumber) {
+	public DeviceThread(TransScale parent, int deviceNumber) {
 		this.parent = parent;
 		this.deviceNumber = deviceNumber;
 		this.device = new CUdevice();
@@ -68,7 +68,9 @@ public class DeviceThread extends Thread {
 		}
 		
 		// Wake the daemon thread
-		barrier.notify();
+		synchronized(barrier) {
+			barrier.notify();
+		}
 	}
 	
 	/**
@@ -83,7 +85,9 @@ public class DeviceThread extends Thread {
 		}
 		
 		// Wake the daemon thread
-		barrier.notify();
+		synchronized(barrier) {
+			barrier.notify();
+		}
 	}
 	
 	/**
@@ -109,7 +113,7 @@ public class DeviceThread extends Thread {
 			CUfunction newFunction = new CUfunction();			
 			cuModuleGetFunction(newFunction, newModule, job.functionMapping.get(id));
 			
-			invokables.put(id, new Invokable(newContext, newFunction));
+			invokables.put(id, new Invokable(newContext, newModule, newFunction));
 		}
 		
 		// Notify parent that I am available
@@ -127,12 +131,13 @@ public class DeviceThread extends Thread {
 		
 		Invokable invokable = invokables.get(job.functionId);
 		CUcontext context = invokable.context;
+		CUmodule module = invokable.module;
 		CUfunction function = invokable.function;
 		
 		// Switch the context
 		cuCtxSetCurrent(context);
 		
-		job.preTrigger.doTask();
+		job.preTrigger.doTask(module);
 		
 		cuLaunchKernel(function, job.gridDimX, job.gridDimY, job.gridDimZ,
 				job.blockDimX, job.blockDimY, job.blockDimZ,
@@ -140,7 +145,8 @@ public class DeviceThread extends Thread {
 				job.pointerToArguments, null);
 		cuCtxSynchronize();
 		
-		job.postTrigger.doTask();
+		job.postTrigger.doTask(module);
+		job.notifyComplete();
 		
 		// Notify parent that I am available
 		parent.notifyAvailable(this);

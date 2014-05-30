@@ -39,7 +39,7 @@ problem.negativeExamples = 1024
 #############################
 #	THREADING AND RUNTIME   #
 #############################
-generations = 100
+generations = 1000
 pop.subpop.0.size = 1024
 
 #jobs = 10

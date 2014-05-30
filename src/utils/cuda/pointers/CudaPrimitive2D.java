@@ -206,8 +206,8 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	
 	@Override
 	public int reallocate() {
-		if (!freed)
-			return 0;
+//		if (!freed)
+//			return 0;
 		
 		freed = false;		
 		int allocResult = allocate();
