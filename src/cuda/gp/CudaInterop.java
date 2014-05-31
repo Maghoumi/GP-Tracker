@@ -12,10 +12,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import cuda.multigpu.KernelAddJob;
-import cuda.multigpu.KernelInvoke;
-import cuda.multigpu.TransScale;
-import cuda.multigpu.Trigger;
+import cuda.multigpu.*;
 import ec.EvolutionState;
 import ec.Singleton;
 import ec.util.Parameter;
@@ -329,7 +326,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 //		fncEvaluate = new CUfunction();
 //		fncFilter = new CUfunction();
 
-		File kernelCodeFile = new File("bin/cuda/kernels/gp/cuda-kernels.cu");
+		File kernelCodeFile = new File(TransScale.preparePtxFile("bin/cuda/kernels/gp/cuda-kernels.cu", RECOMPILE, false));
 
 		if (recompile || !kernelCodeFile.exists()) {
 			// Read the template code and insert the actions for the functions
@@ -535,7 +532,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			}
 		}
 
-		final CudaTrainingInstance ti = job.getTrainingInstances();		
+		final CudaTrainingInstance ti = (CudaTrainingInstance) job.getTrainingInstances().clone();
 		// Allocate expressions memory
 		final CudaByte2D devExpressions = new CudaByte2D(population.length, 1, 1, population, true);
 		/**/Trigger pre = new Trigger() {
