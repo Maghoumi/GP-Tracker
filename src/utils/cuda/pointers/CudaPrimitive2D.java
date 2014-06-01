@@ -84,7 +84,7 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 * 
 	 * @return JCuda's error code
 	 */
-	protected int allocate() {
+	public int allocate() {
 		// Check to see if we can allocate using pitched memory
 		if (isPitched())
 			return allocatePitched();
@@ -117,7 +117,7 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 * This method will decide to do a pitched or non-pitched transfer.
 	 * @return JCuda's error code 
 	 */
-	protected int upload() {
+	public int upload() {
 		// Check to see if we can transfer using pitched memory
 		if (isPitched())
 			return uploadPitched();
@@ -261,6 +261,10 @@ public abstract class CudaPrimitive2D extends CudaPrimitive {
 	 */
 	public long[] getDevPitchInElements() {
 		return new long[] {this.pitch[0] / (numFields * getElementSizeInBytes())};
+	}
+	
+	public CudaPrimitive2D subArray(int start, int length) {
+		return null;
 	}
 	
 	/**

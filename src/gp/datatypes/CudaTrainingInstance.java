@@ -13,7 +13,7 @@ import utils.cuda.pointers.CudaInteger2D;
  * @author Mehran Maghoumi
  *
  */
-public class CudaTrainingInstance {
+public class CudaTrainingInstance implements Cloneable {
 	
 	/** Float2D object to hold the input RGB values */
 	protected CudaFloat2D inputs;
@@ -38,9 +38,6 @@ public class CudaTrainingInstance {
 	 
 	/** Integer2D object to hold the label of each instance */
 	protected CudaInteger2D labels;
-	
-	/** Float2D object to hold the output of each instance */
-	protected CudaFloat2D outputs;
 	
 	/** The width of the CudaPrimitive2D objects to allocate */
 	protected int width;
@@ -90,7 +87,26 @@ public class CudaTrainingInstance {
 		this.largeSds = new CudaFloat2D(width, 1, numChannels, largeSds, true);
 		
 		this.labels = new CudaInteger2D(width, 1, 1, labels, true);
-		this.outputs = new CudaFloat2D(width, 1, 1, true);
+	}
+	
+	/**
+	 * Copy constructor
+	 */
+	protected CudaTrainingInstance(CudaTrainingInstance instance) {
+		this.numChannels = instance.numChannels;
+		this.width = instance.width;
+		
+		this.inputs = (CudaFloat2D) instance.inputs.clone(true);
+		
+		this.smallAvgs = (CudaFloat2D) instance.smallAvgs.clone(true);
+		this.mediumAvgs = (CudaFloat2D) instance.mediumAvgs.clone(true);
+		this.largeAvgs = (CudaFloat2D) instance.largeAvgs.clone(true);
+		
+		this.smallSds = (CudaFloat2D) instance.smallAvgs.clone(true);
+		this.mediumSds = (CudaFloat2D) instance.mediumAvgs.clone(true);
+		this.largeSds = (CudaFloat2D) instance.largeAvgs.clone(true);
+		
+		this.labels = (CudaInteger2D) instance.labels.clone(true);
 	}
 	
 	/**
@@ -108,7 +124,6 @@ public class CudaTrainingInstance {
 		this.largeSds.reallocate();
 		
 		this.labels.reallocate();
-		this.outputs.reallocate();
 	}
 
 	/**
@@ -200,13 +215,6 @@ public class CudaTrainingInstance {
 	}
 
 	/**
-	 * @return the outputs
-	 */
-	public CudaFloat2D getOutputs() {
-		return outputs;
-	}
-
-	/**
 	 * Frees all CUDA allocated memories that are associated with this object
 	 */
 	public void freeAll() {
@@ -218,7 +226,11 @@ public class CudaTrainingInstance {
 		mediumSds.free();
 		largeSds.free();
 		labels.free();
-		outputs.free();
+	}
+	
+	@Override
+	public Object clone() {
+		return new CudaTrainingInstance(this);
 	}
 	
 }

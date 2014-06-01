@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
 
+import cuda.multigpu.TransScale;
 import utils.Classifier;
 import utils.FilteredImage;
 import utils.ImageFilterProvider;
@@ -94,7 +95,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		String ptxFileName = "";
 
 		try {
-			ptxFileName = preparePtxFile("bin/cuda/kernels/visualizer/visualizer-kernel.cu");
+			ptxFileName = TransScale.preparePtxFile("bin/cuda/kernels/visualizer/visualizer-kernel.cu", RECOMPILE, GEN_DEBUG);
 		} catch (IOException e) {
 			System.err.println("Could not create PTX file");
 			throw new RuntimeException("Could not create PTX file", e);
@@ -154,6 +155,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		// First, we must filter the segment using the context associated with this thread! Otherwise, CUDA will complain!
 		segment.filterImage(this);
 		FilteredImage filteredImage = segment.getFilteredImage();
+		filteredImage.allocateAndTransfer();	//WTF?? for whatever reason...
 		
 		// Allocate and transfer the scratchpad
 		float[] scratchPad = new float[numClassifiers];
@@ -242,81 +244,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		return this.fncFilter;
 	}
 	
-	/**
-	 * The extension of the given file name is replaced with "ptx". If the file
-	 * with the resulting name does not exist, it is compiled from the given
-	 * file using NVCC. The name of the PTX file is returned.
-	 * 
-	 * @param cuFileName
-	 *            The name of the .CU file
-	 * @return The name of the PTX file
-	 * @throws IOException
-	 *             If an I/O error occurs
-	 */
-	private static String preparePtxFile(String cuFileName) throws IOException {
-		int endIndex = cuFileName.lastIndexOf('.');
-		if (endIndex == -1) {
-			endIndex = cuFileName.length() - 1;
-		}
-		String ptxFileName = cuFileName.substring(0, endIndex + 1) + "ptx";
-		File ptxFile = new File(ptxFileName);
-
-		if (ptxFile.exists() && !RECOMPILE) {
-			return ptxFileName;
-		}
-
-		File cuFile = new File(cuFileName);
-		if (!cuFile.exists()) {
-			throw new IOException("Input file not found: " + cuFileName);
-		}
-		String modelString = "-m" + System.getProperty("sun.arch.data.model");
-		String command = "nvcc " + modelString + " -arch=sm_21" + (GEN_DEBUG ? " -G" : "") +" -ptx " + cuFile.getPath() + " -o " + ptxFileName;
-
-		System.out.println("Executing\n" + command);
-		Process process = Runtime.getRuntime().exec(command);
-
-		String errorMessage = new String(toByteArray(process.getErrorStream()));
-		String outputMessage = new String(toByteArray(process.getInputStream()));
-		int exitValue = 0;
-		try {
-			exitValue = process.waitFor();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IOException("Interrupted while waiting for nvcc output", e);
-		}
-
-		if (exitValue != 0) {
-			System.out.println("nvcc process exitValue " + exitValue);
-			System.out.println("errorMessage:\n" + errorMessage);
-			System.out.println("outputMessage:\n" + outputMessage);
-			throw new IOException("Could not create .ptx file: " + errorMessage);
-		}
-
-		System.out.println("Finished creating PTX file");
-		return ptxFileName;
-	}
-
-	/**
-	 * Fully reads the given InputStream and returns it as a byte array
-	 * 
-	 * @param inputStream
-	 *            The input stream to read
-	 * @return The byte array containing the data from the input stream
-	 * @throws IOException
-	 *             If an I/O error occurs
-	 */
-	private static byte[] toByteArray(InputStream inputStream) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		byte buffer[] = new byte[8192];
-		while (true) {
-			int read = inputStream.read(buffer);
-			if (read == -1) {
-				break;
-			}
-			baos.write(buffer, 0, read);
-		}
-		return baos.toByteArray();
-	}
+	
 
 	@Override
 	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {

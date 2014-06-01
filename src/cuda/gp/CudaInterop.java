@@ -28,7 +28,6 @@ import utils.cuda.pointers.CudaFloat2D;
 import jcuda.*;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;
-import jcuda.utils.KernelLauncher;
 import static jcuda.driver.CUaddress_mode.CU_TR_ADDRESS_MODE_CLAMP;
 import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
 
@@ -47,7 +46,6 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	private static final String KERNEL_EVALUATE = "evaluate";
 	private static final String KERNEL_FILTER = "avgSdFilter";
 
-	private KernelLauncher kernel = null;
 	private String kernelCode;
 
 	private int FILTER_BLOCK_SIZE = 16;
@@ -64,11 +62,6 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	private int smallFilterSize; // The size of the small filter
 	private int mediumFilterSize; // The size of the medium filter
 	private int largeFilterSize; // The size of the large filter
-
-//	private CUcontext context = null;
-//	private CUmodule codeModule = null; // Stores the module of the compiled code.
-//	private CUfunction fncEvaluate = null; // Function handle for the "Evaluate" function
-//	private CUfunction fncFilter = null; // Function handle for the image filter function
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -89,6 +82,39 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+	
+	private void prepareKernel(boolean recompile) throws Exception {
+		JCuda.setExceptionsEnabled(true);
+		JCudaDriver.setExceptionsEnabled(true);
+
+		String kernelTemplate = "";
+
+		File kernelCodeFile = new File(TransScale.preparePtxFile("bin/cuda/kernels/gp/cuda-kernels.cu", RECOMPILE, false));
+
+		if (recompile || !kernelCodeFile.exists()) {
+			// Read the template code and insert the actions for the functions
+			kernelTemplate = FileUtils.readFileToString(new File("bin/cuda/kernels/gp/evaluator-template.cu")).replace("/*@@actions@@*/", kernelCode);
+			// Set the value of the constants in the kernel
+			kernelTemplate = kernelTemplate.replace("/*@@fitness-cases@@*/", String.valueOf(EVAL_FITNESS_CASES));
+			kernelTemplate = kernelTemplate.replace("/*@@eval-block-size@@*/", String.valueOf(EVAL_BLOCK_SIZE));
+			kernelTemplate = kernelTemplate.replace("/*@@max-grid-size@@*/", String.valueOf(EVAL_MAX_GRID_SIZE));
+			kernelTemplate = kernelTemplate.replace("/*@@positive-examples@@*/", String.valueOf(POSITIVE_COUNT));
+			kernelTemplate = kernelTemplate.replace("/*@@negative-examples@@*/", String.valueOf(NEGATIVE_COUNT));
+
+			kernelTemplate = kernelTemplate.replace("/*@@desc-block-size@@*/", String.valueOf(DESC_BLOCK_SIZE));
+			// Save the template
+			FileUtils.write(kernelCodeFile, kernelTemplate);
+		}
+
+		KernelAddJob kernelAdd = new KernelAddJob();
+		kernelAdd.ptxFile = new File("bin/cuda/kernels/gp/cuda-kernels.ptx");
+		kernelAdd.functionMapping = new HashMap<>();
+		kernelAdd.functionMapping.put(KERNEL_EVALUATE, KERNEL_EVALUATE);
+		kernelAdd.functionMapping.put(KERNEL_FILTER, KERNEL_FILTER);
+		
+		TransScale.getInstance().addKernel(kernelAdd);
+		System.out.println(recompile ? "Kernel COMPILED" : "Kernel loaded");
 	}
 	
 	/**
@@ -318,58 +344,6 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 		this.kernelCode = code;
 	}
 
-	private void prepareKernel(boolean recompile) throws Exception {
-		JCuda.setExceptionsEnabled(true);
-		JCudaDriver.setExceptionsEnabled(true);
-
-		String kernelTemplate = "";
-//		fncEvaluate = new CUfunction();
-//		fncFilter = new CUfunction();
-
-		File kernelCodeFile = new File(TransScale.preparePtxFile("bin/cuda/kernels/gp/cuda-kernels.cu", RECOMPILE, false));
-
-		if (recompile || !kernelCodeFile.exists()) {
-			// Read the template code and insert the actions for the functions
-			kernelTemplate = FileUtils.readFileToString(new File("bin/cuda/kernels/gp/evaluator-template.cu")).replace("/*@@actions@@*/", kernelCode);
-			// Set the value of the constants in the kernel
-			kernelTemplate = kernelTemplate.replace("/*@@fitness-cases@@*/", String.valueOf(EVAL_FITNESS_CASES));
-			kernelTemplate = kernelTemplate.replace("/*@@eval-block-size@@*/", String.valueOf(EVAL_BLOCK_SIZE));
-			kernelTemplate = kernelTemplate.replace("/*@@max-grid-size@@*/", String.valueOf(EVAL_MAX_GRID_SIZE));
-			kernelTemplate = kernelTemplate.replace("/*@@positive-examples@@*/", String.valueOf(POSITIVE_COUNT));
-			kernelTemplate = kernelTemplate.replace("/*@@negative-examples@@*/", String.valueOf(NEGATIVE_COUNT));
-
-			kernelTemplate = kernelTemplate.replace("/*@@desc-block-size@@*/", String.valueOf(DESC_BLOCK_SIZE));
-			// Save the template
-			FileUtils.write(kernelCodeFile, kernelTemplate);
-		}
-
-		KernelAddJob kernelAdd = new KernelAddJob();
-		kernelAdd.ptxFile = new File("bin/cuda/kernels/gp/cuda-kernels.ptx");
-		kernelAdd.functionMapping = new HashMap<>();
-		kernelAdd.functionMapping.put(KERNEL_EVALUATE, KERNEL_EVALUATE);
-		kernelAdd.functionMapping.put(KERNEL_FILTER, KERNEL_FILTER);
-		
-		TransScale.getInstance().addKernel(kernelAdd);
-		if (true)
-		return;
-		
-		
-		
-		// Compile or load the kernel
-		kernel = KernelLauncher.create("bin/cuda/kernels/gp/cuda-kernels.cu", "evaluate", recompile, "-arch=compute_20 -code=sm_30 -use_fast_math");
-
-		System.out.println(recompile ? "Kernel COMPILED" : "Kernel loaded");
-
-		// Save the current context. I want to use this context later for multithreaded operations
-//		this.context = new CUcontext();
-//		cuCtxGetCurrent(context);
-
-		// Get the module so that I can get handles to kernel functions
-//		this.codeModule = kernel.getModule();
-//		cuModuleGetFunction(fncEvaluate, codeModule, "evaluate");
-//		cuModuleGetFunction(fncFilter, codeModule, "avgSdFilter");
-	}
-
 	/**
 	 * This method will switch the context to the calling thread so that another host
 	 * thread can access the CUDA functionality offered by this class.
@@ -432,19 +406,9 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			}
 		};
 		
-		
-
 		Pointer kernelParams = Pointer.to(averageResult.toPointer(), sdResult.toPointer(),
 				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) averageResult.getDevPitchInElements()[0] }),
 				Pointer.to(new int[] { maskSize }));
-
-//		// Call kernel
-//		cuLaunchKernel(fncFilter,
-//				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
-//				16, 16, 1,
-//				0, null,
-//				kernelParams, null);
-//		cuCtxSynchronize();
 
 		Trigger post = new Trigger() {
 			
@@ -453,6 +417,8 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 				// Retrieve results
 				averageResult.refresh();
 				sdResult.refresh();
+				averageResult.free();
+				sdResult.free();
 
 				// A little housekeeping
 				cuArrayDestroy(devTexture);				
@@ -478,10 +444,43 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	}
 	
 	@Override
-	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {
-		performFilter(byteInput, smallAvg, smallSd, getSmallFilterSize());
-		performFilter(byteInput, mediumAvg, mediumSd, getMediumFilterSize());
-		performFilter(byteInput, largeAvg, largeSd, getLargeFilterSize());
+	public void performFilters(final CudaByte2D byteInput, final CudaFloat2D smallAvg, final CudaFloat2D mediumAvg, final CudaFloat2D largeAvg, final CudaFloat2D smallSd, final CudaFloat2D mediumSd, final CudaFloat2D largeSd) {
+		Thread smallFilterRunner = new Thread( new Runnable() {
+			
+			@Override
+			public void run() {
+				performFilter(byteInput, smallAvg, smallSd, getSmallFilterSize());
+			}
+		});
+		smallFilterRunner.start();
+		
+		Thread mediumFilterRunner = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				performFilter(byteInput, mediumAvg, mediumSd, getMediumFilterSize());
+			}
+		});
+		mediumFilterRunner.start();
+		
+		Thread largeFilterRunner = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				performFilter(byteInput, largeAvg, largeSd, getLargeFilterSize());
+			}
+		});
+		largeFilterRunner.start();
+		
+		try {
+			smallFilterRunner.join();
+			mediumFilterRunner.join();
+			largeFilterRunner.join();
+		}
+		catch (Throwable e) {
+			
+		}
+		
 	}
 	
 	@Override
@@ -531,71 +530,158 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 				i++;
 			}
 		}
-
-		final CudaTrainingInstance ti = (CudaTrainingInstance) job.getTrainingInstances().clone();
-		// Allocate expressions memory
-		final CudaByte2D devExpressions = new CudaByte2D(population.length, 1, 1, population, true);
-		/**/Trigger pre = new Trigger() {
+		
+		// Break population into chunks, each chunk is evaluated by a single GPU
+		TransScale scaler = TransScale.getInstance();
+		int gpuCount = scaler.getNumberOfDevices();
+		float[] fitnessResults = new float[indCount];	// The evaluated fitness values
+		
+		// Create gpuCount number of threads. Each thread will call "waitFor" for a single job 
+		Thread[] gpuInteropThreads = new Thread[gpuCount];
+		
+		int arrayCpyOffset = 0;	// Offset variable
+		int assignmentOffset = 0;	// Offset variable
+		
+		List<byte[]> chunks = new ArrayList<>();
+		
+		for (i = 0 ; i < gpuCount ; i++) {
+			final GpuRunnerThread runner = new GpuRunnerThread();
+			runner.scaler = scaler;
+			runner.destination = fitnessResults;
+			runner.start = assignmentOffset;
 			
-			@Override
-			public void doTask(CUmodule module) {
-				ti.allocateAndTransfer();
-				devExpressions.reallocate();
-			}
-		};
-		
-		/**/Trigger post = new Trigger() {
+			int thisOutputShare;
+			int thisPopShare;
 			
-			@Override
-			public void doTask(CUmodule module) {
-				// Refresh fitnesses (aka outputs)
-				ti.getOutputs().refresh();
-				devExpressions.free();
+			// *Evenly* divide the number of individuals
+			if (i == gpuCount - 1) {
+				thisOutputShare = indCount - i * (indCount / gpuCount);
 			}
-		};
+			else {
+				thisOutputShare = indCount / gpuCount;
+			}
+			
+			thisPopShare = thisOutputShare * maxExpLength;
+			
+			final CudaTrainingInstance ti = (CudaTrainingInstance) job.getTrainingInstances().clone();
+			final CudaFloat2D chunkOutput = new CudaFloat2D(thisOutputShare, 1, 1, true);	// Allocate the output pointer for this portion
+			
+			byte[] popChunk  = new byte[thisPopShare];
+			System.arraycopy(population, arrayCpyOffset, popChunk, 0, thisPopShare);	// Copy this GPU's chunk of expressions
+			chunks.add(popChunk);
+			final CudaByte2D devExpression = new CudaByte2D(thisPopShare, 1, 1, popChunk, true);	// Allocate device expression pointer
+			
+			arrayCpyOffset += thisPopShare;
+			assignmentOffset += thisOutputShare;
+			
+			Trigger pre = new Trigger() {
+				
+				@Override
+				public void doTask(CUmodule module) {
+					ti.allocateAndTransfer();
+					chunkOutput.allocate();
+					devExpression.reallocate();
+				}
+			};
+			
+			Trigger post = new Trigger() {
+				
+				@Override
+				public void doTask(CUmodule module) {
+					chunkOutput.refresh();
+					devExpression.free();
+					runner.result = chunkOutput.getUnclonedArray();
+					ti.freeAll();
+					chunkOutput.free();
+				}
+			}; 
+			
+			// Create a kernel job
+			KernelInvoke kernelJob = new KernelInvoke();
+			
+			kernelJob.functionId = KERNEL_EVALUATE;
+			kernelJob.preTrigger = pre;
+			kernelJob.postTrigger = post;
+			
+			kernelJob.gridDimX = thisOutputShare;
+			kernelJob.gridDimY = 1;
+			
+			kernelJob.blockDimX = EVAL_BLOCK_SIZE;
+			kernelJob.blockDimY = 1;
+			kernelJob.blockDimZ = 1;
+			
+			kernelJob.pointerToArguments =
+					Pointer.to(
+						devExpression.toPointer(), Pointer.to(new int[] {thisOutputShare}), Pointer.to(new int[] {maxExpLength}),
+						ti.getInputs().toPointer(),
+						ti.getSmallAvgs().toPointer(), ti.getMediumAvgs().toPointer(), ti.getLargeAvgs().toPointer(),
+						ti.getSmallSds().toPointer(), ti.getMediumSds().toPointer(), ti.getLargeSds().toPointer(),
+						ti.getLabels().toPointer(), chunkOutput.toPointer()
+					);
+			
+			kernelJob.id = "Popsize: " + indCount + " (array length of  " + population.length + ") my share is " + thisOutputShare + " processing " + thisPopShare + " maxExpLength:" + maxExpLength;
+			
+			runner.kernelJob = kernelJob;
+			gpuInteropThreads[i] = new Thread(runner);
+			// Run this job on this thread, wait for the job to finish, then copy back the fitness
+			gpuInteropThreads[i].start();			
+		}
 		
-		KernelInvoke kernelJob = new KernelInvoke();
-		kernelJob.functionId = KERNEL_EVALUATE;
-		kernelJob.preTrigger = pre;
-		kernelJob.postTrigger = post;
-		
-		kernelJob.gridDimX = indCount;
-		kernelJob.gridDimY = 1;
-		
-		kernelJob.blockDimX = EVAL_BLOCK_SIZE;
-		kernelJob.blockDimY = 1;
-		kernelJob.blockDimZ = 1;
-		
-		kernelJob.pointerToArguments =
-				Pointer.to(
-					devExpressions.toPointer(), Pointer.to(new int[] {indCount}), Pointer.to(new int[] {maxExpLength}),
-					ti.getInputs().toPointer(),
-					ti.getSmallAvgs().toPointer(), ti.getMediumAvgs().toPointer(), ti.getLargeAvgs().toPointer(),
-					ti.getSmallSds().toPointer(), ti.getMediumSds().toPointer(), ti.getLargeSds().toPointer(),
-					ti.getLabels().toPointer(), ti.getOutputs().toPointer()
-				);
-		
-		TransScale.getInstance().queueJob(kernelJob);
-		kernelJob.waitFor();
-		
-		
-		
-//		kernel.setGridSize(indCount, 1);
-//		kernel.setBlockSize(EVAL_BLOCK_SIZE, 1, 1);
-//		kernel.call(devExpressions, indCount, maxExpLength,
-//				ti.getInputs(),
-//				ti.getSmallAvgs(), ti.getMediumAvgs(), ti.getLargeAvgs(),
-//				ti.getSmallSds(), ti.getMediumSds(), ti.getLargeSds(),
-//				ti.getLabels(), ti.getOutputs());
+//		i = 0;
+//		for (byte[] chunk : chunks) {
+//			for (int j = 0 ; j < chunk.length ; j++) {
+//				if (population[i] != chunk[j]) {
+//					throw new RuntimeException("elements not equal");
+//				}
+//				i++;
+//			}
+//			
+//		}
 //		
-//
-//
+//		for (i = 0 ; i < gpuCount ; i++) {
+//			gpuInteropThreads[i].start();
+//		}
 		
-		// Refresh fitnesses (aka outputs)
 		
-//		ti.getOutputs().refresh();
-//		devExpressions.free();
+		
+		// Wait for auxiliary threads to finish their job
+		for (i = 0 ; i < gpuCount ; i++) {
+			try {
+				gpuInteropThreads[i].join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}		
+		
+		// No need to merge anything! The threads have done that :-)
+		return fitnessResults;
+	}
+	
+	/**
+	 * Runs using a thread, queues a job on GPU, waits for the job to finish and
+	 * then obtains the results and copies its portion of the output to the final
+	 * output.
+	 * 
+	 * @author Mehran Maghoumi
+	 *
+	 */
+	private class GpuRunnerThread implements Runnable {
+		
+		public TransScale scaler;
+		public KernelInvoke kernelJob;
+		
+		public float[] destination;
+		public float[] result;
+		public int start;
 
-		return ti.getOutputs().getUnclonedArray();
+		@Override
+		public void run() {
+			scaler.queueJob(kernelJob);
+			kernelJob.waitFor();
+			
+			// Copy my fitness values :-)
+			System.arraycopy(result, 0, destination, start, result.length);
+		}
+		
 	}
 }

@@ -16,11 +16,23 @@ public class CudaLong2D extends CudaPrimitive2D {
 	protected long[] array;
 	
 	public CudaLong2D (int width, int height) {
-		this(width, height, 1);
+		this(width, height, false);
+	}
+	
+	public CudaLong2D (int width, int height, boolean lazyTransfer) {
+		this(width, height, 1, null, lazyTransfer);
 	}
 	
 	public CudaLong2D (int width, int height, int numFields) {
 		this(width, height, numFields, null);
+	}
+	
+	public CudaLong2D (int width, int height, int numFields, boolean lazyTransfer) {
+		this(width, height, numFields, null, lazyTransfer);
+	}
+	
+	public CudaLong2D (int width, int height, int numFields, long[] initialValues) {
+		this(width, height, numFields, initialValues, false);
 	}
 	
 	/**
@@ -28,13 +40,17 @@ public class CudaLong2D extends CudaPrimitive2D {
 	 * and the passed initialValues. If initialValues is null, an array will be created.
 	 * Note that the passed initialValues is cloned and a separate copy is held for internal
 	 * use of this object.
+	 * If lazyTransfer is true, then the actual CUDA pointer will not be allocated until reallocate
+	 * is called. This is useful for data use in multiple contexts.
+	 * 
 	 * 
 	 * @param width
 	 * @param height
 	 * @param numFields
 	 * @param initialValues
+	 * @param lazyTransfer
 	 */
-	public CudaLong2D (int width, int height, int numFields, long[] initialValues) {
+	public CudaLong2D (int width, int height, int numFields, long[] initialValues, boolean lazyTransfer) {
 		super(width, height, numFields);
 		
 		// Initialize the host array
@@ -47,8 +63,10 @@ public class CudaLong2D extends CudaPrimitive2D {
 			this.array = initialValues.clone();
 		}
 		
-		allocate();
-		upload();
+		if (!lazyTransfer) {
+			allocate();
+			upload();
+		}
 	}
 	
 	/**
@@ -133,7 +151,11 @@ public class CudaLong2D extends CudaPrimitive2D {
 	}
 
 	@Override
-	protected Object clone() {
-		return new CudaLong2D(width, height, numFields, array);
+	public Object clone() {
+		return this.clone(false);
+	}
+	
+	public Object clone(boolean lazyTransfer) {
+		return new CudaLong2D(width, height, numFields, array, lazyTransfer);
 	}
 }

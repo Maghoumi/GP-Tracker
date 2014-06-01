@@ -151,7 +151,12 @@ public class CudaFloat2D extends CudaPrimitive2D {
 	}
 
 	@Override
-	protected Object clone() {
-		return new CudaFloat2D(width, height, numFields, array);
+	public Object clone() {
+		return this.clone(false);
 	}
+	
+	public Object clone(boolean lazyTransfer) {
+		return new CudaFloat2D(width, height, numFields, array, lazyTransfer);
+	}
+	
 }

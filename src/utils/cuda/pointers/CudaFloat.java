@@ -73,7 +73,7 @@ public class CudaFloat extends CudaPrimitive {
 	}
 
 	@Override
-	protected Object clone() {
+	public Object clone() {
 		return new CudaFloat(floatValue);
 	}
 

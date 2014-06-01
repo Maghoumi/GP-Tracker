@@ -18,7 +18,7 @@
 		<link>
 			<name>ecj-src</name>
 			<type>2</type>
-			<location>C:/Dropbox/University Stuff/Thesis/workspace/GP-Tracker/lib/ecj</location>
+			<locationURI>PROJECT_LOC/lib/ecj</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

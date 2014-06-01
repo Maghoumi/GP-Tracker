@@ -45,37 +45,43 @@ public class KernelInvoke {
 	/** The size of the shared memory to pass to the kernel function */
 	public int sharedMemorySize = 0;
 	
-	/** For waiting for this job to complete */
-	protected Object waitMutex = new Object();
+	/** Can be used for debugging purposes */
+	public String id;
 	
-	private volatile boolean jobComplete = false;
+	/** Flag indicating that this job has completed */
+	protected volatile boolean jobComplete = false;
+	
+	/** For waiting for this job to complete */
+	protected Object mutex = new Object();
+	
+	protected Thread waitingThread = null;
 	
 	/**
 	 * Wait for this job to complete. Blocks the calling thread until
 	 * this job has been completed on the graphics card.
 	 */
 	public void waitFor() {
-		while (!jobComplete) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		
+		synchronized(mutex) {
+			while (!jobComplete) {
+				try {
+					waitingThread = Thread.currentThread();
+					mutex.wait();
+				} catch (InterruptedException e) {}
 			}
-			
 		}
-//		synchronized (waitMutex) {
-//			try {
-//				waitMutex.wait();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
 	}
 	
+	/**
+	 * Notify the threads that are waiting for this job to finish
+	 */
 	public void notifyComplete() {
-		jobComplete = true;
-//		synchronized (waitMutex) {
-//			waitMutex.notify();
-//		}
+		
+		synchronized (mutex) {
+			jobComplete = true;
+			
+			if (waitingThread != null)
+				waitingThread.interrupt();			
+		}
 	}
 }

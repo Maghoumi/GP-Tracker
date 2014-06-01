@@ -11,6 +11,8 @@ import ec.gp.GPNode;
 import ec.gp.GPType;
 import ec.util.Parameter;
 
+import cuda.gp.*;
+
 /**
  * Basically the same as ec.gp.GPFunctionSet with the only difference being the assignment
  * of OPCODE to each node based on the number of child nodes and their return types.

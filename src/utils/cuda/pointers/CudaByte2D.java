@@ -151,8 +151,12 @@ public class CudaByte2D extends CudaPrimitive2D {
 	}
 
 	@Override
-	protected Object clone() {
-		return new CudaByte2D(width, height, numFields, array);
+	public Object clone() {
+		return this.clone(false);
+	}
+	
+	public Object clone(boolean lazyTransfer) {
+		return new CudaByte2D(width, height, numFields, array, lazyTransfer);
 	}
 
 }

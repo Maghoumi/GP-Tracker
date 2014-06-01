@@ -1,3 +1,5 @@
-Renamed LoadBalancer to TransScale (Transparet Scalability)
-TransScale works perfectly for 2 cards (Yaaaaaaaaay!)
-Visualizer is broken and currently the visualization ability is broken :(
+CudaTrainingInstance
+	Removed the "output" filed (won't be necessary when using TransScale)
+	
+CudaInterop:
+	Now uses all the available devices at the same time for fitness evaluation and filter calculation 

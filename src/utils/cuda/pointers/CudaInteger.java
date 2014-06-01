@@ -73,7 +73,7 @@ public class CudaInteger extends CudaPrimitive {
 	}
 
 	@Override
-	protected Object clone() {
+	public Object clone() {
 		return new CudaInteger(intValue);
 	}
 	

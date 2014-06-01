@@ -47,6 +47,8 @@ public abstract class CudaPrimitive extends CUdeviceptr implements Cloneable {
 	 * WARNING: Do not use cuMemFree on this object directly!
 	 */
 	public void free() {
+		if (freed)
+			throw new RuntimeException("Already freed");
 		if (!freed)
 			cuMemFree(this);
 		
@@ -67,6 +69,6 @@ public abstract class CudaPrimitive extends CUdeviceptr implements Cloneable {
 	public abstract Pointer hostDataToPointer();
 	
 	@Override
-	protected abstract Object clone();
+	public abstract Object clone();
 	
 }

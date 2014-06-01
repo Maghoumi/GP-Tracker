@@ -43,7 +43,6 @@ public class DeviceThread extends Thread {
 	protected Object barrier = new Object();
 	
 	
-	
 	/**
 	 * Initializes a thread that interops with the specified device
 	 * @param deviceNumber	The ordinal of the device that this thread should interop with
@@ -60,16 +59,18 @@ public class DeviceThread extends Thread {
 	 * Add a new kernel to the list of kernels that this thread can invoke
 	 * @param job
 	 */
-	public void addKernel(KernelAddJob job) {
-		try {
-			kernelJobsQueue.put(job);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public synchronized void addKernel(KernelAddJob job) {
 		
-		// Wake the daemon thread
 		synchronized(barrier) {
-			barrier.notify();
+			synchronized(kernelJobsQueue) {
+				try {
+					kernelJobsQueue.put(job);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			interrupt();
 		}
 	}
 	
@@ -77,18 +78,21 @@ public class DeviceThread extends Thread {
 	 * Queue a kernel invocation job on this device
 	 * @param job
 	 */
-	public void queueJob(KernelInvoke job) {
-		try {
-			invocationJobs.put(job);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public synchronized void queueJob(KernelInvoke job) {
 		
-		// Wake the daemon thread
 		synchronized(barrier) {
-			barrier.notify();
+			synchronized(invocationJobs) {
+				try {
+					invocationJobs.put(job);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			interrupt();
 		}
 	}
+	
 	
 	/**
 	 * Creates a new CUDA context and loads the supplied PTX module and obtains
@@ -150,27 +154,29 @@ public class DeviceThread extends Thread {
 		
 		// Notify parent that I am available
 		parent.notifyAvailable(this);
-	}
-	
+	}	
 	
 	@Override
 	public void run() {
 		while (true) {
 			
 			// Wait for something to become availble
-			synchronized (barrier) {
+			synchronized(barrier) {
 				try {
 					barrier.wait();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
-			}			
+			}
 			
-			if (!kernelJobsQueue.isEmpty())
-				loadKernel(kernelJobsQueue.poll());
+			synchronized(kernelJobsQueue) {
+				if (!kernelJobsQueue.isEmpty())
+					loadKernel(kernelJobsQueue.poll());
+			}
 			
-			if (!invocationJobs.isEmpty())
-				invoke(invocationJobs.poll());			
+			synchronized(invocationJobs) {
+				if (!invocationJobs.isEmpty())
+					invoke(invocationJobs.poll());
+			}
 		}
 		
 	}

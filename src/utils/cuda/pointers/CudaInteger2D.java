@@ -151,7 +151,11 @@ public class CudaInteger2D extends CudaPrimitive2D {
 	}
 
 	@Override
-	protected Object clone() {
-		return new CudaInteger2D(width, height, numFields, array);
+	public Object clone() {
+		return this.clone(false);
+	}
+	
+	public Object clone(boolean lazyTransfer) {
+		return new CudaInteger2D(width, height, numFields, array, lazyTransfer);
 	}
 }
