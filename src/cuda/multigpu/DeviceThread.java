@@ -5,6 +5,7 @@ import static jcuda.driver.JCudaDriver.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import jcuda.Pointer;
 import jcuda.driver.*;
 
 /**
@@ -143,10 +144,12 @@ public class DeviceThread extends Thread {
 		
 		job.preTrigger.doTask(module);
 		
+		Pointer pointerToArgs = job.argSetter.getArgs();
+		
 		cuLaunchKernel(function, job.gridDimX, job.gridDimY, job.gridDimZ,
 				job.blockDimX, job.blockDimY, job.blockDimZ,
 				job.sharedMemorySize, null,
-				job.pointerToArguments, null);
+				pointerToArgs, null);
 		cuCtxSynchronize();
 		
 		job.postTrigger.doTask(module);

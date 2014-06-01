@@ -14,8 +14,8 @@ public class CudaFinisher extends SimpleFinisher {
 
 	@Override
 	public void finishPopulation(EvolutionState state, int result) {
-		CudaEvolutionState cuState = (CudaEvolutionState) state;
-		cuState.getActiveJob().freeAll();
+//		CudaEvolutionState cuState = (CudaEvolutionState) state;
+//		cuState.getActiveJob().freeAll();
 	}
 	
 }

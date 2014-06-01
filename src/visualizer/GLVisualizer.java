@@ -661,7 +661,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			
 			// Invoke kernel and determine orphans
 			if (!this.classifiers.isEmpty()) {
-				return;
+//				return;
 			}
 			List<Segment> orphans = invokeKernel(drawable, frame);
 			
@@ -730,7 +730,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 */
 	private List<Segment> invokeKernel(GLAutoDrawable drawable, SegmentedVideoFrame frame) {
 		// We obtain the pointer to all, if there are no classifiers, we have null here
-		ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
 		List<Segment> orphans = new ArrayList<>();
 
 		frame.shuffle();
@@ -739,7 +738,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
 
 			// If there are no classifiers, then there are no claimers for this texture!
-			int claimers = pointerToAll == null ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
+			int claimers = classifiers.isEmpty() ? 0 : kernel.call(invoker, drawable, classifiers, s,
 					chckbxThreshold.isSelected(), threshold, opacity,
 					chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
 			
@@ -749,8 +748,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			}
 		}
 
-		if (pointerToAll != null)
-			pointerToAll.freeAll();
+//		if (pointerToAll != null)
+//			pointerToAll.freeAll();
 		
 		return orphans;
 	}

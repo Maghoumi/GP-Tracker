@@ -129,9 +129,9 @@ public class ClassifierSet implements Iterable<Classifier> {
 				
 			}
 			
-			CudaByte2D expResult = new CudaByte2D(maxExpLength, set.size(), 1, expressions);
-			CudaByte2D overlayResult = new CudaByte2D(set.size(), 1, 4, overlayColors);
-			CudaByte2D enabilityResult = new CudaByte2D(set.size(), 1, 1, enabilityMap);
+			CudaByte2D expResult = new CudaByte2D(maxExpLength, set.size(), 1, expressions, true);
+			CudaByte2D overlayResult = new CudaByte2D(set.size(), 1, 4, overlayColors, true);
+			CudaByte2D enabilityResult = new CudaByte2D(set.size(), 1, 1, enabilityMap, true);
 			
 			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult, enabilityResult);
 		}

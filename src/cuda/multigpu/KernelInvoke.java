@@ -1,7 +1,5 @@
 package cuda.multigpu;
 
-import jcuda.Pointer;
-
 /**
  * Defines the elements that are required for invoking a kernel in CUDA.
  * This class defines the operations that should be done before and after 
@@ -15,14 +13,14 @@ public class KernelInvoke {
 	/** The ID of the kernel to call */
 	public String functionId;
 	
-	/** Pointer to pointer to all the arguments the kernel needs */
-	public Pointer pointerToArguments;
-	
 	/** Pre-call triggers */
 	public Trigger preTrigger;
 	
 	/** Post-call triggers */
 	public Trigger postTrigger;
+	
+	/** A function that returns the pointer to the kernel arguments */
+	public KernelArgSetter argSetter;
 	
 	/** Grid size in X */
 	public int gridDimX;

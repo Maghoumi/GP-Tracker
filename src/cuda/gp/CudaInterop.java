@@ -361,7 +361,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	 * @param sdResult Placeholder to store the result of the standard deviation filter
 	 * @param maskSize	the mask size to use for the filter
 	 */
-	private void performFilter(final CudaByte2D byteInput, final CudaFloat2D averageResult, final CudaFloat2D sdResult, int maskSize) {
+	private void performFilter(final CudaByte2D byteInput, final CudaFloat2D averageResult, final CudaFloat2D sdResult, final int maskSize) {
 		final int imageWidth = byteInput.getWidth();
 		final int imageHeight = byteInput.getHeight();
 		final int numChannels = byteInput.getNumFields();
@@ -406,9 +406,15 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			}
 		};
 		
-		Pointer kernelParams = Pointer.to(averageResult.toPointer(), sdResult.toPointer(),
-				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) averageResult.getDevPitchInElements()[0] }),
-				Pointer.to(new int[] { maskSize }));
+		KernelArgSetter setter = new KernelArgSetter() {
+			
+			@Override
+			public Pointer getArgs() {
+				return Pointer.to(averageResult.toPointer(), sdResult.toPointer(),
+						Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) averageResult.getDevPitchInElements()[0] }),
+						Pointer.to(new int[] { maskSize }));
+			}
+		}; 
 
 		Trigger post = new Trigger() {
 			
@@ -437,7 +443,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 		kernelJob.blockDimY = 16;
 		kernelJob.blockDimZ = 1;
 		
-		kernelJob.pointerToArguments = kernelParams;
+		kernelJob.argSetter = setter;
 		
 		TransScale.getInstance().queueJob(kernelJob);
 		kernelJob.waitFor();
@@ -508,16 +514,18 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	public float[] evaluatePopulation(List<List<TByteArrayList>> expressions, Job job) {
 		// First determine how many unevals we have in total
 		int indCount = 0;
-		int maxExpLength = 0;
+		int maxExpLengthtmp = 0;
 
 		for (List<TByteArrayList> thExps : expressions) {
 			indCount += thExps.size();
 
 			// Determine the longest expression
 			for (TByteArrayList exp : thExps)
-				if (exp.size() > maxExpLength)
-					maxExpLength = exp.size();
+				if (exp.size() > maxExpLengthtmp)
+					maxExpLengthtmp = exp.size();
 		}
+		
+		final int maxExpLength = maxExpLengthtmp;
 
 		// Convert expressions to byte[]
 		byte[] population = new byte[indCount * maxExpLength];
@@ -550,7 +558,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			runner.destination = fitnessResults;
 			runner.start = assignmentOffset;
 			
-			int thisOutputShare;
+			final int thisOutputShare;
 			int thisPopShare;
 			
 			// *Evenly* divide the number of individuals
@@ -610,14 +618,20 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			kernelJob.blockDimY = 1;
 			kernelJob.blockDimZ = 1;
 			
-			kernelJob.pointerToArguments =
-					Pointer.to(
-						devExpression.toPointer(), Pointer.to(new int[] {thisOutputShare}), Pointer.to(new int[] {maxExpLength}),
-						ti.getInputs().toPointer(),
-						ti.getSmallAvgs().toPointer(), ti.getMediumAvgs().toPointer(), ti.getLargeAvgs().toPointer(),
-						ti.getSmallSds().toPointer(), ti.getMediumSds().toPointer(), ti.getLargeSds().toPointer(),
-						ti.getLabels().toPointer(), chunkOutput.toPointer()
-					);
+			kernelJob.argSetter = new KernelArgSetter() {
+				
+				@Override
+				public Pointer getArgs() {
+					return Pointer.to(
+							devExpression.toPointer(), Pointer.to(new int[] {thisOutputShare}), Pointer.to(new int[] {maxExpLength}),
+							ti.getInputs().toPointer(),
+							ti.getSmallAvgs().toPointer(), ti.getMediumAvgs().toPointer(), ti.getLargeAvgs().toPointer(),
+							ti.getSmallSds().toPointer(), ti.getMediumSds().toPointer(), ti.getLargeSds().toPointer(),
+							ti.getLabels().toPointer(), chunkOutput.toPointer()
+						);
+				}
+			};
+					
 			
 			kernelJob.id = "Popsize: " + indCount + " (array length of  " + population.length + ") my share is " + thisOutputShare + " processing " + thisPopShare + " maxExpLength:" + maxExpLength;
 			

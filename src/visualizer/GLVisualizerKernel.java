@@ -11,12 +11,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
 
+import cuda.multigpu.KernelAddJob;
+import cuda.multigpu.KernelArgSetter;
+import cuda.multigpu.KernelInvoke;
 import cuda.multigpu.TransScale;
+import cuda.multigpu.Trigger;
 import utils.Classifier;
+import utils.ClassifierSet;
 import utils.FilteredImage;
 import utils.ImageFilterProvider;
 import utils.Segment;
@@ -45,6 +51,10 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	public static final boolean RECOMPILE = false;
 	/** Generate debug info ** FOR DEBUGGING PURPOSES** */
 	public static final boolean GEN_DEBUG = false;
+	
+	public static final String KERNEL_DESCRIBE = "describe";
+	public static final String KERNEL_FILTER = "avgSdFilter";
+	public static final String KERNEL_FILTER_ID = "avgSdFilter2";
 	
 	/** The size of the small image filter */
 	public static final int FILTER_SIZE_SMALL = 15;
@@ -100,6 +110,13 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 			System.err.println("Could not create PTX file");
 			throw new RuntimeException("Could not create PTX file", e);
 		}
+		
+		KernelAddJob job = new KernelAddJob();
+		job.ptxFile = new File(ptxFileName);
+		job.functionMapping = new HashMap<>();
+		job.functionMapping.put(KERNEL_DESCRIBE, KERNEL_DESCRIBE);
+		job.functionMapping.put(KERNEL_FILTER_ID, KERNEL_FILTER);
+		TransScale.getInstance().addKernel(job);
 
 		// Load the PTX file containing the kernel
 		CUmodule module = new CUmodule();
@@ -141,61 +158,140 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	 * @return Returns the number of classifiers that have claimed this segment. Will return -1
 	 * 			if thresholding was not enabled
 	 */
-	public int call(Invoker invoker, GLAutoDrawable drawable, ClassifierAllocationResult pointerToAll, Segment segment,
-			boolean shouldThreshold, float threshold, float opacity,
-			boolean showConflicts, int imageWidth, int imageHeight) {
-		
-		CudaByte2D devExpression = pointerToAll.expressions;
-		CudaByte2D overlayColors = pointerToAll.overlayColors;
-		CudaByte2D enabilityMap = pointerToAll.enabilityMap;
-		
-		// Determine the number of GP expressions
-		int numClassifiers = devExpression.getHeight();
+	public int call(Invoker invoker, GLAutoDrawable drawable, final ClassifierSet classifiers, final Segment segment,
+			final boolean shouldThreshold, float threshold, final float opacity,
+			final boolean showConflicts, final int imageWidth, final int imageHeight) {
 		
 		// First, we must filter the segment using the context associated with this thread! Otherwise, CUDA will complain!
 		segment.filterImage(this);
-		FilteredImage filteredImage = segment.getFilteredImage();
-		filteredImage.allocateAndTransfer();	//WTF?? for whatever reason...
+		final FilteredImage filteredImage = segment.getFilteredImage();
 		
-		// Allocate and transfer the scratchpad
-		float[] scratchPad = new float[numClassifiers];
-		CUdeviceptr devScratchPad = new CUdeviceptr();
-		cuMemAlloc(devScratchPad, numClassifiers * Sizeof.FLOAT);
-		cuMemcpyHtoD(devScratchPad, Pointer.to(scratchPad), numClassifiers * Sizeof.FLOAT);
+		/*
+		 * Note: Lazy transfer is active, so we just obtain everything but
+		 * no GPU API call will be made, so we're safe :-)
+		 */
+		final ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
+		
+		final CudaByte2D devExpression = pointerToAll.expressions;
+		final CudaByte2D overlayColors = pointerToAll.overlayColors;
+		final CudaByte2D enabilityMap = pointerToAll.enabilityMap;
+		// Determine the number of GP expressions
+		final int numClassifiers = devExpression.getHeight();
+		
+		// Allocate the scratchpad
+		float[] temp = new float[numClassifiers];	// Initial values of 0 for scratchpad
+		final CudaFloat2D devScratchPad = new CudaFloat2D(numClassifiers, 1, 1, temp, true);
+		
+		Trigger pre = new Trigger() {
+			@Override
+			public void doTask(CUmodule module) {
+				filteredImage.allocateAndTransfer();
+				
+				devExpression.reallocate();
+				overlayColors.reallocate();
+				enabilityMap.reallocate();
+				devScratchPad.reallocate();
+			}
+		};
+		
+		
+				
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+//		CUdeviceptr devScratchPad = new CUdeviceptr();
+//		cuMemAlloc(devScratchPad, numClassifiers * Sizeof.FLOAT);
+//		cuMemcpyHtoD(devScratchPad, Pointer.to(scratchPad), numClassifiers * Sizeof.FLOAT);
 		
 		// Map the OpenGL buffer to a CUDA pointer
-		cuGraphicsMapResources(1, new CUgraphicsResource[] { bufferResource }, null);
-		cuGraphicsResourceGetMappedPointer(devOutput, new long[1], bufferResource);
+//		cuGraphicsMapResources(1, new CUgraphicsResource[] { bufferResource }, null);
+//		cuGraphicsResourceGetMappedPointer(devOutput, new long[1], bufferResource);
 		
 		// Setup kernel parameters
-		Pointer kernelParams = Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
-				Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
-				Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
-				Pointer.to(devScratchPad),
-				filteredImage.getInput().toPointer(), Pointer.to(devOutput),
-				filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
-				filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
-				Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), Pointer.to(new int[] { (int) filteredImage.getInput().getDevPitchInElements()[0] }),
-				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
 		
+		KernelArgSetter setter = new KernelArgSetter() {
+			
+			@Override
+			public Pointer getArgs() {
+				return Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
+						Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
+						Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
+						Pointer.to(devScratchPad),
+						filteredImage.getInput().toPointer(), Pointer.to(new CUdeviceptr()),
+						filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
+						filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
+						Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), Pointer.to(new int[] { (int) filteredImage.getInput().getDevPitchInElements()[0] }),
+						Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
+			}
+		};
+//		Pointer kernelParams = Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
+//				Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
+//				Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
+//				Pointer.to(devScratchPad),
+//				filteredImage.getInput().toPointer(), Pointer.to(new CUdeviceptr()),
+//				filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
+//				filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
+//				Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), Pointer.to(new int[] { (int) filteredImage.getInput().getDevPitchInElements()[0] }),
+//				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
 		
-		// Call kernel
-		cuLaunchKernel(fncDescribe,
-				segment.getBounds().height, 1, 1, 	// segment height is equal to the number of blocks
-				segment.getBounds().width, 1, 1,	// segment width is equal to the number of threads in each block
-				0, null,
-				kernelParams, null);
-		cuCtxSynchronize();
+		final float[] scratchpad = new float[numClassifiers];
 		
 		// Unmap OpenGL buffer from CUDA
-		cuGraphicsUnmapResources(1, new CUgraphicsResource[] { bufferResource }, null);
-		filteredImage.freeAll();
+//		cuGraphicsUnmapResources(1, new CUgraphicsResource[] { bufferResource }, null);
+		Trigger post = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				filteredImage.freeAll();
+				devScratchPad.refresh();
+				System.arraycopy(devScratchPad.getUnclonedArray(), 0, scratchpad, 0, scratchpad.length);
+				devScratchPad.free();
+				pointerToAll.freeAll();
+				// fetch scratchPad and clear memory
+			}
+		};
 		
-		// Copy the scratchpad back 
-		cuMemcpyDtoH(Pointer.to(scratchPad), devScratchPad, Sizeof.FLOAT * numClassifiers);
+		KernelInvoke kernelJob = new KernelInvoke();
+		kernelJob.functionId = KERNEL_DESCRIBE;
+		kernelJob.preTrigger = pre;
+		kernelJob.postTrigger = post;
 		
-		// Housekeeping
-		cuMemFree(devScratchPad);
+		kernelJob.gridDimX = segment.getBounds().height;
+		kernelJob.gridDimY = 1;
+		
+		kernelJob.blockDimX = segment.getBounds().width;
+		kernelJob.blockDimY = 1;
+		kernelJob.blockDimZ = 1;
+		
+		kernelJob.argSetter = setter;
+		
+		// Queue kernel and wait for it		
+		TransScale.getInstance().queueJob(kernelJob);
+		kernelJob.waitFor();
+		
+		
+		
+//				cuLaunchKernel(fncDescribe,
+//						segment.getBounds().height, 1, 1, 	// segment height is equal to the number of blocks
+//						segment.getBounds().width, 1, 1,	// segment width is equal to the number of threads in each block
+//						0, null,
+//						kernelParams, null);
+//				cuCtxSynchronize();
+		
+		
+//		// Copy the scratchpad back 
+//		cuMemcpyDtoH(Pointer.to(scratchPad), devScratchPad, Sizeof.FLOAT * numClassifiers);
+//		
+//		// Housekeeping
+//		cuMemFree(devScratchPad);
 		
 		// Should we do the thresholding here??
 		if (!shouldThreshold)
@@ -205,9 +301,9 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		// A list of classifiers that have claimed this segment
 		List<Classifier> claimers = new ArrayList<Classifier>();
 		
-		for (int i = 0 ; i < scratchPad.length ; i++) {
-			scratchPad[i] /= segment.getBounds().width * segment.getBounds().height;
-			if (scratchPad[i] > threshold) {
+		for (int i = 0 ; i < scratchpad.length ; i++) {
+			scratchpad[i] /= segment.getBounds().width * segment.getBounds().height;
+			if (scratchpad[i] > threshold) {
 				Classifier claimer = pointerToAll.classifiers.get(i);
 				claimers.add(claimer);
 				claimer.addClaim(segment);
@@ -247,7 +343,11 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	
 
 	@Override
-	public void performFilters(CudaByte2D byteInput, CudaFloat2D smallAvg, CudaFloat2D mediumAvg, CudaFloat2D largeAvg, CudaFloat2D smallSd, CudaFloat2D mediumSd, CudaFloat2D largeSd) {
+	public void performFilters(final CudaByte2D byteInput, final CudaFloat2D smallAvg, final CudaFloat2D mediumAvg, final CudaFloat2D largeAvg, final CudaFloat2D smallSd, final CudaFloat2D mediumSd, final CudaFloat2D largeSd) {
+		final int imageWidth = byteInput.getWidth();
+		final int imageHeight = byteInput.getHeight();
+		final int numChannels = byteInput.getNumFields();
+		
 		byteInput.reallocate();
 		smallAvg.reallocate();
 		mediumAvg.reallocate();
@@ -257,66 +357,114 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		mediumSd.reallocate();
 		largeSd.reallocate();
 		
-		int imageWidth = byteInput.getWidth();
-		int imageHeight = byteInput.getHeight();
-		int numChannels = byteInput.getNumFields();
+		final CUarray devTexture = new CUarray();
 		
-		// Allocate device array
-		CUarray devTexture = new CUarray();
-		CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
-		desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
-		desc.NumChannels = numChannels;
-		desc.Width = imageWidth;
-		desc.Height = imageHeight;
-		JCudaDriver.cuArrayCreate(devTexture, desc);
+		Trigger pre = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				// Allocate device array
+				CUDA_ARRAY_DESCRIPTOR desc = new CUDA_ARRAY_DESCRIPTOR();
+				desc.Format = CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8;
+				desc.NumChannels = numChannels;
+				desc.Width = imageWidth;
+				desc.Height = imageHeight;
+				JCudaDriver.cuArrayCreate(devTexture, desc);
 
-		// Copy the host input to the array
-		CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
-		copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
-		copyHD.srcHost = byteInput.hostDataToPointer();
-		copyHD.srcPitch = byteInput.getSourcePitch();
-		copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
-		copyHD.dstArray = devTexture;
-		copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
-		copyHD.Height = imageHeight;
+				// Copy the host input to the array
+				CUDA_MEMCPY2D copyHD = new CUDA_MEMCPY2D();
+				copyHD.srcMemoryType = CUmemorytype.CU_MEMORYTYPE_HOST;
+				copyHD.srcHost = byteInput.hostDataToPointer();
+				copyHD.srcPitch = byteInput.getSourcePitch();
+				copyHD.dstMemoryType = CUmemorytype.CU_MEMORYTYPE_ARRAY;
+				copyHD.dstArray = devTexture;
+				copyHD.WidthInBytes = imageWidth * byteInput.getElementSizeInBytes() * numChannels;
+				copyHD.Height = imageHeight;
 
-		cuMemcpy2D(copyHD);
+				cuMemcpy2D(copyHD);
 
-		// Set texture reference properties
-		CUtexref inputTexRef = new CUtexref();
-		cuModuleGetTexRef(inputTexRef, this.codeModule, "inputTexture");
-		cuTexRefSetFilterMode(inputTexRef, CU_TR_FILTER_MODE_POINT);
-		cuTexRefSetAddressMode(inputTexRef, 0, CU_TR_ADDRESS_MODE_CLAMP);
-		cuTexRefSetAddressMode(inputTexRef, 1, CU_TR_ADDRESS_MODE_CLAMP);
-		cuTexRefSetFlags(inputTexRef, CU_TRSF_READ_AS_INTEGER);
-		cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, numChannels);
-		cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
-
+				// Set texture reference properties
+				CUtexref inputTexRef = new CUtexref();
+				cuModuleGetTexRef(inputTexRef, module, "inputTexture");
+				cuTexRefSetFilterMode(inputTexRef, CU_TR_FILTER_MODE_POINT);
+				cuTexRefSetAddressMode(inputTexRef, 0, CU_TR_ADDRESS_MODE_CLAMP);
+				cuTexRefSetAddressMode(inputTexRef, 1, CU_TR_ADDRESS_MODE_CLAMP);
+				cuTexRefSetFlags(inputTexRef, CU_TRSF_READ_AS_INTEGER);
+				cuTexRefSetFormat(inputTexRef, CUarray_format.CU_AD_FORMAT_UNSIGNED_INT8, numChannels);
+				cuTexRefSetArray(inputTexRef, devTexture, CU_TRSA_OVERRIDE_FORMAT);
+				
+				smallAvg.reallocate();
+				mediumAvg.reallocate();
+				largeAvg.reallocate();
+				
+				smallSd.reallocate();
+				mediumSd.reallocate();
+				largeSd.reallocate();
+			}
+		};
+		
 		// Allocate results array
-		Pointer kernelParams = Pointer.to(smallAvg.toPointer(), smallSd.toPointer(),
-				mediumAvg.toPointer(), mediumSd.toPointer(),
-				largeAvg.toPointer(), largeSd.toPointer(),
-				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) smallAvg.getDevPitchInElements()[0] }),
-				Pointer.to(new int[] { getSmallFilterSize() }), Pointer.to(new int[] { getMediumFilterSize() }), Pointer.to(new int[] { getLargeFilterSize() }));
+		KernelArgSetter setter = new KernelArgSetter() {
+			
+			@Override
+			public Pointer getArgs() {
+				return Pointer.to(smallAvg.toPointer(), smallSd.toPointer(),
+						mediumAvg.toPointer(), mediumSd.toPointer(),
+						largeAvg.toPointer(), largeSd.toPointer(),
+						Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }), Pointer.to(new int[] { (int) smallAvg.getDevPitchInElements()[0] }),
+						Pointer.to(new int[] { getSmallFilterSize() }), Pointer.to(new int[] { getMediumFilterSize() }), Pointer.to(new int[] { getLargeFilterSize() }));				
+			}
+		};
 
 		// Call kernel
-		cuLaunchKernel(this.fncFilter,
-				(imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE, 1,
-				FILTER_BLOCK_SIZE, FILTER_BLOCK_SIZE, 1,
-				0, null,
-				kernelParams, null);
-		cuCtxSynchronize();
+//		cuLaunchKernel(this.fncFilter,
+//				, , 1,
+//				FILTER_BLOCK_SIZE, FILTER_BLOCK_SIZE, 1,
+//				0, null,
+//				kernelParams, null);
+//		cuCtxSynchronize();
 		
-		smallAvg.refresh();
-		mediumAvg.refresh();
-		largeAvg.refresh();
+		Trigger post = new Trigger() {
+			
+			@Override
+			public void doTask(CUmodule module) {
+				smallAvg.refresh();
+				mediumAvg.refresh();
+				largeAvg.refresh();
+				
+				smallSd.refresh();
+				mediumSd.refresh();
+				largeSd.refresh();
+				
+				smallAvg.free();
+				mediumAvg.free();
+				largeAvg.free();
+				
+				smallSd.free();
+				mediumSd.free();
+				largeSd.free();
+				
+				// A little housekeeping
+				cuArrayDestroy(devTexture);				
+			}
+		};
 		
-		smallSd.refresh();
-		mediumSd.refresh();
-		largeSd.refresh();
+		KernelInvoke kernelJob = new KernelInvoke();
+		kernelJob.functionId = KERNEL_FILTER_ID;
+		kernelJob.preTrigger = pre;
+		kernelJob.postTrigger = post;
 		
-		// A little housekeeping
-		cuArrayDestroy(devTexture);		
+		kernelJob.gridDimX = (imageWidth + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE;
+		kernelJob.gridDimY = (imageHeight + FILTER_BLOCK_SIZE - 1) / FILTER_BLOCK_SIZE;
+		
+		kernelJob.blockDimX = FILTER_BLOCK_SIZE;
+		kernelJob.blockDimY = FILTER_BLOCK_SIZE;
+		kernelJob.blockDimZ = 1;
+		
+		kernelJob.argSetter = setter;
+		
+		TransScale.getInstance().queueJob(kernelJob);
+		kernelJob.waitFor();
 	}
 
 	@Override
