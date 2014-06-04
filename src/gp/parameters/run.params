@@ -39,8 +39,8 @@ problem.negativeExamples = 1024
 #############################
 #	THREADING AND RUNTIME   #
 #############################
-generations = 100
-pop.subpop.0.size = 1024
+generations = 50
+pop.subpop.0.size = 512
 
 #jobs = 10
 eval.evaluationMethod = gpu

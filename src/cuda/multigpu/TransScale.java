@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.*;
 
+import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
 import jcuda.runtime.JCuda;
 

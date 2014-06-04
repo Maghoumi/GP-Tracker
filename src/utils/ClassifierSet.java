@@ -88,7 +88,6 @@ public class ClassifierSet implements Iterable<Classifier> {
 			
 			// Stored the cloned expressions and do some other stuff (determine maxLength, enability, etc.)
 			for (Classifier classifier : this.set) {
-				classifier.resetClaims();	// reset this guy's claims
 				// Add this classifier to the list of active classifiers
 				activeClassifiers.add(classifier);
 				
@@ -151,8 +150,17 @@ public class ClassifierSet implements Iterable<Classifier> {
 		
 		return result;
 	}
+	
+	/**
+	 * Reset the claims of all the classifiers in this set
+	 */
+	public void resetClaims() {
+		for (Classifier c : this.set) {
+			c.resetClaims();
+		}
+	}
 
-	public class ClassifierAllocationResult {
+	public class ClassifierAllocationResult implements Cloneable{
 		/** The allocated expression trees of these classifier */
 		public CudaByte2D expressions;
 		
@@ -172,6 +180,13 @@ public class ClassifierSet implements Iterable<Classifier> {
 			this.enabilityMap = enabilityMap;
 		}
 		
+		public ClassifierAllocationResult(ClassifierAllocationResult other) {
+			this.expressions = (CudaByte2D) other.expressions.clone(true);
+			this.overlayColors = (CudaByte2D) other.overlayColors.clone(true);
+			this.enabilityMap = (CudaByte2D) other.enabilityMap.clone(true);
+			this.classifiers = other.classifiers;	// classifiers is thread-safe
+		}
+		
 		/**
 		 * Frees the allocated CUDA memory for this classifier
 		 */
@@ -179,6 +194,14 @@ public class ClassifierSet implements Iterable<Classifier> {
 			expressions.free();
 			overlayColors.free();
 			enabilityMap.free();
+		}
+		
+		/**
+		 * @return A clone of the classifiers that are partially converted to pointers
+		 * NOTE: it does a partial-shallow copy! The list of classifiers is not cloned!
+		 */
+		public Object clone() {
+			return new ClassifierAllocationResult(this);
 		}
 	}
 

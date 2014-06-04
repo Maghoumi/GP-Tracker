@@ -12,8 +12,6 @@ import jcuda.driver.CUmodule;
  *
  */
 public class Invokable { 
-	/** The context that contains the function to be invoked */
-	public CUcontext context;
 	
 	/** The module that this function is being invoked on */
 	public CUmodule module;
@@ -21,8 +19,7 @@ public class Invokable {
 	/** The CUDA kernel that could be invoked */
 	public CUfunction function;
 	
-	public Invokable(CUcontext context, CUmodule module, CUfunction function) {
-		this.context = context;
+	public Invokable(CUmodule module, CUfunction function) {
 		this.module = module;
 		this.function = function;
 	}

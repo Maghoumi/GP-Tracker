@@ -11,6 +11,7 @@ import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,8 @@ import utils.gui.Slider;
 import utils.opengl.OpenGLUtils;
 
 import com.jogamp.opengl.util.Animator;
+
+import cuda.multigpu.TransScale;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -253,6 +256,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		pnlRight.add(chckbxShowConflicts, "cell 0 2,growx");
 
 		chckbxThreshold = new JCheckBox("Do thresholding");
+		chckbxThreshold.setEnabled(false);
 		chckbxThreshold.setSelected(true);
 		pnlRight.add(chckbxThreshold, "cell 0 3,growx");
 
@@ -660,9 +664,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				return;
 			
 			// Invoke kernel and determine orphans
-			if (!this.classifiers.isEmpty()) {
-//				return;
-			}
 			List<Segment> orphans = invokeKernel(drawable, frame);
 			
 			if (!invoker.isQueueEmpty())
@@ -713,8 +714,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			if (!invoker.isQueueEmpty())
 				cycleSuccessful = false;
 				
-			if (cycleSuccessful)
-				notifySuccess();
+//			if (cycleSuccessful)
+//				notifySuccess();
 
 		}/* end-synchronized*/
 
@@ -729,29 +730,113 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * @return	a list of all orphan textures in this frame
 	 */
 	private List<Segment> invokeKernel(GLAutoDrawable drawable, SegmentedVideoFrame frame) {
-		// We obtain the pointer to all, if there are no classifiers, we have null here
-		List<Segment> orphans = new ArrayList<>();
-
+		// Create a list to maintain orphans
+		// NOTE: Must be synchronized for a dual-card setup
+		List<Segment> orphans = Collections.synchronizedList(new ArrayList<Segment>());
+		classifiers.resetClaims();	// Reset the claimes since we are going to run them all
+		ClassifierAllocationResult pointerToAll = this.classifiers.getPointerToAll();
+		
 		frame.shuffle();
-		for (Segment s : frame) {
-			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
-			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
-
-			// If there are no classifiers, then there are no claimers for this texture!
-			int claimers = classifiers.isEmpty() ? 0 : kernel.call(invoker, drawable, classifiers, s,
-					chckbxThreshold.isSelected(), threshold, opacity,
-					chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+		
+		// Delegate the processing to a single thread
+		int gpuCount = TransScale.getInstance().getNumberOfDevices();
+		int portion = frame.size() / gpuCount;
+		int offset = 0;
+		Thread[] threads = new Thread[gpuCount];
+		
+		for (int i = 0 ; i < gpuCount ; i++) {
+			Describer d = new Describer();
+			d.orphans = orphans;
+			d.drawable = drawable;
 			
-			if (claimers == 0) {
-				s.setOrphan(true);
-				orphans.add(s);
+			// Adjust the number of segments for the last thread
+			if (i == gpuCount - 1) {
+				portion = frame.size() - i * portion;
+				d.pointerToAll = pointerToAll;	// optimization! use the already existing pointerToAll for one of them
+			}
+			else {
+				d.pointerToAll = pointerToAll == null ? null : (ClassifierAllocationResult) pointerToAll.clone();
+			}
+			
+			for (int j = offset ; j < offset + portion ; j++) {
+				d.mySegments.add(frame.get(j));
+			}
+			
+			offset += portion;
+			
+			threads[i] = new Thread(d);
+			threads[i].setName("Visualizer spawned #" + i);
+			threads[i].start();			
+		}
+		
+		for (int i = 0 ; i < gpuCount ; i++) {
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
-
-//		if (pointerToAll != null)
-//			pointerToAll.freeAll();
+		
+//		
+//		
+//		
+//		
+//		for (Segment s : frame) {
+//			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
+//			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
+//
+//			// If there are no classifiers, then there are no claimers for this texture!
+//			int claimers = classifiers.isEmpty() ? 0 : kernel.call(invoker, drawable, classifiers, s,
+//					chckbxThreshold.isSelected(), threshold, opacity,
+//					chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+//			
+//			if (claimers == 0) {
+//				s.setOrphan(true);
+//				orphans.add(s);
+//			}
+//		}
 		
 		return orphans;
+	}
+	
+	/**
+	 * Helper class for multithread functionality. The threads backed by this Runnable
+	 * will work on a specific portion of the segments. Each thread will run one segment on 1 card 
+	 * and determine its claimers
+	 * 
+	 * @author Mehran Maghoumi
+	 *
+	 */
+	private class Describer implements Runnable {
+		
+		/** The segments that this thread must process */
+		public List<Segment> mySegments = new ArrayList<>();
+		
+		/** The list of orphans detected by this thread */
+		public List<Segment> orphans;
+		
+		public ClassifierAllocationResult pointerToAll;
+		
+		public GLAutoDrawable drawable;
+
+		@Override
+		public void run() {
+			for (Segment s : mySegments) {
+				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
+				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
+
+				// If there are no classifiers, then there are no claimers for this texture!
+				int claimers = (pointerToAll == null) ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
+						chckbxThreshold.isSelected(), threshold, opacity,
+						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+				
+				if (claimers == 0) {
+					s.setOrphan(true);
+					orphans.add(s);
+				}
+			}
+		}
+		
 	}
 	
 	/**

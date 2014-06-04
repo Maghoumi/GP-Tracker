@@ -323,7 +323,7 @@ public class Classifier implements Comparable<Classifier>{
 	 * Adds a segment as a claimed segment by this classifier
 	 * Note: a claim is when a classifier "claims" a texture
 	 */
-	public void addClaim(Segment segment) {
+	public synchronized void addClaim(Segment segment) {
 		this.claimedSegments.add(segment);
 	}
 	
@@ -331,14 +331,14 @@ public class Classifier implements Comparable<Classifier>{
 	 * Reset the claims this classifier has over the segments
 	 * Note: a claim is when a classifier "claims" a texture
 	 */
-	public void resetClaims() {
+	public synchronized void resetClaims() {
 		this.claimedSegments.clear();
 	}
 	
 	/**
 	 * @return	The number of claims that this classifier has
 	 */
-	public int getClaimsCount() {
+	public synchronized int getClaimsCount() {
 		return this.claimedSegments.size();
 	}
 	
@@ -369,7 +369,7 @@ public class Classifier implements Comparable<Classifier>{
 	 * @param segment
 	 * @return
 	 */
-	public boolean hasClaimed(Segment segment) {
+	public synchronized boolean hasClaimed(Segment segment) {
 		return this.claimedSegments.contains(segment);
 	}
 	

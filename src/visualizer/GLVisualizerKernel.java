@@ -6,15 +6,14 @@ import static jcuda.driver.JCudaDriver.*;
 import invoker.Invoker;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLRunnable;
 
 import cuda.multigpu.KernelAddJob;
 import cuda.multigpu.KernelArgSetter;
@@ -31,7 +30,6 @@ import utils.cuda.pointers.CudaByte2D;
 import utils.cuda.pointers.CudaFloat2D;
 import utils.opengl.OpenGLUtils;
 import jcuda.Pointer;
-import jcuda.Sizeof;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;
 
@@ -158,7 +156,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	 * @return Returns the number of classifiers that have claimed this segment. Will return -1
 	 * 			if thresholding was not enabled
 	 */
-	public int call(Invoker invoker, GLAutoDrawable drawable, final ClassifierSet classifiers, final Segment segment,
+	public int call(Invoker invoker, GLAutoDrawable drawable, final ClassifierAllocationResult pointerToAll, final Segment segment,
 			final boolean shouldThreshold, float threshold, final float opacity,
 			final boolean showConflicts, final int imageWidth, final int imageHeight) {
 		
@@ -170,11 +168,10 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		 * Note: Lazy transfer is active, so we just obtain everything but
 		 * no GPU API call will be made, so we're safe :-)
 		 */
-		final ClassifierAllocationResult pointerToAll = classifiers.getPointerToAll();
-		
 		final CudaByte2D devExpression = pointerToAll.expressions;
 		final CudaByte2D overlayColors = pointerToAll.overlayColors;
 		final CudaByte2D enabilityMap = pointerToAll.enabilityMap;
+		
 		// Determine the number of GP expressions
 		final int numClassifiers = devExpression.getHeight();
 		
@@ -195,28 +192,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		};
 		
 		
-				
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		CUdeviceptr devScratchPad = new CUdeviceptr();
-//		cuMemAlloc(devScratchPad, numClassifiers * Sizeof.FLOAT);
-//		cuMemcpyHtoD(devScratchPad, Pointer.to(scratchPad), numClassifiers * Sizeof.FLOAT);
-		
-		// Map the OpenGL buffer to a CUDA pointer
-//		cuGraphicsMapResources(1, new CUgraphicsResource[] { bufferResource }, null);
-//		cuGraphicsResourceGetMappedPointer(devOutput, new long[1], bufferResource);
-		
-		// Setup kernel parameters
-		
+		// Setup kernel parameters		
 		KernelArgSetter setter = new KernelArgSetter() {
 			
 			@Override
@@ -224,7 +200,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 				return Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
 						Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
 						Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
-						Pointer.to(devScratchPad),
+						devScratchPad.toPointer(),
 						filteredImage.getInput().toPointer(), Pointer.to(new CUdeviceptr()),
 						filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
 						filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
@@ -232,15 +208,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 						Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
 			}
 		};
-//		Pointer kernelParams = Pointer.to(Pointer.to(new byte[] {(byte) (shouldThreshold ? 1 : 0)}),
-//				Pointer.to(devExpression),Pointer.to(devExpression.getDevPitchInElements()), Pointer.to(new int[] { numClassifiers }),
-//				Pointer.to(enabilityMap),Pointer.to(overlayColors), Pointer.to(new byte[] {(byte) (showConflicts ? 1 : 0)}), Pointer.to(new float[] {opacity}),
-//				Pointer.to(devScratchPad),
-//				filteredImage.getInput().toPointer(), Pointer.to(new CUdeviceptr()),
-//				filteredImage.getSmallAvg().toPointer(), filteredImage.getMediumAvg().toPointer(), filteredImage.getLargeAvg().toPointer(),
-//				filteredImage.getSmallSd().toPointer(), filteredImage.getMediumSd().toPointer(), filteredImage.getLargeSd().toPointer(),
-//				Pointer.to(new int[] {segment.getBounds().x}), Pointer.to(new int[] {segment.getBounds().y}), Pointer.to(new int[] {segment.getBounds().width}), Pointer.to(new int[] {segment.getBounds().height}), Pointer.to(new int[] { (int) filteredImage.getInput().getDevPitchInElements()[0] }),
-//				Pointer.to(new int[] { imageWidth }), Pointer.to(new int[] { imageHeight }));
 		
 		final float[] scratchpad = new float[numClassifiers];
 		
@@ -250,12 +217,15 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 			
 			@Override
 			public void doTask(CUmodule module) {
-				filteredImage.freeAll();
+				// fetch scratchPad and clear memory
 				devScratchPad.refresh();
 				System.arraycopy(devScratchPad.getUnclonedArray(), 0, scratchpad, 0, scratchpad.length);
 				devScratchPad.free();
-				pointerToAll.freeAll();
-				// fetch scratchPad and clear memory
+				
+				filteredImage.freeAll();
+				devExpression.free();
+				overlayColors.free();
+				enabilityMap.free();
 			}
 		};
 		
@@ -276,30 +246,14 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		// Queue kernel and wait for it		
 		TransScale.getInstance().queueJob(kernelJob);
 		kernelJob.waitFor();
-		
-		
-		
-//				cuLaunchKernel(fncDescribe,
-//						segment.getBounds().height, 1, 1, 	// segment height is equal to the number of blocks
-//						segment.getBounds().width, 1, 1,	// segment width is equal to the number of threads in each block
-//						0, null,
-//						kernelParams, null);
-//				cuCtxSynchronize();
-		
-		
-//		// Copy the scratchpad back 
-//		cuMemcpyDtoH(Pointer.to(scratchPad), devScratchPad, Sizeof.FLOAT * numClassifiers);
-//		
-//		// Housekeeping
-//		cuMemFree(devScratchPad);
-		
+
 		// Should we do the thresholding here??
 		if (!shouldThreshold)
 			return -1;
 		
 		// Do thresholding:
 		// A list of classifiers that have claimed this segment
-		List<Classifier> claimers = new ArrayList<Classifier>();
+		final List<Classifier> claimers = new ArrayList<Classifier>();
 		
 		for (int i = 0 ; i < scratchpad.length ; i++) {
 			scratchpad[i] /= segment.getBounds().width * segment.getBounds().height;
@@ -312,15 +266,29 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		
 		if (claimers.size() == 1) {
 			if (claimers.get(0).isEnabled())	// Overlay time! If a classifier is disabled, we shouldn't paint overlays!
-				OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
-					claimers.get(0).getColor(), opacity,
-					imageWidth, imageHeight ,segment.getBounds());
+				drawable.invoke(false, new GLRunnable() {
+					@Override
+					public boolean run(GLAutoDrawable drawable) {
+						OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
+								claimers.get(0).getColor(), opacity,
+								imageWidth, imageHeight ,segment.getBounds());
+						return false;
+					}
+				});
+				
 			return claimers.size();
 		} 
 		else if (claimers.size() != 0) {	// if 0 => no classifiers have been active!!
-			OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
-					Color.RED, opacity,
-					imageWidth, imageHeight, segment.getBounds());
+			drawable.invoke(false, new GLRunnable() {
+				
+				@Override
+				public boolean run(GLAutoDrawable drawable) {
+					OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
+							Color.RED, opacity,
+							imageWidth, imageHeight, segment.getBounds());
+					return false;
+				}
+			});
 		}
 		
 		return claimers.size();
@@ -347,15 +315,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		final int imageWidth = byteInput.getWidth();
 		final int imageHeight = byteInput.getHeight();
 		final int numChannels = byteInput.getNumFields();
-		
-		byteInput.reallocate();
-		smallAvg.reallocate();
-		mediumAvg.reallocate();
-		largeAvg.reallocate();
-		
-		smallSd.reallocate();
-		mediumSd.reallocate();
-		largeSd.reallocate();
 		
 		final CUarray devTexture = new CUarray();
 		
@@ -415,14 +374,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 						Pointer.to(new int[] { getSmallFilterSize() }), Pointer.to(new int[] { getMediumFilterSize() }), Pointer.to(new int[] { getLargeFilterSize() }));				
 			}
 		};
-
-		// Call kernel
-//		cuLaunchKernel(this.fncFilter,
-//				, , 1,
-//				FILTER_BLOCK_SIZE, FILTER_BLOCK_SIZE, 1,
-//				0, null,
-//				kernelParams, null);
-//		cuCtxSynchronize();
 		
 		Trigger post = new Trigger() {
 			

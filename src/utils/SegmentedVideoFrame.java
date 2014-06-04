@@ -53,6 +53,15 @@ public class SegmentedVideoFrame implements Iterable<Segment> {
 	}
 	
 	/**
+	 * Returns the segment at the specified position in this frame.
+	 * @param index
+	 * @return
+	 */
+	public Segment get(int index) {
+		return this.segments.get(index);
+	}
+	
+	/**
 	 * @return	The number of segments in this video frame
 	 */
 	public int size() {

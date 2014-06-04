@@ -43,6 +43,8 @@ public class DeviceThread extends Thread {
 	/** Barrier to inform that something is available */
 	protected Object barrier = new Object();
 	
+	CUcontext context = null;
+	
 	
 	/**
 	 * Initializes a thread that interops with the specified device
@@ -105,10 +107,6 @@ public class DeviceThread extends Thread {
 		// Notify parent that I am busy
 		parent.notifyBusy(this);
 		
-		// Create context for the new kernel
-		CUcontext newContext = new CUcontext();
-		cuCtxCreate(newContext, 0, device);
-		
 		// Create and load the module for the new kernel
 		CUmodule newModule = new CUmodule();		
 		cuModuleLoad(newModule, job.ptxFile.getPath());
@@ -118,7 +116,7 @@ public class DeviceThread extends Thread {
 			CUfunction newFunction = new CUfunction();			
 			cuModuleGetFunction(newFunction, newModule, job.functionMapping.get(id));
 			
-			invokables.put(id, new Invokable(newContext, newModule, newFunction));
+			invokables.put(id, new Invokable(newModule, newFunction));
 		}
 		
 		// Notify parent that I am available
@@ -135,12 +133,8 @@ public class DeviceThread extends Thread {
 		parent.notifyBusy(this);
 		
 		Invokable invokable = invokables.get(job.functionId);
-		CUcontext context = invokable.context;
 		CUmodule module = invokable.module;
 		CUfunction function = invokable.function;
-		
-		// Switch the context
-		cuCtxSetCurrent(context);
 		
 		job.preTrigger.doTask(module);
 		
@@ -161,6 +155,13 @@ public class DeviceThread extends Thread {
 	
 	@Override
 	public void run() {
+		// Create a context for this device
+		// NOTE: Context creation must be done on this thread!
+		context = new CUcontext();
+		cuCtxCreate(context, 0, device);
+		cuCtxSetCurrent(context);
+		cuCtxSetCurrent(context);
+		
 		while (true) {
 			
 			// Wait for something to become availble

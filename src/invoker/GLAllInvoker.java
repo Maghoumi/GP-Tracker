@@ -39,7 +39,7 @@ public class GLAllInvoker extends Invoker {
 		else
 			prefix = args[0];
 		
-		int numTextures = 3;
+		int numTextures = 8;
 		
 		if (args.length != 0)
 			numTextures = Integer.parseInt(args[1]);

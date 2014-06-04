@@ -1,5 +1,13 @@
-CudaTrainingInstance
-	Removed the "output" filed (won't be necessary when using TransScale)
-	
-CudaInterop:
-	Now uses all the available devices at the same time for fitness evaluation and filter calculation 
+Classifier:
+	Modifying the claims in now synchronized
+
+GLVisualizerKernel:
+	Now appropriately frees all objects
+
+ClassifierSet:
+	Now has the "resetClaims" method. This is necessary for a dual card setup
+	The getPointerToAll function no longer resets the claims
+
+GLVisualizer:
+	Uses both cards to run all classifiers on all segments.
+	[ISSUE: will not draw overlay -- this will hopefully be fixed in the next commit]
