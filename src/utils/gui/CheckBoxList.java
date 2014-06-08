@@ -36,7 +36,6 @@ public class CheckBoxList extends JScrollPane {
 		});
 
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 	}
 	
 	public void addItem(ClassifierCheckBox item) {
@@ -58,6 +57,9 @@ public class CheckBoxList extends JScrollPane {
 	public void addItem(Classifier classifier) {
 		for (ClassifierCheckBox item : this.items) {
 			if (item.getBoundedClassifier().equals(classifier)) {
+				// All passed classifiers are enabled by default ==> need to set their enability flag
+				boolean enabled = item.getBoundedClassifier().isEnabled();
+				classifier.setEnabled(enabled);
 				item.setBoundedClassifier(classifier);
 				return;
 			}

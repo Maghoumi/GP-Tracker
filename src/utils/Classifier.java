@@ -20,7 +20,7 @@ import ec.gp.GPIndividual;
  * 
  * @author Mehran Maghoumi
  */
-public class Classifier implements Comparable<Classifier>{
+public class Classifier implements Comparable<Classifier>, Cloneable{
 	
 	/** Constant field for the training method that uses separate positive/negative examples */
 	public final static int TYPE_POS_NEG = 0;
@@ -70,6 +70,9 @@ public class Classifier implements Comparable<Classifier>{
 	
 	/** A flag indicating that this classifier is being processed in the GPEngine */
 	private volatile boolean beingProcessed = false;
+	
+	private Object processMutex = new Object();
+	public  long timestamp = System.currentTimeMillis();
 	
 	/** For synchronizing the individual updates and obtaination of the expressio */
 	private Object mutex = new Object();
@@ -130,6 +133,29 @@ public class Classifier implements Comparable<Classifier>{
 		default:
 			throw new RuntimeException("Unsupported training type");
 		}
+	}
+	
+	/**
+	 * Copy constructor
+	 * @param c
+	 */
+	public Classifier (Classifier c) {
+		this.color = new Color(c.color.getRGB());
+		this.colorName = c.colorName;
+		this.expression = c.expression.clone();
+		this.individual = (GPIndividual) c.individual.clone();
+		this.shouldSeed = c.shouldSeed;
+		this.trainingType = c.trainingType;
+		this.beingProcessed = c.beingProcessed;
+		this.timestamp = c.timestamp;
+		
+		// No need to clone the examples!
+		this.positiveExamples = c.positiveExamples;
+		this.negativeExamples = c.negativeExamples;
+		
+		// No need to clone the training image
+		this.trainingImage = c.trainingImage;
+		this.gtImage = c.gtImage;
 	}
 	
 	/**
@@ -227,9 +253,9 @@ public class Classifier implements Comparable<Classifier>{
 	}
 	
 	/**
-	 * Set the GP individual of this individual. This method was declared synchronized as there
+	 * Set the GPIndividual instance of this individual. This method was declared synchronized as there
 	 * was the possibility of the best individual being set by multiple classifiers.
-	 * The individual is cloned (TODO necessary??)
+	 * The individual is cloned
 	 * @param individual
 	 */
 	public synchronized void setIndividual(GPIndividual individual) {
@@ -323,9 +349,16 @@ public class Classifier implements Comparable<Classifier>{
 	 * Adds a segment as a claimed segment by this classifier
 	 * Note: a claim is when a classifier "claims" a texture
 	 */
-	public synchronized void addClaim(Segment segment) {
+	public synchronized void addClaim(Segment segment, float percentage) {
 		this.claimedSegments.add(segment);
+		
+		String log = segment.toString() + "\t" + percentage;
+		if (claimString.indexOf(log) == -1)
+			claimString.append(log + System.lineSeparator());
 	}
+	
+	public StringBuilder claimString = new StringBuilder();
+	 
 	
 	/**
 	 * Reset the claims this classifier has over the segments
@@ -354,14 +387,18 @@ public class Classifier implements Comparable<Classifier>{
 	 * @param beingProcessed
 	 */
 	public void setBeingProcessed(boolean beingProcessed) {
-		this.beingProcessed = beingProcessed;
+		synchronized (processMutex) {
+			this.beingProcessed = beingProcessed;
+		}
 	}
 	
 	/**
 	 * @return	True if this classifier is being processed, False otherwise
 	 */
 	public boolean isBeingProcessed() {
-		return this.beingProcessed;
+		synchronized (processMutex) {
+			return this.beingProcessed;
+		}
 	}
 	
 	/**
@@ -397,5 +434,10 @@ public class Classifier implements Comparable<Classifier>{
 	@Override
 	public String toString() {
 		return "Classifier: " + colorName;
+	}
+	
+	@Override
+	public Object clone() {
+		return new Classifier(this);
 	}
 }

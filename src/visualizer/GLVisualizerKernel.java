@@ -5,30 +5,16 @@ import static jcuda.driver.CUfilter_mode.CU_TR_FILTER_MODE_POINT;
 import static jcuda.driver.JCudaDriver.*;
 import invoker.Invoker;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLRunnable;
 
-import cuda.multigpu.KernelAddJob;
-import cuda.multigpu.KernelArgSetter;
-import cuda.multigpu.KernelInvoke;
-import cuda.multigpu.TransScale;
-import cuda.multigpu.Trigger;
-import utils.Classifier;
-import utils.ClassifierSet;
-import utils.FilteredImage;
-import utils.ImageFilterProvider;
-import utils.Segment;
+import cuda.multigpu.*;
+import utils.*;
 import utils.ClassifierSet.ClassifierAllocationResult;
-import utils.cuda.pointers.CudaByte2D;
-import utils.cuda.pointers.CudaFloat2D;
-import utils.opengl.OpenGLUtils;
+import utils.cuda.pointers.*;
 import jcuda.Pointer;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;
@@ -46,12 +32,17 @@ import jcuda.runtime.JCuda;
 public class GLVisualizerKernel implements ImageFilterProvider {
 	
 	/** Recompile flag ** FOR DEBUGGING PURPOSES** */
-	public static final boolean RECOMPILE = false;
+	public static final boolean RECOMPILE = true;
 	/** Generate debug info ** FOR DEBUGGING PURPOSES** */
 	public static final boolean GEN_DEBUG = false;
 	
+	/** The "Describe" kernel name and ID */
 	public static final String KERNEL_DESCRIBE = "describe";
+	
+	/** The "AverageFilter" kernel name */
 	public static final String KERNEL_FILTER = "avgSdFilter";
+	
+	/** The "AverageFilter" kernel name and ID */
 	public static final String KERNEL_FILTER_ID = "avgSdFilter2";
 	
 	/** The size of the small image filter */
@@ -66,18 +57,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	/** The block size to use for the filter function */
 	protected static final int FILTER_BLOCK_SIZE = 16;
 	
-	/** The CUDA module of the compiled kernel */
-	private CUmodule codeModule = new CUmodule();
-
-	/** Handle to the convolution filter kernel */
-	private CUfunction fncFilter = new CUfunction();
-
-	/** Handle to the describe kernel */
-	private CUfunction fncDescribe;
-
-	/** Pointer to the registered OpenGL buffer */
-	private CUdeviceptr devOutput;
-	
 	/** CUDA graphics resource that has been used to registered the buffer */
 	private CUgraphicsResource bufferResource;
 	
@@ -91,13 +70,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	public GLVisualizerKernel() {
 		JCuda.setExceptionsEnabled(true);
 		JCudaDriver.setExceptionsEnabled(true);
-
-		// Create a device and a context
-		cuInit(0);
-		CUdevice dev = new CUdevice();
-		cuDeviceGet(dev, 0);
-		CUcontext glCtx = new CUcontext();
-		cuCtxCreate(glCtx, 0, dev);
 
 		// Prepare the PTX file containing the kernel
 		String ptxFileName = "";
@@ -115,17 +87,6 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		job.functionMapping.put(KERNEL_DESCRIBE, KERNEL_DESCRIBE);
 		job.functionMapping.put(KERNEL_FILTER_ID, KERNEL_FILTER);
 		TransScale.getInstance().addKernel(job);
-
-		// Load the PTX file containing the kernel
-		CUmodule module = new CUmodule();
-		cuModuleLoad(module, ptxFileName);
-
-		// Obtain fncDescribe handle
-		fncDescribe = new CUfunction();
-		cuModuleGetFunction(fncDescribe, module, "describe");
-		cuModuleGetFunction(fncFilter, module, "avgSdFilter");
-		codeModule = module;
-		devOutput = new CUdeviceptr();
 	}
 	
 	/**
@@ -133,9 +94,10 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 	 * @param glBuffer	The handle to the OpenGL buffer
 	 */
 	public void registerGLBuffer(int glBuffer) {
-		this.bufferResource = new CUgraphicsResource();
-		cuGraphicsGLRegisterBuffer(bufferResource, glBuffer, CUgraphicsMapResourceFlags.CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE);
-		this.glBuffer = glBuffer;
+		System.err.println("Direct draw using CUDA is disabled at this point");
+//		this.bufferResource = new CUgraphicsResource();
+//		cuGraphicsGLRegisterBuffer(bufferResource, glBuffer, CUgraphicsMapResourceFlags.CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE);
+//		this.glBuffer = glBuffer;
 	}
 	
 	/**
@@ -162,6 +124,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		
 		// First, we must filter the segment using the context associated with this thread! Otherwise, CUDA will complain!
 		segment.filterImage(this);
+		segment.resetClaimers();	// Just in case! Clear the claimers of this segment
 		final FilteredImage filteredImage = segment.getFilteredImage();
 		
 		/*
@@ -251,65 +214,19 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 		if (!shouldThreshold)
 			return -1;
 		
-		// Do thresholding:
-		// A list of classifiers that have claimed this segment
-		final List<Classifier> claimers = new ArrayList<Classifier>();
-		
+		// Do thresholding:		
 		for (int i = 0 ; i < scratchpad.length ; i++) {
 			scratchpad[i] /= segment.getBounds().width * segment.getBounds().height;
 			if (scratchpad[i] > threshold) {
 				Classifier claimer = pointerToAll.classifiers.get(i);
-				claimers.add(claimer);
-				claimer.addClaim(segment);
+				segment.addClaimer(claimer);
+				claimer.addClaim(segment, scratchpad[i]);
 			}
 		}
 		
-		if (claimers.size() == 1) {
-			if (claimers.get(0).isEnabled())	// Overlay time! If a classifier is disabled, we shouldn't paint overlays!
-				drawable.invoke(false, new GLRunnable() {
-					@Override
-					public boolean run(GLAutoDrawable drawable) {
-						OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
-								claimers.get(0).getColor(), opacity,
-								imageWidth, imageHeight ,segment.getBounds());
-						return false;
-					}
-				});
-				
-			return claimers.size();
-		} 
-		else if (claimers.size() != 0) {	// if 0 => no classifiers have been active!!
-			drawable.invoke(false, new GLRunnable() {
-				
-				@Override
-				public boolean run(GLAutoDrawable drawable) {
-					OpenGLUtils.drawRegionOverlay(drawable, glBuffer,
-							Color.RED, opacity,
-							imageWidth, imageHeight, segment.getBounds());
-					return false;
-				}
-			});
-		}
-		
-		return claimers.size();
+		return segment.getClaimersCount();
 	}	
 	
-	/**
-	 * @return	The CUmodule of the compiled kernel
-	 */
-	public CUmodule getModule() {
-		return this.codeModule;
-	}
-	
-	/**
-	 * @return	The handle to the image filter function
-	 */
-	public CUfunction getFilterFunction() {
-		return this.fncFilter;
-	}
-	
-	
-
 	@Override
 	public void performFilters(final CudaByte2D byteInput, final CudaFloat2D smallAvg, final CudaFloat2D mediumAvg, final CudaFloat2D largeAvg, final CudaFloat2D smallSd, final CudaFloat2D mediumSd, final CudaFloat2D largeSd) {
 		final int imageWidth = byteInput.getWidth();

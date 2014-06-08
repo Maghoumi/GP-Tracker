@@ -3,19 +3,16 @@ package visualizer;
 import invoker.Invoker;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.*;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -77,7 +74,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	public static final URL ICON_RW = GLVisualizer.class.getResource("/icons/rw-icon.png");
 	public static final URL KERNEL_PATH = GLVisualizer.class.getResource("/cuda/kernels/visualizer/visualizer-kernel.cu");
 
-	private static final int REPORT_FREQUENCY = 1;
+	private static final int REPORT_FREQUENCY = 50;
 
 	/** The kernel wrapper object to use for invoking CUDA */
 	private GLVisualizerKernel kernel;
@@ -363,10 +360,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * @param classifiers
 	 */
 	public void removeClassifier(Collection<Classifier> classifiers) {
-		synchronized (this.classifiers) {
-			for (Classifier c : classifiers) {
-				removeClassifier(c);
-			}
+		for (Classifier c : classifiers) {
+			removeClassifier(c);
 		}
 	}
 	
@@ -376,9 +371,11 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * @param classifier
 	 */
 	protected void removeClassifier(Classifier classifier) {
-		this.checkBoxList.removeItem(classifier);
-		this.classifiers.remove(classifier);
-		classifier.destroy();	// release the color
+		synchronized (this.classifiers) {
+			this.checkBoxList.removeItem(classifier);
+			this.classifiers.remove(classifier);
+			classifier.destroy();	// release the color
+		}
 	}
 
 	/**
@@ -673,7 +670,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			determinePermanentOrphans(frame, orphans);
 			
 			// Resolve training issues and remove garbage/wrong classifiers
-			cycleSuccessful = !resolveIssues();
+			cycleSuccessful = !resolveIssues(frame);
 			
 			currentSegmentCount = frame.size();
 			if (previousSegmentCount < currentSegmentCount) {
@@ -684,7 +681,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				 * be left with now that a new segment has been added
 				 */
 				orphans = invokeKernel(drawable, frame);
-				cycleSuccessful = !resolveIssues();
+				cycleSuccessful = !resolveIssues(frame);
 				determinePermanentOrphans(frame, orphans);
 				orphans = invokeKernel(drawable, frame);
 				
@@ -736,7 +733,15 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		classifiers.resetClaims();	// Reset the claimes since we are going to run them all
 		ClassifierAllocationResult pointerToAll = this.classifiers.getPointerToAll();
 		
-		frame.shuffle();
+		if (pointerToAll == null) {
+			for (Segment s : frame) {
+				orphans.add(s);
+			}
+			
+			return orphans;
+		}
+		
+		frame.shuffle();	// Shuffle the frames so that each time we will process a different segment
 		
 		// Delegate the processing to a single thread
 		int gpuCount = TransScale.getInstance().getNumberOfDevices();
@@ -777,126 +782,121 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			}
 		}
 		
-//		
-//		
-//		
-//		
-//		for (Segment s : frame) {
-//			float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
-//			float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
-//
-//			// If there are no classifiers, then there are no claimers for this texture!
-//			int claimers = classifiers.isEmpty() ? 0 : kernel.call(invoker, drawable, classifiers, s,
-//					chckbxThreshold.isSelected(), threshold, opacity,
-//					chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
-//			
-//			if (claimers == 0) {
-//				s.setOrphan(true);
-//				orphans.add(s);
-//			}
-//		}
+		drawOverlay(drawable);
 		
 		return orphans;
 	}
 	
 	/**
-	 * Helper class for multithread functionality. The threads backed by this Runnable
-	 * will work on a specific portion of the segments. Each thread will run one segment on 1 card 
-	 * and determine its claimers
+	 * Called by the invokeKernel method after each kernel invocation in order to
+	 * draw the color overlays based on the results of the kernel execution.
 	 * 
-	 * @author Mehran Maghoumi
-	 *
+	 * @param drawable	JOGL drawable
 	 */
-	private class Describer implements Runnable {
+	private void drawOverlay(GLAutoDrawable drawable) {
+		// The mapping of segment => color
+		Map<Rectangle, Color> mapping = new HashMap<>();
+		float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
 		
-		/** The segments that this thread must process */
-		public List<Segment> mySegments = new ArrayList<>();
-		
-		/** The list of orphans detected by this thread */
-		public List<Segment> orphans;
-		
-		public ClassifierAllocationResult pointerToAll;
-		
-		public GLAutoDrawable drawable;
-
-		@Override
-		public void run() {
-			for (Segment s : mySegments) {
-				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
-				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
-
-				// If there are no classifiers, then there are no claimers for this texture!
-				int claimers = (pointerToAll == null) ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
-						chckbxThreshold.isSelected(), threshold, opacity,
-						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+		for (Classifier c : this.classifiers) {
+			if (!c.isEnabled())
+				continue;
+			
+			for (Segment claimed : c.getClaims()) {
+				Rectangle bounds = claimed.getBounds();
+				Color color = c.getColor();
 				
-				if (claimers == 0) {
-					s.setOrphan(true);
-					orphans.add(s);
+				if (!mapping.containsKey(bounds)) {		// If this pair does not exist add it to the list of the overlays we have to do
+					mapping.put(bounds, color);
 				}
-			}
-		}
+				else {
+					mapping.put(bounds, Color.RED);		// Colorize this overlay by red indicating a problem.
+				}
+			}	// end for (claimed segments)
+		} // end for (classifiers)
 		
+		// Draw the overlays based on the mapping
+		for (Entry<Rectangle, Color> entry : mapping.entrySet()) {
+			OpenGLUtils.drawRegionOverlay(drawable, glBuffer, entry.getValue(), opacity, imageWidth, imageHeight, entry.getKey());			
+		}
 	}
-	
+
 	/**
 	 * Removes the unnecessary classifiers from the system and detects
 	 * and resolves the training issues.
 	 * @return	True if an issue was detected, false otherwise
 	 */
-	private boolean resolveIssues() {
+	private boolean resolveIssues(SegmentedVideoFrame frame) {
 		boolean issueDetected = false;
-		Set<Classifier> toBeDestroyed = new HashSet<Classifier>(); // A set of classifiers that have problems and need to be destroyed
+		
+		for (Classifier c : this.classifiers) {
+			if (c.isBeingProcessed())
+				return true;
+		}
+		
+		List<Classifier> toBeDestroyed = new ArrayList<>();
+		
 		// Remove garbage classifiers
 		for (Classifier c : classifiers) {
 			if (c.getClaimsCount() == 0 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
 				toBeDestroyed.add(c);
 				issueDetected = true;
 			}				
-			if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+			else if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
 				toBeDestroyed.add(c);
 				issueDetected = true;
 			}
 		}
 		
-		// Resolve retraining issues:
-		/*inspect: for (Classifier c : classifiers) {
-			if (c.getClaimsCount() == 1 || c.isBeingProcessed() || !invoker.isQueueEmpty())
-				continue;
+		// Destroy classifiers that have claimed the same segments
+		Map<Segment,List<Classifier>> singleClaimers = new HashMap<>();	// We do not want to over-destroy! Leave one of the single claimers and destroye the rest :-)
+		
+		for (Segment s : frame) {
+			List<Classifier> listOfSingles = new ArrayList<>();
 			
-			issueDetected = true;
-
-			boolean somethingHappened = false;
-
-			for (Segment claimed : c.getClaims()) {
-
-				for (Classifier other : classifiers) {
-					if (other == c)
-						continue;
-
-					if (other.hasClaimed(claimed) && other.getClaimsCount() == 1 && invoker.isQueueEmpty()) { // claimed by another one as well, the other is very certain about his claim
-						toBeDestroyed.add(c);
-						somethingHappened = true;
-						break inspect;
-					}
-					else if (other.hasClaimed(claimed)) { // claimed by both!
-						toBeDestroyed.add(other);
-						toBeDestroyed.add(c);
-						somethingHappened = true;
-						break inspect;
+			if (s.getClaimersCount() == 1) {
+				singleClaimers.put(s, listOfSingles);
+				continue;
+			}
+			
+			for (Classifier c : s.getClaimers()) {
+				if (c.getClaimsCount() == 1  && c.getClaims().contains(s) && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {
+					listOfSingles.add(c);
+					issueDetected = true;
+				}
+				
+				singleClaimers.put(s, listOfSingles);			
+			}
+		}
+		
+		// Remove older ones from single claimers
+		for (Entry<Segment, List<Classifier>> entry : singleClaimers.entrySet()) {
+			List<Classifier> currentSingleClaimers = entry.getValue();
+			
+			if (currentSingleClaimers.size() > 0) {
+				// Remove the older classifier so that we can safely remove the rest
+				long minTime = Long.MAX_VALUE;
+				int index = -1;
+				
+				for (int i = 0 ; i < currentSingleClaimers.size() ; i++) {
+					Classifier c = currentSingleClaimers.get(i);
+					if (c.timestamp < minTime) {
+						minTime = c.timestamp;
+						index = i;
 					}
 				}
-
+				
+				currentSingleClaimers.remove(index);
+				
+				// Mark all the remaining classifiers to be destroyed
+				for (Classifier c : currentSingleClaimers) {
+					toBeDestroyed.add(c);
+				}
 			}
-
-			if (!somethingHappened && c.getClaimsCount() > 1) {
-				// If here ==> this classifier has claimed multiple textures!!
-				// Destroy the sucker
-				toBeDestroyed.add(c);
-			}
-		} // end-for (inspect)*/
+		}
 		
-		// Get rid of problematic classifiers
+
+		// Destroy the suckers
 		removeClassifier(toBeDestroyed);
 		return issueDetected;
 	}
@@ -920,11 +920,6 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				Segment item = iter.next();
 				if (item.isPermanentOrphan())
 					iter.remove();
-//				for (String string : permanentOrphans)
-//					if (item.toString().equals(string)) {
-//						iter.remove();
-//						break;
-//					}
 			}
 		}
 	}
@@ -1100,5 +1095,45 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		for (SegmentEventListener listener : this.segmentListeners) {
 			listener.segmentAdded(segmentCount, orphansCount, permanentOrphansCount);
 		}
+	}
+	
+	/**
+	 * Helper class for multithread functionality. The threads backed by this Runnable
+	 * will work on a specific portion of the segments. Each thread will run one segment on 1 card 
+	 * and determine its claimers
+	 * 
+	 * @author Mehran Maghoumi
+	 *
+	 */
+	private class Describer implements Runnable {
+		
+		/** The segments that this thread must process */
+		public List<Segment> mySegments = new ArrayList<>();
+		
+		/** The list of orphans detected by this thread */
+		public List<Segment> orphans;
+		
+		public ClassifierAllocationResult pointerToAll;
+		
+		public GLAutoDrawable drawable;
+
+		@Override
+		public void run() {
+			for (Segment s : mySegments) {
+				float threshold = Float.valueOf(spnThreshold.getValue().toString()).floatValue() / 100f;
+				float opacity = Float.valueOf(spnOpacity.getValue().toString()).floatValue() / 100f;
+
+				// If there are no classifiers, then there are no claimers for this texture!
+				int claimers = (pointerToAll == null) ? 0 : kernel.call(invoker, drawable, pointerToAll, s,
+						chckbxThreshold.isSelected(), threshold, opacity,
+						chckbxShowConflicts.isSelected(), imageWidth, imageHeight);
+				
+				if (claimers == 0) {
+					s.setOrphan(true);
+					orphans.add(s);
+				}
+			}
+		}
+		
 	}
 }

@@ -178,6 +178,12 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 		}
 	}
 
+	/**
+	 * Helper function for random sampling of the training points for GP run.
+	 *  
+	 * @param state
+	 * @param job
+	 */
 	private void randomSample(CudaEvolutionState state, Job job) {
 		
 		switch(job.getJobType()) {
@@ -342,14 +348,6 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 	 */
 	public void setKernelCode(String code) {
 		this.kernelCode = code;
-	}
-
-	/**
-	 * This method will switch the context to the calling thread so that another host
-	 * thread can access the CUDA functionality offered by this class.
-	 */
-	public synchronized void switchContext() {
-//		cuCtxSetCurrent(context); DO NOTHING!
 	}
 
 	/**
@@ -640,23 +638,6 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			// Run this job on this thread, wait for the job to finish, then copy back the fitness
 			gpuInteropThreads[i].start();			
 		}
-		
-//		i = 0;
-//		for (byte[] chunk : chunks) {
-//			for (int j = 0 ; j < chunk.length ; j++) {
-//				if (population[i] != chunk[j]) {
-//					throw new RuntimeException("elements not equal");
-//				}
-//				i++;
-//			}
-//			
-//		}
-//		
-//		for (i = 0 ; i < gpuCount ; i++) {
-//			gpuInteropThreads[i].start();
-//		}
-		
-		
 		
 		// Wait for auxiliary threads to finish their job
 		for (i = 0 ; i < gpuCount ; i++) {

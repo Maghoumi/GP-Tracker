@@ -198,7 +198,7 @@ public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 	 * @return	True if the job queue is empty, False otherwise.
 	 */
 	public boolean isQueueEmpty() {
-		return this.jobs.size() == 0;
+		return gpQueueEmpty;
 	}
 	
 	/**
@@ -207,9 +207,6 @@ public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 	 * @param job
 	 */
 	protected GPIndividual runJob(Job job) {
-		// Set the CUDA context to the calling thread
-		getCudaInterop().switchContext();
-		
 		state.setActiveJob(job);
 		
 		// Ask the State to be started
@@ -232,11 +229,11 @@ public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 	public CudaInterop getCudaInterop() {
 		return this.state.getCudaInterop();
 	}
+	
+	volatile boolean gpQueueEmpty = true;
 
 	@Override
 	public void run() {
-		// Switch the CUDA context
-		getCudaInterop().switchContext();
 
 		while (threadAlive) {
 			Job newJob = null;
@@ -254,21 +251,20 @@ public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 				// Therefore, we will check the threadAlive flag
 				break;
 			}
+			
+			gpQueueEmpty = false;
 
 			newJob.getClassifier().setBeingProcessed(true);
-			
-			if (!stats.addToStat(newJob))
-				toString();
-//				notifyFailure("Maximum GP runs for this job exceeded for " + newJob.getId());
 			
 			GPIndividual evolvedIndividual = runJob(newJob);
 			stats.addFrameStat(newJob);
 			
 			newJob.getClassifier().setIndividual(evolvedIndividual);
+			newJob.getClassifier().setBeingProcessed(false);
 			state.reportIndividual(evolvedIndividual);
 			jobs.poll(); // remove this job from the queue permanently!
-			newJob.getClassifier().setBeingProcessed(false);
 			System.out.println("Finished processing " + newJob.getClassifier().toString());
+			gpQueueEmpty = true;
 		} // end-while
 	}
 

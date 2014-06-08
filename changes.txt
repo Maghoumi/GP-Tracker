@@ -1,13 +1,17 @@
+The whole system now uses TransScale for GPU interop
+ 
+Fixes the serious bug with single claimer classifiers. If one segment is uniquely identified
+by more than 1 classifier, the older one is deleted
+
+** NOTE: Do thresholding is always performed! (still have no idea how to map an OpenGL buffer
+to more than 1 card)
+ 
+CudaEvolutionState:
+	Now correctly reports the classifiers every "n" generations
+	When reporting classifiers, they are cloned
+
 Classifier:
-	Modifying the claims in now synchronized
+	Now supports cloning
 
-GLVisualizerKernel:
-	Now appropriately frees all objects
-
-ClassifierSet:
-	Now has the "resetClaims" method. This is necessary for a dual card setup
-	The getPointerToAll function no longer resets the claims
-
-GLVisualizer:
-	Uses both cards to run all classifiers on all segments.
-	[ISSUE: will not draw overlay -- this will hopefully be fixed in the next commit]
+Segment:
+	Each segment now holds a list of all the classifiers that have claimed it

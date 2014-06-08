@@ -1,15 +1,12 @@
 package utils;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import utils.cuda.pointers.CudaByte2D;
 
 /**
- * A TreeSet of classifiers but with utility methods for transferring all
+ * A set of classifiers but with utility methods for transferring all
  * individuals to the GPU memory. I have tried to make this set thread-safe.
  * The add/remove/update/getPointerToAll methods are all thread-safe.
  * 
@@ -25,8 +22,14 @@ public class ClassifierSet implements Iterable<Classifier> {
 	 */
 	private Object mutex = new Object();
 	
-	private TreeSet<Classifier> set = new TreeSet<>();
+	/** The underlying set that maintains a list of all classifiers in this set */
+	private Set<Classifier> set = new HashSet<>();
 	
+	/**
+	 * 
+	 * @param e
+	 * @return
+	 */
 	public boolean add(Classifier e) {
 		synchronized (mutex) {
 			return set.add(e);
@@ -45,14 +48,24 @@ public class ClassifierSet implements Iterable<Classifier> {
 		}
 	}
 	
+	/**
+	 * Removes the specified classifier from the set
+	 * @param o
+	 * @return
+	 */
 	public boolean remove(Object o) {
 		synchronized (mutex) {
 			return set.remove(o);
 		}
 	}
 	
+	/**
+	 * @return	True if there are no classifiers in this set, false otherwise
+	 */
 	public boolean isEmpty() {
-		return set.isEmpty();
+		synchronized (mutex) {
+			return set.isEmpty();
+		}
 	}
 	
 	/**
@@ -134,21 +147,6 @@ public class ClassifierSet implements Iterable<Classifier> {
 			
 			return new ClassifierAllocationResult(activeClassifiers, expResult, overlayResult, enabilityResult);
 		}
-	}
-	
-	/**
-	 * @return	Returns the length of the longest GP-expression that currently
-	 * 			exists in this set.
-	 */
-	private int getMaxExpLength() {
-		int result = 0;
-		
-		for (Classifier c : this.set) {
-			if (c.getExpression().length > result)
-				result = c.getExpression().length;
-		}
-		
-		return result;
 	}
 	
 	/**

@@ -1,11 +1,9 @@
 package utils;
 
 import java.awt.Rectangle;
+import java.util.*;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import jcuda.driver.CUfunction;
-import jcuda.driver.CUmodule;
 
 /**
  * Represents a segment of an image. The objects of this class must be
@@ -32,6 +30,9 @@ public class Segment implements Cloneable {
 	/** Flag indicating that this segment is orphan */
 	protected boolean orphan = false;
 	
+	/** The list of the classifiers that have claimed this segment */
+	protected Set<Classifier> claimers = new HashSet<>();
+	
 	/**
 	 * Flag indicating whether this segment is permanent orphan.
 	 * If a segment is permanent orphan, it means that it has exceeded the
@@ -48,6 +49,11 @@ public class Segment implements Cloneable {
 	 * @param height
 	 * @param id
 	 */
+	public Segment(ByteImage image, int x, int y, int width, int height, String id, Set<Classifier> claimers) {
+		this(image, new Rectangle(x, y, width, height), id);
+		this.claimers.addAll(claimers);
+	}
+	
 	public Segment(ByteImage image, int x, int y, int width, int height, String id) {
 		this(image, new Rectangle(x, y, width, height), id);
 	}
@@ -113,6 +119,35 @@ public class Segment implements Cloneable {
 	public void setPermanentOrphan(boolean permanentOrphan) {
 		this.permanentOrphan = permanentOrphan;
 	}
+	
+	/**
+	 * Add a classifier to the list of the classifiers that have claimes this segment
+	 * @param c
+	 */
+	public void addClaimer(Classifier c) {
+		this.claimers.add(c);
+	}
+	
+	/**
+	 * @return	The list of classifiers that have claimed this segment
+	 */
+	public Set<Classifier> getClaimers() {
+		return this.claimers;
+	}
+	
+	/**
+	 * @return	The number of classifiers that have claimed this segment
+	 */
+	public int getClaimersCount() {
+		return this.claimers.size();
+	}
+	
+	/**
+	 * Clear the list of classifiers that have claimed this segment
+	 */
+	public void resetClaimers() {
+		this.claimers.clear();
+	}
 
 	/**
 	 * Filters the image using the provided ImageFilterProvider.
@@ -151,7 +186,7 @@ public class Segment implements Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		return new Segment(image, bounds.x, bounds.y, bounds.width, bounds.height, id + "_cloned");
+		return new Segment(image, bounds.x, bounds.y, bounds.width, bounds.height, id + "_cloned", this.claimers);
 	}
 	
 	@Override

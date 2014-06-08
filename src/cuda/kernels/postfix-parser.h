@@ -43,7 +43,12 @@ bool parseExpression(char* expression, DescribeData data) {
 		k++;
 	} // end while
 
+
 	float result;
 	pop(result);
+
+	if (sp != -1)
+		printf("Stack pointer not -1 but is %d! \t", sp);
+
 	return (result > 0);
 }

@@ -150,9 +150,9 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 		for (EvolutionListener listener : this.evolutionListeners) {
 			int indReportFrequency = listener.getIndReportingFrequency();
 			
-			if (generation % indReportFrequency == 0 /*&& !classifier.getIndividual().equals(individual)*/) {	//TODO comparing individuals may have a performance hit!
-				listener.reportClassifier(classifier);	//FIXME concurrent access warning!
-				//FIXME probably won't even need to add this guy again because we have already added the pointer
+			// Generation starts from 0 which always triggers a report on the first generation
+			if ((generation + 1) % indReportFrequency == 0) {
+				listener.reportClassifier((Classifier)classifier.clone());
 			}
 		}
 	}
