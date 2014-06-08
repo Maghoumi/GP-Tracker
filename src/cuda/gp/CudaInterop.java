@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import cuda.multigpu.*;
+import com.sir_m2x.transscale.*;
+import com.sir_m2x.transscale.pointers.*;
+
 import ec.EvolutionState;
 import ec.Singleton;
 import ec.util.Parameter;
@@ -23,8 +25,6 @@ import gp.datatypes.TrainingInstance;
 import utils.ByteImage;
 import utils.FilteredImage;
 import utils.ImageFilterProvider;
-import utils.cuda.pointers.CudaByte2D;
-import utils.cuda.pointers.CudaFloat2D;
 import jcuda.*;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;

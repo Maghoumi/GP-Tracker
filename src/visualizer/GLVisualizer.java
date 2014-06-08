@@ -51,8 +51,7 @@ import utils.gui.Slider;
 import utils.opengl.OpenGLUtils;
 
 import com.jogamp.opengl.util.Animator;
-
-import cuda.multigpu.TransScale;
+import com.sir_m2x.transscale.TransScale;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;

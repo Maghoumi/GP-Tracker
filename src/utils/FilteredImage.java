@@ -1,6 +1,6 @@
 package utils;
 
-import utils.cuda.pointers.*;
+import com.sir_m2x.transscale.pointers.*;
 
 /**
  * Represents a ByteImage that has been prepared and has been filtered

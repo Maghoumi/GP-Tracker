@@ -3,8 +3,8 @@ package gp.datatypes;
 
 import java.util.List;
 
-import utils.cuda.pointers.CudaFloat2D;
-import utils.cuda.pointers.CudaInteger2D;
+import com.sir_m2x.transscale.pointers.*;
+
 
 /**
  * Represents a list of TrainingInstance that have been copied to the GPU memory

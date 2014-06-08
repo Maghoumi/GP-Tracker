@@ -1,17 +1,2 @@
-The whole system now uses TransScale for GPU interop
- 
-Fixes the serious bug with single claimer classifiers. If one segment is uniquely identified
-by more than 1 classifier, the older one is deleted
-
-** NOTE: Do thresholding is always performed! (still have no idea how to map an OpenGL buffer
-to more than 1 card)
- 
-CudaEvolutionState:
-	Now correctly reports the classifiers every "n" generations
-	When reporting classifiers, they are cloned
-
-Classifier:
-	Now supports cloning
-
-Segment:
-	Each segment now holds a list of all the classifiers that have claimed it
+Removed TransScale and added it as a dependency library
+TransScale is available here: https://github.com/Maghoumi/TransScale

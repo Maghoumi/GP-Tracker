@@ -11,10 +11,11 @@ import java.util.*;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import cuda.multigpu.*;
+import com.sir_m2x.transscale.*;
+import com.sir_m2x.transscale.pointers.*;
+
 import utils.*;
 import utils.ClassifierSet.ClassifierAllocationResult;
-import utils.cuda.pointers.*;
 import jcuda.Pointer;
 import jcuda.driver.*;
 import jcuda.runtime.JCuda;

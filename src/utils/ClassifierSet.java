@@ -3,7 +3,7 @@ package utils;
 import java.awt.Color;
 import java.util.*;
 
-import utils.cuda.pointers.CudaByte2D;
+import com.sir_m2x.transscale.pointers.CudaByte2D;
 
 /**
  * A set of classifiers but with utility methods for transferring all

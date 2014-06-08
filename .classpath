@@ -60,5 +60,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/miglayout/miglayout15-swing.jar" sourcepath="lib/miglayout/miglayout-src.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TransScale"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

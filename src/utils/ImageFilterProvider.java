@@ -1,7 +1,6 @@
 package utils;
 
-import utils.cuda.pointers.CudaByte2D;
-import utils.cuda.pointers.CudaFloat2D;
+import com.sir_m2x.transscale.pointers.*;
 
 /**
  * Represents classes that are able to filter images using CUDA. This
