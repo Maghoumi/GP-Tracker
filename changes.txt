@@ -1,2 +1,1 @@
-Removed TransScale and added it as a dependency library
-TransScale is available here: https://github.com/Maghoumi/TransScale
+Changed class names here and there because of the change in the name in TransScale

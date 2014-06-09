@@ -107,7 +107,7 @@ public class CudaInterop implements Singleton, ImageFilterProvider {
 			FileUtils.write(kernelCodeFile, kernelTemplate);
 		}
 
-		KernelAddJob kernelAdd = new KernelAddJob();
+		Kernel kernelAdd = new Kernel();
 		kernelAdd.ptxFile = new File("bin/cuda/kernels/gp/cuda-kernels.ptx");
 		kernelAdd.functionMapping = new HashMap<>();
 		kernelAdd.functionMapping.put(KERNEL_EVALUATE, KERNEL_EVALUATE);

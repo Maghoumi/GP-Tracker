@@ -82,7 +82,7 @@ public class GLVisualizerKernel implements ImageFilterProvider {
 			throw new RuntimeException("Could not create PTX file", e);
 		}
 		
-		KernelAddJob job = new KernelAddJob();
+		Kernel job = new Kernel();
 		job.ptxFile = new File(ptxFileName);
 		job.functionMapping = new HashMap<>();
 		job.functionMapping.put(KERNEL_DESCRIBE, KERNEL_DESCRIBE);
