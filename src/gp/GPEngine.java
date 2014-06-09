@@ -255,7 +255,8 @@ public class GPEngine extends Evolve implements Runnable, SuccessProvider {
 			gpQueueEmpty = false;
 
 			newJob.getClassifier().setBeingProcessed(true);
-			
+
+			stats.addToStat(newJob);
 			GPIndividual evolvedIndividual = runJob(newJob);
 			stats.addFrameStat(newJob);
 			
