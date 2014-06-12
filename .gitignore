@@ -1,4 +1,10 @@
+.settings/
 bin/
+assets/
+stat-dump/
+textures/
+/.project
+/.classpath
 out.stat
 /textures
 /simple.stat
@@ -13,3 +19,5 @@ out.stat
 /OneByOneExperimentRunner.cmd
 /std-output.txt
 /test/
+*.log
+*.stat

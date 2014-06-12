@@ -73,12 +73,6 @@ public class CudaEvaluator extends SimpleEvaluator {
 	@Override
 	public void evaluatePopulation(final EvolutionState state) {
 		
-		int count = 0;
-		for(int x = 0;x<state.population.subpops.length;x++)
-            for(int y=0;y<state.population.subpops[x].individuals.length;y++)
-                if (!state.population.subpops[x].individuals[y].evaluated) {
-                	count++;
-                }
 		// Not using CUDA? What a shame... :-<
 		if (!useCuda) {
 			super.evaluatePopulation(state);
@@ -134,13 +128,6 @@ public class CudaEvaluator extends SimpleEvaluator {
 			
 			// Call the CUDA kernel
 			float[] fitnesses = cuState.getCudaInterop().evaluatePopulation(threadExpList, cuState.getActiveJob());
-			
-//			if (fitnesses.length != count) {
-//				throw new RuntimeException("");
-//			}
-				
-			
-			// Clean the expressions! Will clean it bellow!
 			
 			// call the assignFitness and assign fitnesses to each individual
 			if (state.evalthreads == 1) {
