@@ -42,8 +42,11 @@ public interface Visualizer extends SuccessProvider {
 	 * visualizer is full.
 	 * 
 	 * @param classifier	The new classifier that is found during the GP run
+	 * @return	True, if evolution should be continued (no eager termination)
+	 * 			False, for eager termination and if the reported classifier meets the
+	 * 			requirements 
 	 */
-	public void passNewClassifier(Classifier classifier);	
+	public boolean passNewClassifier(Classifier classifier);	
 	
 	/**
 	 * Used to pass a new video frame (image) to this visualizer. Usually should

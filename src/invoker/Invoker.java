@@ -140,7 +140,6 @@ public abstract class Invoker implements EvolutionListener, Runnable, SuccessLis
 		Job j = new Job(classifier, target.toString());
 		j.setTag(this.visualizer);
 		gpSystem.queueJob(j);
-		ColorUtils ut = new ColorUtils();
 	}
 	
 	/**
@@ -154,8 +153,8 @@ public abstract class Invoker implements EvolutionListener, Runnable, SuccessLis
 	}
 	
 	@Override
-	public void reportClassifier(Classifier classifier) {
-		this.visualizer.passNewClassifier(classifier);
+	public boolean reportClassifier(Classifier classifier) {
+		return this.visualizer.passNewClassifier(classifier);
 	}
 
 	@Override

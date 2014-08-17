@@ -47,6 +47,9 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 	
 	/** The prefix of the current session */
 	private String sessionPrefix;
+	
+	/** Holds the current status of the evolution */
+	protected int result;
 
 	@Override
 	public void setup(EvolutionState state, Parameter base) {
@@ -152,7 +155,8 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 			
 			// Generation starts from 0 which always triggers a report on the first generation
 			if ((generation + 1) % indReportFrequency == 0) {
-				listener.reportClassifier((Classifier)classifier.clone());
+				if (!listener.reportClassifier((Classifier)classifier.clone()))
+					this.result = R_SUCCESS;
 			}
 		}
 	}
@@ -266,7 +270,10 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 			statistics.postCheckpointStatistics(this);
 		}
 
-		return R_NOTDONE;
+		if (this.result != R_SUCCESS)
+			return R_NOTDONE;
+		else
+			return this.result;
 	}
 
 	@Override
@@ -275,12 +282,12 @@ public class CudaEvolutionState extends SimpleEvolutionState {
 		cudaInterop.prepareDataForRun(this, activeJob);
 
 		/* the big loop */
-		int result = R_NOTDONE;
-		while (result == R_NOTDONE) {
-			result = evolve();
+		this.result = R_NOTDONE;
+		while (this.result == R_NOTDONE) {
+			this.result = evolve();
 		}
 
-		finish(result);
+		finish(this.result);
 	}
 
 }

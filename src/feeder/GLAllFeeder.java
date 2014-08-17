@@ -28,8 +28,8 @@ public class GLAllFeeder extends JFrame implements VideoFeeder {
 	protected final static int NUM_CHANNELS = 4;
 	protected final static int LENGTH_IN_FRAMES = 170;
 	protected final static int FRAME_WIDTH = 854;
-	protected final static int FRAME_HEIGHT = 1600;
-	protected final static int VERTICAL_MARGIN = 3;
+	protected final static int FRAME_HEIGHT = 800;
+	protected final static int VERTICAL_MARGIN = 2;
 	protected final static int OBJECT_HEIGHT = 96;
 	
 	protected byte[] buffer = new byte[FRAME_WIDTH * FRAME_HEIGHT * NUM_CHANNELS];
@@ -83,7 +83,7 @@ public class GLAllFeeder extends JFrame implements VideoFeeder {
 		for (File fl : selected) {
 			try {
 				ByteImage img = ByteImage.loadFromFile(fl);
-				objects.add(new Segment(img, 0, getNextYPosition(), img.getWidth(), img.getHeight(), fl.getName()));
+				objects.add(new Segment(img, 0, getNextYPosition(), img.getWidth(), img.getHeight(), fl.getName().replace(".png", "")));
 			}
 			catch (Throwable t) {
 				t.printStackTrace();

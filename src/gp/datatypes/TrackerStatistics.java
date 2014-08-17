@@ -45,6 +45,7 @@ public class TrackerStatistics {
 	 * 			this run has exceeded
 	 */
 	public boolean addToStat(Job j) {
+		dumpShitNow(j);
 		synchronized(trainingRequests) {
 			String id = j.getId();
 			int newValue = 1;
@@ -63,6 +64,16 @@ public class TrackerStatistics {
 		}
 	}
 	
+	private void dumpShitNow(Job j) {
+		File f = new File(callDumpPath.getPath().replace(".stat", ".keke.stat"));
+		try {
+			FileUtils.write(f, j.getId() + System.lineSeparator(), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	/**
 	 * Determines if a specific segment has reached the maximum number of allowed
 	 * training requests.

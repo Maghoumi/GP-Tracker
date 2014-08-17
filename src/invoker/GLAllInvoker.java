@@ -39,12 +39,12 @@ public class GLAllInvoker extends Invoker {
 		else
 			prefix = args[0];
 		
-		int numTextures = 16;
+		int numTextures = 4;
 		
 		if (args.length != 0)
 			numTextures = Integer.parseInt(args[1]);
 		
-		String path = "textures/gecco-textures/hard";
+		String path = "textures/gecco-textures/easy";
 		if (args.length != 0)
 			path = args[2];
 		

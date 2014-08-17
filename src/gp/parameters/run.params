@@ -6,10 +6,17 @@ parent.0 = cuda.params
 
 stat = cuda.gp.CudaSimpleStatistics
 stat.file = $stat-dump/out.stat
+stat.do-time = true
+stat.do-size = true
 stat.num-children = 1
 stat.child.0 = cuda.gp.CudaSimpleShortStatistics
 stat.child.0.file = $stat-dump/simple.stat
 stat.child.0.do-size = true
+stat.child.0.do-time = true
+#stat.child.1 = ec.gp.koza.KozaShortStatistics
+#stat.child.1.file = $stat-dump/koza.stat
+#stat.child.1.do-size = true
+#stat.child.1.do-time = true
 
 ######################
 #	PROBLEM CONFIG	 #
@@ -39,8 +46,8 @@ problem.negativeExamples = 1024
 #############################
 #	THREADING AND RUNTIME   #
 #############################
-generations = 50
-pop.subpop.0.size = 512
+generations = 100
+pop.subpop.0.size = 1024
 
 #jobs = 10
 eval.evaluationMethod = gpu
@@ -48,6 +55,11 @@ eval.visualize = false
 
 evalthreads = 				auto
 breedthreads = 				auto
+
+#seed.0 =time
+#seed.1 =time  
+#seed.2 =time  
+#seed.3 =time
 
 seed.0 =time
 seed.1 =time  

@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.net.URL;
@@ -107,6 +109,12 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * kernel needs to be called, the classifiers in this set are passed to the kernel function as GP individuals
 	 */
 	private ClassifierSet classifiers = new ClassifierSet();
+	
+	/** A flag indicating whether the newest classifier meets the requirements and is good enough */
+	protected volatile boolean eagerTerminateSatisfied = false;
+	
+	/** Synchronization for the passNewClassifier function */
+	protected Object passedClassifierMutex = new Object();
 
 	/** The associated invoker reference */
 	private Invoker invoker;
@@ -221,7 +229,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		pnlRight.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Options", TitledBorder.LEADING, TitledBorder.TOP,
 				null, null));
 		pnlContent.add(pnlRight, BorderLayout.EAST);
-		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][][center][][][][][][][][][]"));
+		pnlRight.setLayout(new MigLayout("", "[grow]", "[150px:n,fill][][center][][][][][][][][][][]"));
 
 		checkBoxList = new CheckBoxList();
 		checkBoxList.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -250,14 +258,18 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 
 		chckbxShowConflicts = new JCheckBox("Show conflicts");
 		pnlRight.add(chckbxShowConflicts, "cell 0 2,growx");
+		
+		chckbxEagerTermination = new JCheckBox("Eager termination");
+		chckbxEagerTermination.setSelected(true);
+		pnlRight.add(chckbxEagerTermination, "cell 0 3");
 
 		chckbxThreshold = new JCheckBox("Do thresholding");
 		chckbxThreshold.setEnabled(false);
 		chckbxThreshold.setSelected(true);
-		pnlRight.add(chckbxThreshold, "cell 0 3,growx");
+		pnlRight.add(chckbxThreshold, "cell 0 4,growx");
 
 		panel_3 = new JPanel();
-		pnlRight.add(panel_3, "cell 0 4,growx");
+		pnlRight.add(panel_3, "cell 0 5,growx");
 		panel_3.setLayout(new BorderLayout(0, 0));
 
 		lblNewLabel_1 = new JLabel(" Threshold:");
@@ -269,7 +281,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		spnThreshold.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 
 		this.panel_4 = new JPanel();
-		this.pnlRight.add(this.panel_4, "cell 0 5,growx");
+		this.pnlRight.add(this.panel_4, "cell 0 6,growx");
 		this.panel_4.setLayout(new BorderLayout(0, 0));
 
 		this.lblOpacity = new JLabel(" Opacity:");
@@ -279,7 +291,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		this.spnOpacity.setModel(new SpinnerNumberModel(50, 0, 100, 1));
 		this.spnOpacity.setPreferredSize(new Dimension(35, 20));
 		this.panel_4.add(this.spnOpacity, BorderLayout.EAST);
-		pnlRight.add(btnSeedRetrain, "cell 0 7,growx");
+		pnlRight.add(btnSeedRetrain, "cell 0 8,growx");
 
 		btnRetrain = new JButton("Retrain");
 		btnRetrain.addActionListener(new ActionListener() {
@@ -292,10 +304,10 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				invoker.retrain(classifier, false);
 			}
 		});
-		pnlRight.add(btnRetrain, "cell 0 8,growx");
+		pnlRight.add(btnRetrain, "cell 0 9,growx");
 
 		btnResetSize = new JButton("Reset Canvas");
-		this.pnlRight.add(this.btnResetSize, "cell 0 9,growx");
+		this.pnlRight.add(this.btnResetSize, "cell 0 10,growx");
 
 		tglbtnGpSystem = new JToggleButton("GP [Enabled]", true);
 		tglbtnGpSystem.addActionListener(new ActionListener() {
@@ -308,7 +320,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				invoker.setGPStatus(tglbtnGpSystem.isSelected());
 			}
 		});
-		pnlRight.add(tglbtnGpSystem, "cell 0 11,growx");
+		pnlRight.add(tglbtnGpSystem, "cell 0 12,growx");
 		
 		btnSelectNone = new JButton("None");
 		btnSelectNone.addActionListener(new ActionListener() {
@@ -334,11 +346,16 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		pnlRight.add(btnDel, "cell 0 1");
 		btnResetSize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
+//				glComponent.setPreferredSize(new Dimension(imageWidth, imageHeight));
+				glComponent.setPreferredSize(new Dimension(854, 800));
 				pack();
 			}
 		});
 	}
+	
+	BlockingQueue<Boolean> eagerQueue = new ArrayBlockingQueue<>(1);
+	volatile Thread waiting = null;
+	private JCheckBox chckbxEagerTermination;
 
 	/**
 	 * Used to pass a new individual to the visualizer. Usually, when a fitter individual is found in the run, this fncDescribe should be called. Note
@@ -347,11 +364,27 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * @param classifier
 	 *            The new classifier that is found during the GP run
 	 */
-	public void passNewClassifier(Classifier classifier) {
+	public boolean passNewClassifier(Classifier classifier) {
 		synchronized (this.classifiers) {
+			waiting = Thread.currentThread();
 			this.classifiers.update(classifier);
 			this.checkBoxList.addItem(classifier);
 		}
+		
+		boolean result = false;
+		
+		try {
+			result = eagerQueue.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		waiting = null;
+		
+		if (chckbxEagerTermination.isSelected())
+			return !result;
+		else
+			return true;
 	}
 
 	/**
@@ -359,9 +392,8 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	 * @param classifiers
 	 */
 	public void removeClassifier(Collection<Classifier> classifiers) {
-		for (Classifier c : classifiers) {
-			removeClassifier(c);
-		}
+		for (Classifier c : classifiers)
+				removeClassifier(c);
 	}
 	
 	/**
@@ -496,6 +528,14 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 		pnlVideoControls.add(sliderVidPosition, "cell 3 0,growx");
 		animator.setUpdateFPSFrames(30, null); // animator will use 30 FPS
 		animator.start();
+		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    GraphicsDevice[] gd = ge.getScreenDevices();
+	    
+	    // Force it to appear on the other screen! FOR THESIS FINALIZATION ONLY
+//	    if (gd.length != 1) {
+//	    	setLocation(gd[1].getDefaultConfiguration().getBounds().x, getY());	    	
+//	    }
 
 		this.pack();
 		this.setVisible(true);
@@ -662,8 +702,9 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			// Invoke kernel and determine orphans
 			List<Segment> orphans = invokeKernel(drawable, frame);
 			
-			if (!invoker.isQueueEmpty())
-				return;
+//			if (!invoker.isQueueEmpty())
+//				return;
+			eagerTerminateSatisfied = true;
 			
 			// Determine permanent orphans
 			determinePermanentOrphans(frame, orphans);
@@ -694,6 +735,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				for (Segment s : orphans) {
 					if (!s.isPermanentOrphan()) {
 						toBeTrained = s;
+						cycleSuccessful = false;
 						break;
 					}
 				}
@@ -701,17 +743,24 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 				invoker.evolveClassifier(frame, toBeTrained);
 			}
 			
-			if (!invoker.isQueueEmpty())
-				return;
+//			if (!invoker.isQueueEmpty())
+//				return;
 			
 			if (this.classifiers.isEmpty() || !frame.hasSegments())
 				cycleSuccessful = false;
 			
 			if (!invoker.isQueueEmpty())
 				cycleSuccessful = false;
+			
+			if(classifiers.isEmpty())
+				eagerTerminateSatisfied = false;
+						
+			if (waiting != null)
+				eagerQueue.offer(eagerTerminateSatisfied);
+			
 				
-//			if (cycleSuccessful)
-//				notifySuccess();
+			if (cycleSuccessful)
+				notifySuccess();
 
 		}/* end-synchronized*/
 
@@ -828,20 +877,20 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 	private boolean resolveIssues(SegmentedVideoFrame frame) {
 		boolean issueDetected = false;
 		
-		for (Classifier c : this.classifiers) {
-			if (c.isBeingProcessed())
-				return true;
-		}
+//		for (Classifier c : this.classifiers) {
+//			if (c.isBeingProcessed())
+//				return true;
+//		}
 		
 		List<Classifier> toBeDestroyed = new ArrayList<>();
 		
 		// Remove garbage classifiers
 		for (Classifier c : classifiers) {
-			if (c.getClaimsCount() == 0 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+			if (c.getClaimsCount() == 0 /*&& !c.isBeingProcessed()*/ && chckbxThreshold.isSelected() /*&& invoker.isQueueEmpty()*/) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
 				toBeDestroyed.add(c);
 				issueDetected = true;
 			}				
-			else if (c.getClaimsCount() > 1 && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
+			else if (c.getClaimsCount() > 1 /*&& !c.isBeingProcessed()*/ && chckbxThreshold.isSelected() /*&& invoker.isQueueEmpty()*/) {	// If this classifier has not claimed anything and is not currently being processed, it's garbage and must be deleted! :-)
 				toBeDestroyed.add(c);
 				issueDetected = true;
 			}
@@ -859,7 +908,7 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			}
 			
 			for (Classifier c : s.getClaimers()) {
-				if (c.getClaimsCount() == 1  && c.getClaims().contains(s) && !c.isBeingProcessed() && chckbxThreshold.isSelected() && invoker.isQueueEmpty()) {
+				if (c.getClaimsCount() == 1  && c.getClaims().contains(s) /*&& !c.isBeingProcessed()*/ && chckbxThreshold.isSelected() /*&& invoker.isQueueEmpty()*/) {
 					listOfSingles.add(c);
 					issueDetected = true;
 				}
@@ -894,9 +943,12 @@ public class GLVisualizer extends JFrame implements GLEventListener, Visualizer,
 			}
 		}
 		
+		eagerTerminateSatisfied = !issueDetected;
 
 		// Destroy the suckers
-		removeClassifier(toBeDestroyed);
+		if (invoker.isQueueEmpty())
+			removeClassifier(toBeDestroyed);
+		
 		return issueDetected;
 	}
 	

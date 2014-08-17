@@ -68,7 +68,7 @@ public class Segment implements Cloneable {
 	public Segment(ByteImage image, Rectangle bounds, String id) {
 		this.image = image;
 		this.bounds = new Rectangle(bounds);
-		this.id = id;
+		this.id = id.replace(".png", "");
 	}
 	
 	/**
@@ -186,7 +186,7 @@ public class Segment implements Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		return new Segment(image, bounds.x, bounds.y, bounds.width, bounds.height, id + "_cloned", this.claimers);
+		return new Segment(image, bounds.x, bounds.y, bounds.width, bounds.height, id, this.claimers);
 	}
 	
 	@Override

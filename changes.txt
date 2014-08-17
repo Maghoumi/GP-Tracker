@@ -1,1 +1,1 @@
-Changed class names here and there because of the change in the name in TransScale
+Final commit and the submitted thesis

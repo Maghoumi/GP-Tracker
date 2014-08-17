@@ -17,10 +17,14 @@ import ec.gp.GPIndividual;
 public interface EvolutionListener {
 	
 	/**
-	 * Report the evolution of a new classifier to this object.
+	 * Report the evolution of a new classifier to this object. This function will
+	 * tell the caller whether the evolution must be stopped or not (for eager termination)
 	 * @param classifier	The newly evolved classifier
+	 * @return	True, if evolution should be continued (no eager termination)
+	 * 			False, for eager termination and if the reported classifier meets the
+	 * 			requirements
 	 */
-	public void reportClassifier(Classifier classifier);
+	public boolean reportClassifier(Classifier classifier);
 	
 	/**
 	 * How often do you want to be informed of the evolution of a new individual?  

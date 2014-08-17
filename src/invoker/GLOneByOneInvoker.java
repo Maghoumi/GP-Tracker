@@ -46,12 +46,12 @@ public class GLOneByOneInvoker extends Invoker implements SegmentEventListener {
 		if (args.length != 0)
 			initialNumTextures = Integer.parseInt(args[1]);
 		
-		int numTextures = 16;
+		int numTextures = 4;
 		
 		if (args.length != 0)
 			numTextures = Integer.parseInt(args[2]);
 		
-		String path = "textures/gecco-textures/hard";
+		String path = "textures/gecco-textures/easy";
 		if (args.length != 0)
 			path = args[3];
 		
